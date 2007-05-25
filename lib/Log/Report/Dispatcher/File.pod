@@ -1,0 +1,218 @@
+=head1 NAME
+
+Log::Report::Dispatcher::File - send messages to a file or file-handle
+
+=head1 INHERITANCE
+
+ Log::Report::Dispatcher::File
+   is a Log::Report::Dispatcher
+
+=head1 SYNOPSIS
+
+ # automatically created when STDERR is open
+ dispatcher Log::Report::Dispatcher::File => 'stderr'
+   , to => \*STDERR, accept => 'NOTICE-';
+
+ # disable default dispatcher
+ dispatcher close => 'stderr';
+
+ # let dispatcher open and close the file
+ dispatcher FILE => 'mylog', to => '/var/log/mylog'
+   , charset => 'utf-8';
+ ...
+ dispatcher close => 'mylog';  # will close file
+
+ # open yourself, then also close yourself
+ open OUT, ">:encoding('iso-8859-1')", '/var/log/mylog'
+     or fault "...";
+ dispatcher FILE => 'mylog', to => \*OUT;
+ ...
+ dispatcher close => 'mylog';  
+ close OUT;
+
+ # dispatch into a scalar
+ my $output = '';
+ open $outfile, '>', \$output;
+ dispatcher FILE => 'into-scalar', to => \$outfile;
+ ...
+ dispatcher close => 'into-scalar';
+ print $output;
+
+=head1 DESCRIPTION
+
+This basic file logger accepts an file-handle or filename as destination.
+
+=head1 METHODS
+
+=head2 Constructors
+
+$obj-E<gt>B<close>
+
+=over 4
+
+Only when initiated with a FILENAME, the file will be closed.  In any
+other case, nothing will be done.
+
+=back
+
+Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
+
+=over 4
+
+ Option --Defined in     --Default
+ accept   Log::Report::Dispatcher  depend on mode
+ charset                   'utf-8'
+ filter   Log::Report::Dispatcher  undef
+ locale   Log::Report::Dispatcher  <system locale>
+ mode     Log::Report::Dispatcher  'NORMAL'
+ replace                   false
+ to                        <required>
+
+. accept => REASONS
+
+. charset => STRING
+
+=over 4
+
+Only used in combination with a FILENAME.
+
+=back
+
+. filter => FILTER|ARRAY-of-FILTERs
+
+. locale => LOCALE
+
+. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
+
+. replace => BOOLEAN
+
+=over 4
+
+Only used in combination with a FILENAME: throw away the old file
+if it exists.  Probably you wish to append to existing information.
+
+=back
+
+. to => FILENAME|FILEHANDLE|FILE-OBJECT
+
+=over 4
+
+You can either specify a FILENAME, which is opened in append mode, or
+any kind of handle or object which accepts supports C<print()>.
+When cleaning-up the dispatcher, the file will only be closed in case
+of a FILENAME.
+
+=back
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<addFilter>(CODE|LIST-of-CODE|ARRAY-of-CODE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<filename>
+
+=over 4
+
+Returns the name of the opened file, or C<undef> in case this dispatcher
+was started from a file-handle or file-object.
+
+=back
+
+$obj-E<gt>B<isDisabled>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<mode>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<name>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<needs>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<type>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+=head2 Logging
+
+$obj-E<gt>B<collectStack>(NESTING, [MAXDEPTH])
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<stackTraceLine>(OPTIONS)
+
+Log::Report::Dispatcher::File-E<gt>B<stackTraceLine>(OPTIONS)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+=head1 DETAILS
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

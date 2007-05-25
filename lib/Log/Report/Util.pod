@@ -1,0 +1,77 @@
+=head1 NAME
+
+Log::Report::Util - helpful routines to Log::Report
+
+=head1 INHERITANCE
+
+ Log::Report::Util
+   is an Exporter
+
+=head1 DESCRIPTION
+
+=head1 FUNCTIONS
+
+B<escape_chars>(STRING)
+
+=over 4
+
+Replace all escape characters into their readible counterpart.
+
+=back
+
+B<expand_reasons>(REASONS)
+
+=over 4
+
+Returns a sub-set of all existing message reason labels, based on the
+content REASONS string. The following rules apply:
+ REASONS = BLOCK [ ',' BLOCKS]
+ BLOCK   = '-' TO | FROM '-' TO | ONE | SOURCE
+ FROM,TO,ONE = 'TRACE' | 'ASSERT' | ,,, | 'PANIC'
+ SOURCE  = 'USER' | 'PROGRAM' | 'SYSTEM' | 'ALL'
+
+The SOURCE specification group all reasons which are usually related to
+the problem: report about problems caused by the user, reported by
+the program, or with system interaction.
+
+I<Example:> of expended REASONS
+
+ WARNING-FAULT # == WARNING,MISTAKE,ERROR,FAULT
+ -INFO         # == TRACE-INFO
+ ALERT-        # == ALERT,FAILURE,PANIC
+ USER          # == MISTAKE,ERROR
+ ALL           # == TRACE-PANIC
+
+=back
+
+B<parse_locale>(STRING)
+
+=over 4
+
+Returns a LIST of four elements when successful, and an empty
+LIST when the locale is not correct.  The LIST order is country,
+territory, character-set (codeset), and modifier.
+
+=back
+
+B<unescape_chars>(STRING)
+
+=over 4
+
+Replace all C<\.> by their escape character.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

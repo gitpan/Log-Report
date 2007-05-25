@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+# test the file back-end, without translations
+
+use warnings;
+use strict;
+use lib 'lib', '../lib';
+
+use Test::More tests => 35;
+
+use Log::Report undef, syntax => 'SHORT';
+
+my @disp = dispatcher 'list';
+cmp_ok(scalar(@disp), '==', 1);
+
+isa_ok($disp[0], 'Log::Report::Dispatcher');
+
+# start new dispatcher to file
+
+my $file1 = '';
+open my($fh1), ">", \$file1 or die $!;
+my $d = dispatcher FILE => 'file1'
+  , to => $fh1;
+
+@disp = dispatcher 'list';
+cmp_ok(scalar(@disp), '==', 2);
+
+ok(defined $d, 'created file dispatcher');
+isa_ok($d, 'Log::Report::Dispatcher::File');
+cmp_ok($d, '==', $disp[0]);
+ok(!$d->isDisabled);
+is($d->name, 'file1');
+
+my @needs = $d->needs;
+cmp_ok(scalar(@needs), '>', 7, 'needs');
+is($needs[0], 'NOTICE');
+is($needs[-1], 'PANIC');
+
+# start a second dispatcher to a file, which does accept everything
+# trace-info.
+
+my $file2 = '';
+open my($fh2), ">", \$file2 or die $!;
+my $e = dispatcher FILE => 'file2'
+  , to => $fh2, accept => '-INFO';
+ok(defined $e, 'created second disp');
+isa_ok($e, 'Log::Report::Dispatcher::File');
+
+@disp = dispatcher 'list';
+cmp_ok(scalar(@disp), '==', 3);
+
+@needs = $e->needs;
+cmp_ok(scalar(@needs), '>=', 3, 'needs');
+is($needs[0], 'TRACE');
+is($needs[-1], 'INFO');
+
+# silence default dispatcher for tests
+
+dispatcher close => 'stderr';
+
+@disp = dispatcher 'list';
+cmp_ok(scalar(@disp), '==', 2);
+
+#
+# Start producing messages
+#
+
+cmp_ok(length $file1, '==', 0);
+cmp_ok(length $file2, '==', 0);
+
+trace "trace";
+cmp_ok(length $file1, '==', 0, 'disp1 ignore trace');
+my $t = length $file2;
+cmp_ok($t, '>', 0, 'disp2 take trace');
+is($file2, "TRACE: trace\n");
+
+my $linenr = __LINE__ +1;
+assert "assertive";
+cmp_ok(length $file1, '==', 0, 'disp1 ignore assert');
+my $t2 = length $file2;
+cmp_ok($t2, '>', $t, 'disp2 take assert');
+is(substr($file2, $t), "ASSERT: assertive\n at $0 line $linenr\n");
+
+info "just to inform you";
+cmp_ok(length $file1, '==', 0, 'disp1 ignore info');
+my $t3 = length $file2;
+cmp_ok($t3, '>', $t2, 'disp2 take info');
+is(substr($file2, $t2), "INFO: just to inform you\n");
+
+notice "note this!";
+my $s = length $file1;
+cmp_ok($s, '>', 0, 'disp1 take notice');
+is($file1, "NOTICE: note this!\n");
+my $t4 = length $file2;
+cmp_ok($t4, '==', $t3, 'disp2 ignores notice');
+
+warning "oops, be warned!";
+my $s2 = length $file1;
+cmp_ok($s2, '>', $s, 'disp1 take warning');
+like(substr($file1, $s), qr/^WARNING: oops, be warned!: /);
+my $t5 = length $file2;
+cmp_ok($t5, '==', $t4, 'disp2 ignores warnings');
+
+

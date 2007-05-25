@@ -1,0 +1,95 @@
+=head1 NAME
+
+Log::Report::Translator::POT - translation based on POT files
+
+=head1 INHERITANCE
+
+ Log::Report::Translator::POT
+   is a Log::Report::Translator
+
+=head1 SYNOPSIS
+
+ # internal use
+ my $msg = Log::Report::Message->new(_msgid => "Hello World\n"
+             , _domain => 'my-domain');
+ print Log::Report::Translator::POT->new(lexicon => ...)
+             ->translate('nl-BE', $msg);
+
+ # normal use (end-users view)
+ use Log::Report 'my-domain'
+   , translator =>  Log::Report::Translator::POT->new;
+ print __"Hello World\n";
+
+=head1 DESCRIPTION
+
+Translate a message by directly accessing POT files.  The files will
+load lazily (unless forced).  To module attempts to administer the PO's
+in a compact way, much more compact than L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO> does.
+
+=head1 METHODS
+
+=head2 Constructors
+
+Log::Report::Translator::POT-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+ Option --Defined in     --Default
+ charset  Log::Report::Translator  <from locale>
+ lexicon  Log::Report::Translator  <see text>
+
+. charset => STRING
+
+. lexicon => DIRECTORY|ARRAY-of-DIRECTORYs
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<charset>
+
+=over 4
+
+See L<Log::Report::Translator/"Accessors">
+
+=back
+
+$obj-E<gt>B<lexicons>
+
+=over 4
+
+See L<Log::Report::Translator/"Accessors">
+
+=back
+
+=head2 Translating
+
+$obj-E<gt>B<load>(DOMAIN, LOCALE)
+
+=over 4
+
+See L<Log::Report::Translator/"Translating">
+
+=back
+
+$obj-E<gt>B<translate>(MESSAGE)
+
+=over 4
+
+See L<Log::Report::Translator/"Translating">
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

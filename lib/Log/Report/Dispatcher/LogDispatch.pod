@@ -1,0 +1,232 @@
+=head1 NAME
+
+Log::Report::Dispatcher::LogDispatch - send messages to Log::Dispatch back-end
+
+=head1 INHERITANCE
+
+ Log::Report::Dispatcher::LogDispatch
+   is a Log::Report::Dispatcher
+
+=head1 SYNOPSIS
+
+ use Log::Dispatch::File;
+ dispatcher Log::Dispatch::File => 'logger', accept => 'NOTICE-'
+   , to_level => [ 'ALERT-' => 'err' ];
+
+ # disable default dispatcher
+ dispatcher close => 'logger';
+
+=head1 DESCRIPTION
+
+This dispatchers produces output to and C<Log::Dispatch> back-end.
+(which will NOT be automatically installed for you).
+
+The REASON for a message often uses names which are quite similar to the
+log-levels used by Log::Dispatch.  However: they have a different
+approach.  The REASON of Log::Report limits the responsibility of the
+programmer to indicate the cause of the message: whether it was able to
+handle a certain situation.  The Log::Dispatch levels are there for the
+user's of the program.  However: the programmer does not known anything
+about the application (in the general case).  This is cause of miuch of
+the trickery in Perl programs.
+
+The default translation table is list below.  You can change the mapping
+using L<new(to_level)|Log::Report::Dispatcher::LogDispatch/"Constructors">.  See example in SYNOPSIS.
+
+=head1 METHODS
+
+=head2 Constructors
+
+$obj-E<gt>B<close>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Constructors">
+
+=back
+
+Log::Report::Dispatcher::LogDispatch-E<gt>B<new>(TYPE, NAME, OPTIONS)
+
+=over 4
+
+The Log::Dispatch infrastructure has quite a large number of output
+TYPEs, each extending the Log::Dispatch::Output base-class.  You
+do not create these objects yourself: Log::Report is doing it for you.
+
+The Log::Dispatch back-ends are very careful with validating their
+parameters, so you will need to restrict the options to what is supported
+for the specific back-end.  See their respective manual-pages.  The errors
+produced by the back-ends quite horrible and untranslated, sorry.
+
+ Option   --Defined in     --Default
+ accept     Log::Report::Dispatcher  depend on mode
+ callbacks                   []
+ filter     Log::Report::Dispatcher  undef
+ locale     Log::Report::Dispatcher  <system locale>
+ max_level                   undef
+ min_level                   debug
+ mode       Log::Report::Dispatcher  'NORMAL'
+ to_level                    []
+
+. accept => REASONS
+
+. callbacks => CODE|ARRAY-of-CODE
+
+=over 4
+
+See Log::Dispatch::Output.
+
+=back
+
+. filter => FILTER|ARRAY-of-FILTERs
+
+. locale => LOCALE
+
+. max_level => LEVEL
+
+=over 4
+
+Like C<min_level>.
+
+=back
+
+. min_level => LEVEL
+
+=over 4
+
+Restrict the messages which are passed through based on the LEVEL,
+so after the reason got translated into a Log::Dispatch compatible
+LEVEL.  The default will use Log::Report restrictions only.
+
+=back
+
+. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
+
+. to_level => ARRAY-of-PAIRS
+
+=over 4
+
+See L<reasonToLevel()|Log::Report::Dispatcher::LogDispatch/"Logging">.
+
+=back
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<addFilter>(CODE|LIST-of-CODE|ARRAY-of-CODE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<backend>
+
+=over 4
+
+Returns the Log::Dispatch::Output object which is used for logging.
+
+=back
+
+$obj-E<gt>B<isDisabled>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<mode>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<name>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<needs>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<type>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+=head2 Logging
+
+$obj-E<gt>B<collectStack>(NESTING, [MAXDEPTH])
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<reasonToLevel>(REASON)
+
+=over 4
+
+Returns a level which is understood by Log::Dispatch, based on
+a translation table.  This can be changed with L<new(to_level)|Log::Report::Dispatcher::LogDispatch/"Constructors">.
+
+=back
+
+$obj-E<gt>B<stackTraceLine>(OPTIONS)
+
+Log::Report::Dispatcher::LogDispatch-E<gt>B<stackTraceLine>(OPTIONS)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+=head1 DETAILS
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

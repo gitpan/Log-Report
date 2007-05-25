@@ -1,0 +1,128 @@
+=head1 NAME
+
+Log::Report::Translator - base implementation for translating messages
+
+=head1 SYNOPSIS
+
+ # internal infrastructure
+ my $msg = Log::Report::Message->new(_msgid => "Hello World\n");
+ print Log::Report::Translator->new(...)->translate($msg);
+
+ # normal use
+ use Log::Report 'my-domain';
+ print __"Hello World\n";
+
+=head1 DESCRIPTION
+
+A module (or distribution) has a certain way of translating messages,
+usually C<gettext>.  The translator is based on the C<textdomain>
+for the message, which can be specified as option per text element,
+but usually is package scoped.
+
+This base class does not translate at all: it will use the MSGID
+(and MSGID_PLURAL if available).  It's a nice fallback if the
+language packs are not installed.
+
+=head1 METHODS
+
+=head2 Constructors
+
+Log::Report::Translator-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+ Option --Default
+ charset  <from locale>
+ lexicon  <see text>
+
+. charset => STRING
+
+=over 4
+
+When the locale contains a codeset in its name, then that will be
+used.  Otherwise, the default is C<utf-8>.
+
+=back
+
+. lexicon => DIRECTORY|ARRAY-of-DIRECTORYs
+
+=over 4
+
+The DIRECTORY where the translations can be found.  See
+L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index> for the expected structure of such
+DIRECTORY.
+
+The default is based on the location of the module which instantiates
+this translator.  The filename of the module is stripped from its C<.pm>
+extension, and used as directory name.  Within that directory, there
+must be a directory named C<messages>, which will be the root directory
+of a L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index>.
+
+=back
+
+I<Example:> default lexicon directory
+
+ # file xxx/perl5.8.8/My/Module.pm
+ use Log::Report 'my-domain',
+     translator => Log::Report::Translator::POT->new;
+
+ # lexicon now in xxx/perl5.8.8/My/Module/messages/
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<charset>
+
+=over 4
+
+Returns the default charset, which can be overrule by the locale.
+
+=back
+
+$obj-E<gt>B<lexicons>
+
+=over 4
+
+Returns a list of L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index> objects, where the
+translation files may be located.
+
+=back
+
+=head2 Translating
+
+$obj-E<gt>B<load>(DOMAIN, LOCALE)
+
+=over 4
+
+Load the translation information in the text DOMAIN for the indicated LOCALE.
+Multiple calls to L<load()|Log::Report::Translator/"Translating"> should not cost significant performance: the
+data must be cached.
+
+=back
+
+$obj-E<gt>B<translate>(MESSAGE)
+
+=over 4
+
+Returns the translation of the MESSAGE, a C<Log::Report::Message> object,
+based on the current locale.
+
+Translators are permitted to peek into the internal HASH of the
+message object, for performance reasons.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

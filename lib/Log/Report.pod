@@ -1,0 +1,971 @@
+=head1 NAME
+
+Log::Report - report a problem, pluggable handlers and language support
+
+=head1 INHERITANCE
+
+ Log::Report
+   is an Exporter
+
+=head1 SYNOPSIS
+
+ # Read section "The Reason for the report" first!!!
+ # THIS IS THE FIRST RELEASE... please report problems!!!  A few
+ # things do need to be improved, but all the basics are in already.
+
+ # In your main script
+
+ use Log::Report;
+
+ dispatcher FILE => 'stderr', to => \*STDERR
+   , reasons => 'NOTICE-';   # this disp. is automatically added
+
+ dispatcher SYSLOG => 'syslog'
+   , charset => 'iso-8859-1' # explicit conversions
+   , locale => 'en_US';      # overrule user's locale
+
+ # in all (other) files
+ use Log::Report 'my-domain';
+ report ERROR => __x('gettext string', param => $param, ...)
+     if $condition;
+
+ # overrule standard behavior for single message with HASH
+ use Errno qw/ENOMEM/;
+ report {to => 'syslog', errno => ENOMEM}
+   , FAULT => __x"cannot allocate {size} bytes", size => $size;
+
+ use Log::Report 'my-domain', syntax => 'SHORT';
+ error __x('gettext string', param => $param, ...)
+     if $condition;
+
+ # avoid messages without report level
+ print __"Hello World", "\n";
+
+ fault __x "cannot allocate {size} bytes", size => $size;
+ fault "cannot allocate $size bytes";  # fails translation
+
+ print __xn("found one file", "found {_count} files", @files), "\n";
+
+=head1 DESCRIPTION
+
+Handling messages to users can be a hassle, certainly when the same
+module is used for command-line and in a graphical interfaces, and
+has to cope with internationalization at the same time; this set of
+modules tries to simplify this.  Log::Report combines C<gettext> features
+with Log::Dispatch-like features.  However, you can also use this
+module to do only translations or only message dispatching.
+
+Read more about how and why in the L</DETAILS> section, below.  Especially,
+you should B<read about the REASON parameter>.
+
+Content of the whole C<Log::Report> package:
+
+=over 4
+
+=item . Log::Report
+
+Exports the functions to end-users.  To avoid the need to pass around
+an logger-object to all end-user packages, the singleton object is
+wrapped in functions.
+
+=item . Translating
+
+You can use the GNU gettext infrastructure (via MO files handled by
+L<Log::Report::Translator::Gettext|Log::Report::Translator::Gettext>), or extract strings via PPI
+(L<Log::Report::Extract::PerlPPI|Log::Report::Extract::PerlPPI>) into PO files which can be
+used directly (L<Log::Report::Lexicon::POTcompact|Log::Report::Lexicon::POTcompact>).
+
+=item . Dispatching
+
+Multiple dispatchers in parallel can be active. L<Log::Report::Dispatcher|Log::Report::Dispatcher>
+takes care that the back-end gets the messages of the severity it needs,
+translated and in the right character-set.
+
+=back
+
+=head1 FUNCTIONS
+
+=head2 Report Production and Configuration
+
+B<dispatcher>((TYPE, OPTIONS)|(COMMAND => NAME, [NAMEs]))
+
+=over 4
+
+The C<Log::Report> suite has its own dispatcher TYPES, but also connects
+to external dispatching frame-works.  Each need some (minor) conversions,
+especially with respect to translation of "reasons" of the reports
+into log-levels as the back-end understands.
+
+The OPTIONS are a mixture of parameters needed for the
+Log::Report dispatcher wrapper and the settings of the back-end.
+See L<Log::Report::Dispatcher|Log::Report::Dispatcher>, the documentation for the back-end
+specific wrappers, and the back-ends for more details.
+
+Implemented COMMANDs are C<close>, C<find>, C<list>, C<disable>,
+C<enable>, C<mode>, and C<needs>.  The commands are followed by a LIST of
+dispatcher NAMEs to be address.  For C<mode> see section L</Run modes>;
+it requires a MODE argument before the LIST of NAMEs.  Non-existing names
+will be ignored.
+
+With C<needs>, you only provide a REASON: it will return the list of
+dispatchers which need to be called in case of a message with the REASON
+is triggered.
+
+For both the creation as COMMANDs version of this method, all objects
+involved are returned as LIST, non-existing ones skipped.  In SCALAR
+context with only one name, the one object is returned.
+
+I<Example:> play with dispatchers
+
+ dispatcher Log::Dispatcher::File => mylog =>
+   , accept   => 'MISTAKE-'              # for wrapper
+   , locale   => 'pt_BR'                 # other language
+   , filename => 'logfile';              # for back-end
+
+ dispatcher close => 'mylog';            # cleanup
+ my $obj = dispatcher find => 'mylog'; 
+ my @obj = dispatcher list;
+ dispatcher disable => 'syslog';
+ dispatcher enable => 'mylog', 'syslog'; # more at a time
+ dispatcher mode => DEBUG => 'mylog';
+
+ my @need_info = dispatcher needs => 'INFO';
+ if(dispatcher needs => 'INFO') ...
+
+ # Getopt::Long integration: see Log::Report::Dispatcher::mode()
+ dispatcher FILE => stderr =>
+    to => \*STDERR, mode => 'DEBUG', accept => 'ALL'
+       if $debug;
+
+=back
+
+B<report>([HASH-of-OPTIONS], REASON, MESSAGE [,more MESSAGE parts])
+
+=over 4
+
+Produce a report for certain REASON.  The MESSAGE is a LIST containing
+strings and L<Log::Report::Message|Log::Report::Message> objects (which are created with the
+special translation syntax like L<__x()|Log::Report/"Language Translations">).  The HASH is an optional
+first parameter, which can be used to influence the dispatchers.  The
+HASH contains any combination of the OPTIONS listed below.
+
+When C<syntax => 'SHORT'> is configured, you will also have abbreviations
+available, where the REASON is the name of the function.  See for
+instance L<info()|Log::Report/"Abbreviations for report()">.  In that case, you loose the chance for OPTIONS.
+
+Returns is the LIST of dispatchers used to log the MESSAGE.  When
+empty, no back-end has accepted it so the MESSAGE was "lost".  Even when
+no back-end need the message, it program will still exit when there is
+REASON to.
+
+ Option--Default
+ errno   $! or 1
+ locale  undef
+ to      undef
+
+. errno => INTEGER
+
+=over 4
+
+When the REASON includes the error text (See L</Run modes>), you can
+overrule the error code kept in C<$!>.  In other cases, the return code
+default to C<1> (historical UNIX behavior). When the message REASON
+(combined with the run-mode) is severe enough to stop the program,
+this value as return code.  The use of this option itself will not
+trigger an C<die()>.
+
+=back
+
+. locale => LOCALE
+
+=over 4
+
+Use this specific locale, in stead of the user's preference.
+
+=back
+
+. to => NAME|ARRAY-of-NAMEs
+
+=over 4
+
+Sent the MESSAGE only to the NAMEd dispatchers.  Ignore unknown NAMEs.
+Still, the dispatcher needs to be enabled and accept the REASONs.
+
+=back
+
+I<Example:> for use of L<report()|Log::Report/"Report Production and Configuration">
+
+ report TRACE => "start processing now";
+ report INFO  => '500: ', __'Internal Server Error';
+
+ report {to => 'syslog'}, NOTICE => "started process $$";
+
+ # with syntax SHORT
+ trace "start processing now";
+ warning  __x'Disk {percent%.2f}% full', percent => $p
+     if $p > 97;
+
+ # error message, overruled to be printed in Brazillian
+ report {locale => 'pt_BR'}
+     WARNING => __$!;
+
+=back
+
+=head2 Abbreviations for report()
+
+The following functions are abbreviations for calls to L<report()|Log::Report/"Report Production and Configuration">, and
+available when syntax is C<SHORT> (see L<import()|Log::Report/"Configuration">).  You cannot specify
+additional options to influence the behavior of C<report()>, which are
+usually not needed anyway.
+
+$obj-E<gt>B<alert>(MESSAGE)
+
+=over 4
+
+Short for C<< report ALERT => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<assert>(MESSAGE)
+
+=over 4
+
+Short for C<< report ASSERT => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<error>(MESSAGE)
+
+=over 4
+
+Short for C<< report ERROR => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<failure>(MESSAGE)
+
+=over 4
+
+Short for C<< report FAILURE => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<fault>(MESSAGE)
+
+=over 4
+
+Short for C<< report FAULT => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<info>(MESSAGE)
+
+=over 4
+
+Short for C<< report INFO => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<mistake>(MESSAGE)
+
+=over 4
+
+Short for C<< report MISTAKE => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<notice>(MESSAGE)
+
+=over 4
+
+Short for C<< report NOTICE => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<panic>(MESSAGE)
+
+=over 4
+
+Short for C<< report PANIc => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<trace>(MESSAGE)
+
+=over 4
+
+Short for C<< report TRACE => MESSAGE >>
+
+=back
+
+$obj-E<gt>B<warning>(MESSAGE)
+
+=over 4
+
+Short for C<< report WARNING => MESSAGE >>
+
+=back
+
+=head2 Language Translations
+
+B<N__>(MSGID)
+
+=over 4
+
+Label to indicate that the string is a text which will be translated
+later.  The function itself does nothing.  See also L<N__w()|Log::Report/"Language Translations">.
+
+I<Example:> how to use N__()
+
+ my @colors = (N__"red", N__"green", N__"blue");
+ my @colors = N__w "red green blue";   # same
+ print __ $colors[1];
+
+Using L<__()|Log::Report/"Language Translations">, would work as well
+ my @colors = (__"red", __"green", __"blue");
+ print $colors[1];
+However: this will always create all L<Log::Report::Message|Log::Report::Message> objects,
+where maybe only one is used.
+
+=back
+
+B<N__n>(SINGLE_MSGID, PLURAL_MSGID)
+
+=over 4
+
+Label to indicate that the two MSGIDs are related, the first as
+single, the seconds as its plural.  Only used to find the text
+fragments to be translated.  The function itself does nothing.
+
+I<Example:> how to use L<N__n()|Log::Report/"Language Translations">
+
+ my @save = N__n "save file", "save files";
+ my @save = (N__n "save file", "save files");
+ my @save = N__n("save file", "save files");
+
+ # be warned about SCALARs in prototype!
+ print __n @save, $nr_files;  # wrong!
+ print __n $save[0], $save[1], $nr_files;
+
+=back
+
+B<N__w>(STRING)
+
+=over 4
+
+This extension to the Locale::TextDomain syntax, is a combined
+C<qw> (list of quoted words) and L<N__()|Log::Report/"Language Translations"> into a list of translatable
+words.
+
+I<Example:> of L<N__w()|Log::Report/"Language Translations">
+
+  my @colors = (N__"red", N__"green", N__"blue");
+  my @colors = N__w"red green blue";  # same
+  print __ $colors[1];
+
+=back
+
+B<__>(MSGID)
+
+=over 4
+
+This function (name is two under-score characters) will cause the
+MSGID to be replaced by the translations when doing the actual output.
+Returned is one object, which will be used in translation later.
+Translating is invoked when the object gets stringified.
+
+If you need OPTIONS, then take L<__x()|Log::Report/"Language Translations">.
+
+I<Example:> how to use __()
+
+ print __"Hello World";      # translated into user's language
+ print __'Hello World';      # syntax error!
+ print __('Hello World');    # ok, translated
+ print __"Hello", " World";  # World not translated
+
+ my $s = __"Hello World";    # creates object, not yet translated
+ print ref $s;               # Log::Report::Message
+ print $s;                   # ok, translated
+ print $s->toString('fr');   # ok, forced into French
+
+=back
+
+B<__n>(MSGID, PLURAL_MSGID, COUNT, OPTIONS)
+
+=over 4
+
+It depends on the value of COUNT (and the selected language) which
+text will be displayed.  When translations can not be performed, then
+MSGID will be used when COUNT is 1, and PLURAL_MSGSID in other cases.
+However, some languages have more complex schemes than English.
+
+OPTIONS are explained in L<Log::Report::Message::new()|Log::Report::Message/"Constructors">.
+Locale::TextDomain subroutine __n does not have OPTIONS, but they mix
+with variables.
+
+I<Example:> how to use __n()
+
+ print __n "one", "more", $a;
+ print __n("one", "more", $a), "\n";
+ print +(__n "one", "more", $a), "\n";
+ print __n "one\n", "more\n", $a;
+
+=back
+
+B<__nx>(MSGID, PLURAL_MSGID, COUNT, OPTIONS, VARIABLES)
+
+=over 4
+
+It depends on the value of COUNT (and the selected language) which
+text will be displayed.  See details in L<__n()|Log::Report/"Language Translations">.  After translation,
+the VARIABLES will be filled-in.
+
+OPTIONS are explained in L<Log::Report::Message::new()|Log::Report::Message/"Constructors">.
+Locale::TextDomain subroutine __nx does not support the OPTIONS, but they look
+like variables.
+
+I<Example:> how to use __nx()
+
+ print __nx "one file", "{_count} files", $nr_files;
+ print __nx "one file", "{_count} files", @files;
+
+ local $" = ', ';
+ print __nx "one file: {f}", "{_count} files: {f}", @files, f => \@files;
+
+=back
+
+B<__x>(MSGID, OPTIONS, VARIABLES)
+
+=over 4
+
+Translate the MSGID, and then expand the VARIABLES in that
+string.  Of course, translation and expanding is delayed as long
+as possible.  Both OPTIONS and VARIABLES are key-value pairs.
+
+OPTIONS and VARIABLES are explained in L<Log::Report::Message::new()|Log::Report::Message/"Constructors">.
+Locale::TextDomain subroutine __x does not support the OPTIONS, but they
+mix with variables.
+
+=back
+
+B<__xn>(SINGLE_MSGID, PLURAL_MSGID, COUNT, OPTIONS, VARIABLES)
+
+=over 4
+
+Same as L<__xn()|Log::Report/"Language Translations">.
+
+=back
+
+=head2 Configuration
+
+$obj-E<gt>B<import>([DOMAIN], OPTIONS)
+
+=over 4
+
+The import is automatically called when the package is compiled.  For all
+packages but one in your distribution, it will only contain the name of
+the DOMAIN.  For one package, it will contain configuration information.
+These OPTIONS are used for all packages which use the same DOMAIN.
+
+ Option    --Default
+ syntax      'REPORT'
+ translator  <rescue>
+
+. syntax => 'REPORT'|'SHORT'
+
+=over 4
+
+The SHORT syntax will add the report abbreviations (like function
+L<error()|Log::Report/"Abbreviations for report()">) to your name-space.  Otherwise, each message must be produced
+with L<report()|Log::Report/"Report Production and Configuration">.
+
+=back
+
+. translator => Log::Report::Translator
+
+=over 4
+
+Without explicit translator, a dummy translator is used for the domain
+which will use the untranslated message-id .
+
+=back
+
+I<Example:> of import
+
+ use Log::Report 'my-domain'    # in each package
+  , syntax     => 'SHORT';
+
+ use Log::Report 'my-domain'    # in one package
+  , translator => Log::Report::Translator::POT->new
+     ( lexicon  => '/home/me/locale'  # bindtextdomain
+     , charset  => 'UTF-8'            # codeset
+     );
+
+=back
+
+Log::Report-E<gt>B<translator>(TEXTDOMAIN, [TRANSLATOR])
+
+=over 4
+
+Returns the translator configured for the TEXTDOMAIN. By default,
+a translator is configured which does not translate but directly
+uses the gettext message-ids.
+
+When a TRANSLATOR is specified, it will be set to be used for the
+TEXTDOMAIN.  When it is C<undef>, the configuration is removed.
+You can only specify one TRANSLATOR per TEXTDOMAIN.
+
+I<Example:> use if L<translator()|Log::Report/"Configuration">
+
+ # in three steps
+ use Log::Report;
+ my $gettext = Log::Report::Translator::POT->new(...);
+ Log::Report->translator('my-domain', $gettext);
+
+ # in two steps
+ use Log::Report;
+ Log::Report->translator('my-domain'
+   , Log::Report::Translator::POT->new(...));
+
+ # in one step
+ use Log::Report 'my-domain'
+   , translator => Log::Report::Translator::POT->new(...);
+
+=back
+
+=head1 DETAILS
+
+=head2 Introduction
+
+There are three steps in this story: produce some text on a certain
+condition, translate it to the proper language, and deliver it in some
+way to a user.  Texts are usually produced by commands like C<print>,
+C<die>, C<warn>, C<carp>, or C<croak>, which have no way of configuring
+the way of delivery to the user.  Therefore, they are replaced with a
+single new command: C<report> (with various abbreviations)
+
+Besides, the C<print>/C<warn>/C<die> together produce only three levels of
+reasons to produce the message: many people manually implement more, like
+verbose and debug.  Syslog has some extra levels as well, like C<critical>.
+The REASON argument to C<report()> replace them all.
+
+The translations use the beautiful syntax defined by
+Locale::TextDomain, with some extensions (of course).  The main
+difference is that the actual translations are delayed till the delivery
+step.  This means that the popup in the graphical interface of the
+user will show the text in the language of the user, say Chinese,
+but at the same time syslog may write the English version of the text.
+With a little luck, translations can be avoided.
+
+=head2 Background ideas
+
+The following ideas are the base of this implementation:
+
+=over 4
+
+=item . simplification
+
+Handling errors and warnings is probably the most labour-intensive
+task for a programmer: when programs are written correctly, up-to
+three-quarters of the code is related to testing, reporting, and
+handling (problem) conditions.  Simplifying the way to create reports,
+simplifies programming and maintenance.
+
+=item . multiple dispatchers
+
+It is not the location where the (for instance) error occurs determines
+what will happen with the text, but the main application which uses the
+the complaining module has control.  Messages have a reason.  Based
+on the reason, they can get ignored, send to one, or send to multiple
+dispatchers (like Log::Dispatch, Log::Log4perl, or UNIX syslog(1))
+
+=item . delayed translations
+
+The background ideas are that of Locale::TextDomain, based
+on C<gettext()>.  However, the C<Log::Report> infrastructure has a
+pluggable translation backend.  Translations are postponed until the
+text is dispatched to a user or log-file; the same report can be sent
+to syslog in (for instance) English and to the user interface in Dutch.
+
+=item . avoid dupplication
+
+The same message may need to be documented on multiple locations: in
+web-pages for the graphical interface, in pod for the command-line
+configuration.  The same text may even end-up in pdf user-manuals.  When
+the message is written inside the Perl code, it's quite hard to get it
+out, to generate these documents.  Only an abstract message discription
+protocol will make flexible re-use possible.
+This component still needs to be implemented.
+
+=back
+
+=head2 Error handling models
+
+There are two approaches to handling errors and warnings.  In the first
+approach, as produced by C<die>, C<warn> and the C<carp> family of
+commands, the program handles the problem immediately on the location
+where the problem appears.  In the second approach, an I<exception>
+is thrown on the spot where the problem is created, and then somewhere
+else in the program the condition is handled.
+
+The implementation of exceptions in Perl5 is done with a eval-die pair:
+on the spot where the problem occurs, C<die> is called.  But, because of
+the execution of that routine is placed within an C<eval>, the program
+as a whole will not die, just the execution of a part of the program
+will seize.  However, what if the condition which caused the routine to die
+is solvable on a higher level?  Or what if the user of the code doesn't
+bother that a part fails, because it has implemented alternatives for
+that situation?  Exception handling is quite clumpsy in Perl5.
+
+The C<Log::Report> set of distributions let modules concentrate on the
+program flow, and let the main program decide on the report handling
+model.  The infrastructure to translate messages into multiple languages,
+whether to create exceptions or carp/die, to collect longer explanations
+with the messages, to log to mail or syslog, and so on, is decided in
+pluggable back-ends.
+
+=head3 The Reason for the report
+
+Traditionally, perl has a very simple view on error reports: you
+either have a warning or an error.  However, it would be much clearer
+for user's and module-using applications, when a distinction is made
+between various causes.  For instance, a configuarion error is quite
+different from a disk-full situation.  In C<Log::Report>, the produced
+reports in the code tell I<what> is wrong.  The main application defines
+loggers, which interpret the cause into (syslog) levels.
+
+Defined by C<Log::Report> are
+
+=over 4
+
+=item . trace (debug, program)
+
+The message will be used when some logger has debugging enabled.  The
+messages show steps taken by the program, which are of interest by the
+developers and maintainers of the code, but not for end-users.
+
+=item . assert (program)
+
+Shows an unexpected condition, but continues to run.  When you want the
+program to abort in such situation, that use C<panic>.
+
+=item . info (verbose, program)
+
+These messages show larger steps in the execution of the program.
+Experienced users of the program usually do not want to see all these
+intermediate steps.  Most programs will display info messages (and
+higher) when some C<verbose> flag is given on the command-line.
+
+=item . notice (program)
+
+An user may need to be aware of the program's accidental smart behavior,
+for instance, that it initializes a lasting C<Desktop> directory in your
+home directory.  Notices should be sparse.
+
+=item . warning (program)
+
+The program encountered some problems, but was able to work around it
+by smart behavior.  For instance, the program does not understand a
+line from a log-file, but simply skips the line.
+
+=item . mistake (user)
+
+When a user does something wrong, but what is correctable by smart
+behavior of the program.  For instance, in some configuration file,
+you can fill-in "yes" or "no", but the user wrote "yeh".  The program
+interprets this as "yes", producing a mistake message as warning.
+
+It is much nicer to tell someone that he/she made a mistake, than
+to call that an error.
+
+=item . error (user)
+
+The user did something wrong, which is not automatically correctable
+or the program is not willing to correct it automatically for reasons
+of code quality.  For instance, an unknown option flag is given on the
+command-line.  These are configuration issues, and have no useful
+value in C<$!>.  The program will be stopped, usually before taken off.
+
+=item . fault (system)
+
+The program encountered a situation where it has no work-around.  For
+instance, a file cannot be opened to be written.  The cause of that
+problem can be some user error (i.e. wrong filename), or external
+(you accidentally removed a directory yesterday).  In any case, the
+C<$!> (C<$ERRNO>) variable is set here.
+
+=item . alert (system)
+
+Some external cause disturbes the execution of the program, but the
+program stays alive and will try to continue operation.  For instance,
+the connection to the database is lost.  After a few attempts, the
+database can be reached and the program continues as if nothing happend.
+The cause is external, so C<$!> is set.  Usually, a system administrator
+needs to be informed about the problem.
+
+=item . failure (system)
+
+Some external cause makes it impossible for this program to continue.
+C<$!> is set, and usually the system administrator wants to be
+informed.  The program will die.
+
+=item . panic (program)
+
+All above report classes are expected: some predicitable situation
+is encountered, and therefore a message is produced.  However, programs
+often do some internal checking.  Of course, these conditions should
+never be triggered, but if they do... then we can only stop.
+
+For instance, in an OO perl module, the base class requires all
+sub-classes to implement a certain method.  The base class will produce
+a stub method with triggers a panic when called.  The non-dieing version
+of this test C<assert>.
+
+=back
+
+I<Debugging> or being C<verbose> are run-time behaviors, and have nothing
+directly to do with the type of message which is produced.  These two
+are B<modes> which can be set on the dispatchers: one dispatcher may
+be more verbose that some other.
+
+On purpose, we do not use the terms C<die> or C<fatal>, because the
+dispatcher can be configured what to do in cause of which condition.
+For instance, it may decide to stop execution on warnings as well.
+
+The terms C<carp> and C<croak> are avoided, because the program cause
+versus user cause distinction (warn vs carp) is reflected in the use
+of different reasons.  There is no need for C<confess> and C<croak>
+either, because the dispatcher can be configured to produce stack-trace
+information (for a limited sub-set of dispatchers)
+
+=head3 Report levels
+
+Various frameworks used with perl programs define different labels
+to indicate the reason for the message to be produced.
+
+ Perlish  Log::Dispatch      Log4Perl Log::Report
+ print    0,debug            debug    trace
+ print    0,debug            debug    assert
+ print    1,info             info     info
+ warn\n   2,notice           info     notice
+ warn     3,warning          warn     mistake
+ carp     3,warning          warn     warning
+ die\n    4,error,err        error    error
+ die      5,critical,crit    fatal    fault
+ croak    6,alert            fatal    alert  
+ croak    7,emergency,emerg  fatal    failure
+ confess  7,emergency,emerg  fatal    panic
+
+A typical perl5 program can look like this
+
+ my $dir = '/etc';
+
+ File::Spec->file_name is_absolute($dir)
+     or die "ERROR: directory name must be absolute.\n";
+
+ -d $dir
+     or die "ERROR: what platform are you on?";
+
+ until(opendir DIR, $dir)
+ {   warn "ERROR: cannot read system directory $dir: $!";
+     sleep 60;
+ }
+
+ print "Processing directory $dir\n"
+     if $verbose;
+
+ while(defined(my $file = readdir DIR))
+ {   if($file =~ m/\.bak$/)
+     {   warn "WARNING: found backup file $dir/$f\n";
+         next;
+     }
+
+     die "ERROR: file $dir/$file is binary"
+         if $debug && -B "$dir/$file";
+
+     print "DEBUG: processing file $dir/$file\n"
+         if $debug;
+
+     open FILE, "<", "$dir/$file"
+         or die "ERROR: cannot read from $dir/$f: $!";
+
+     close FILE
+         or croak "ERROR: read errors in $dir/$file: $!";
+ }
+
+Where C<die>, C<warn>, and C<print> are used for various tasks.  With
+C<Log::Report>, you would write
+
+ use Log::Report syntax => 'SHORT';
+ dispatcher stderr => 'FILE', mode => 'DEBUG', to => \*STDERR;
+
+ my $dir = '/etc';
+
+ File::Spec->file_name is_absolute($dir)
+     or mistake "directory name must be absolute";
+
+ -d $dir
+     or panic "what platform are you on?";
+
+ until(opendir DIR, $dir)
+ {   alert "cannot read system directory $dir";
+     sleep 60;
+ }
+
+ info "Processing directory $dir";
+
+ while(defined(my $file = readdir DIR))
+ {   if($file =~ m/\.bak$/)
+     {   notice "found backup file $dir/$f";
+         next;
+     }
+
+     assert "file $dir/$file is binary"
+         if -B "$dir/$file";
+
+     trace "processing file $dir/$file";
+
+     unless(open FILE, "<", "$dir/$file")
+     {   error "no permission to read from $dir/$f"
+             if $!==ENOPERM;
+         fault "unable to read from $dir/$f";
+     }
+
+     close FILE
+         or failure "read errors in $dir/$file";
+ }
+
+A lot of things are quite visibly different, and there are a few smaller
+changes.  There is no need for a new-line after the text of the message.
+When applicable (error about system problem), then the C<$!> is added
+automatically.
+
+The distinction between C<error> and C<fault> is a bit artificial her, just
+to demonstrate the difference between the two.  In this case, I want to
+express very explicitly that the user made an error by passing the name
+of a directory in which a file is not readible.  In the common case,
+the user is not to blame and we can use C<fault>.
+
+=head3 Run modes
+
+The run-mode change which messages are passed to a dispatcher, but
+from a different angle than the dispatch filters; the mode changes
+behavioral aspects of the messages, which are described in detail in
+L<Log::Report::Dispatcher/Processing the message>.  However, it should
+behave as you expect: the DEBUG mode shows more than the VERBOSe mode,
+and both show more than the NORMAL mode.
+
+I<Example:> extract run mode from Getopt::Long
+
+The C<GetOptions()> function will count the number of C<v> options
+on the command-line when a C<+> is after the option name.
+
+ use Log::Report syntax => 'SHORT';
+ use Getopt::Long qw(:config no_ignore_case bundling);
+
+ my $mode;    # defaults to NORMAL
+ GetOptions 'v+'        => \$mode
+          , 'verbose=i' => \$mode
+          , 'mode=s'    => \$mode
+     or exit 1;
+
+ dispatcher FILE => 'stderr', to => \*STDERR, mode => $mode;
+
+Now, C<-vv> will set C<$mode> to C<2>, as will C<--verbose 2> and
+C<--verbose=2> and C<--mode=ASSERT>.  Of course, you do not need to
+provide all these options to the user: make a choice.
+
+I<Example:> the mode of a dispatcher
+
+ my $mode = dispatcher(find => 'myname')->mode;
+
+I<Example:> run-time change mode of a dispatcher
+
+To change the running mode of the dispatcher, you can do
+  dispatcher mode => DEBUG => 'myname';
+
+However, be warned that this does not change the types of messages
+accepted by the dispatcher!  So: probably you will not receive
+the trace, assert, and info messages after all.  So, probably you
+need to replace the dispatcher with a new one with the same name:
+  dispatcher FILE => 'myname', to => ..., mode => 'DEBUG';
+
+This may reopen connections (depends on the actual dispatcher), which
+might be not what you wish to happend.  In that case, you must take
+the following approach:
+
+  # at the start of your program
+  dispatcher FILE => 'myname', to => ...
+     , accept => 'ALL';    # overrule the default 'NOTICE-' !!
+
+  # now it works
+  dispatcher mode => DEBUG => 'myname';    # debugging on
+  ...
+  dispatcher mode => NORMAL => 'myname';   # debugging off
+
+Of course, this comes with a small overall performance penalty.
+
+=head2 Comparison
+
+=head3 Log::Dispatch and Log::Log4perl
+
+The two major logging frameworks for Perl are Log::Dispatch and
+Log::Log4perl; both provide a pluggable logging interface.
+
+Both frameworks do not have (gettext or maketext) language translation
+support, which has various concequences.  When you wish for to report
+in some other language, it must be translated before the logging
+function is called.   This may mean that an error message is produced
+in Chinese, and therefore also ends-up in the syslog file in Chinese.
+When this is not your language, you have a problem.
+
+Log::Report translates only in the back-end, which means that the user may
+get the message in Chinese, but you get your report in your beloved Dutch.
+When no dispatcher needs to report the message, then no time is lost in
+translating.
+
+With both logging frameworks, you use terminology comparible to
+syslog: the module programmer determines the seriousness of the
+error message, not the application which integrates multiple modules.
+This is the way perl programs usually work, but often the cause for
+inconsequent user interaction.
+
+=head3 Locale::gettext and Locate::TextDomain
+
+Both on GNU gettext based implementations can be used as translation
+frameworks.  Locale::TextDomain syntax is supported, with quite some
+extensions. Read the excellent documentation of Locale::Textdomain.
+Only the tried access via C<$__> and C<%__> are not supported.
+
+The main difference with these modules is the moment when the translation
+takes place.  In Locale::TextDomain, an C<__x()> will result in an
+immediate translation request via C<gettext()>.  C<Log::Report>'s version
+of C<__x()> will only capture what needs to be translated in an object.
+When the object is used in a print statement, only then the translation
+will take place.  This is needed to offer ways to send different
+translations of the message to different destinations.
+
+To be able to postpone translation, objects are returned which stringify
+into the translated text.
+
+=head1 DIAGNOSTICS
+
+I<Error:> in SCALAR context, only one dispatcher name accepted
+
+The L<dispatcher()|Log::Report/"Report Production and Configuration"> method returns the L<Log::Report::Dispatcher|Log::Report::Dispatcher>
+objects which it has accessed.  When multiple names where given, it
+wishes to return a LIST of objects, not the count of them.
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

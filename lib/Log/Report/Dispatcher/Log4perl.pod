@@ -1,0 +1,227 @@
+=head1 NAME
+
+Log::Report::Dispatcher::Log4perl - send messages to Log::Log4perl back-end
+
+=head1 INHERITANCE
+
+ Log::Report::Dispatcher::Log4perl
+   is a Log::Report::Dispatcher
+
+=head1 SYNOPSIS
+
+ dispatcher Log::Log4perl => 'logger', accept => 'NOTICE-'
+   , config => "$ENV{HOME}/.log.conf"
+   , to_level => [ 'ALERT-' => $ERROR ];
+
+ # disable default dispatcher
+ dispatcher close => 'logger';
+
+ # configuration inline, not in file: adapted from the Log4perl manpage
+ my $name    = 'logger';
+ my $outfile = '/tmp/a.log';
+ my $config  = <<__CONFIG;
+ log4perl.category.$name            = INFO, Logfile
+ log4perl.appender.Logfile          = Log::Log4perl::Appender::File
+ log4perl.appender.Logfile.filename = $outfn
+ log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::PatternLayout
+ log4perl.appender.Logfile.layout.ConversionPattern = %d %F{1} %L> %m
+ __CONFIG
+
+ dispatcher 'Log::Log4perl' => $name, config => \$config;
+
+=head1 DESCRIPTION
+
+This dispatchers produces output tot syslog, based on the C<Sys::Log4perl>
+module (which will not be automatically installed for you).
+
+The REASON for a message often uses names which are quite similar to the
+log-levels used by Log::Dispatch.  However: they have a different
+approach.  The REASON of Log::Report limits the responsibility of the
+programmer to indicate the cause of the message: whether it was able to
+handle a certain situation.  The Log::Dispatch levels are there for the
+user's of the program.  However: the programmer does not known anything
+about the application (in the general case).  This is cause of miuch of
+the trickery in Perl programs.
+
+The default translation table is list below.  You can change the mapping
+using L<new(to_level)|Log::Report::Dispatcher::Log4perl/"Constructors">.  See example in SYNOPSIS.
+
+  TRACE   => $DEBUG  ERROR   => $ERROR
+  ASSERT  => $DEBUG  FAULT   => $ERROR
+  INFO    => $INFO   ALERT   => $FATAL
+  NOTICE  => $INFO   FAILURE => $FATAL
+  WARNING => $WARN   PANIC   => $FATAL
+  MISTAKE => $WARN
+
+=head1 METHODS
+
+=head2 Constructors
+
+$obj-E<gt>B<close>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Constructors">
+
+=back
+
+Log::Report::Dispatcher::Log4perl-E<gt>B<new>(TYPE, NAME, OPTIONS)
+
+=over 4
+
+The Log::Log4perl infrastructure has all information in a configuration
+file.  In that file, you should find a category with the NAME.
+
+ Option  --Defined in     --Default
+ accept    Log::Report::Dispatcher  depend on mode
+ config                     <required>
+ filter    Log::Report::Dispatcher  undef
+ locale    Log::Report::Dispatcher  <system locale>
+ mode      Log::Report::Dispatcher  'NORMAL'
+ to_level                   []
+
+. accept => REASONS
+
+. config => FILENAME|SCALAR
+
+=over 4
+
+When a SCALAR reference is passed in, that must refer to a string which
+contains the configuration text.  Otherwise, specify an existing FILENAME.
+
+=back
+
+. filter => FILTER|ARRAY-of-FILTERs
+
+. locale => LOCALE
+
+. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
+
+. to_level => ARRAY-of-PAIRS
+
+=over 4
+
+See L<reasonToLevel()|Log::Report::Dispatcher::Log4perl/"Logging">.
+
+=back
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<addFilter>(CODE|LIST-of-CODE|ARRAY-of-CODE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<appender>
+
+=over 4
+
+Returns the Log::Log4perl::Logger object which is used for logging.
+
+=back
+
+$obj-E<gt>B<isDisabled>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<mode>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<name>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<needs>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<type>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+=head2 Logging
+
+$obj-E<gt>B<collectStack>(NESTING, [MAXDEPTH])
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<reasonToLevel>(REASON)
+
+=over 4
+
+Returns a level which is understood by Log::Dispatch, based on
+a translation table.  This can be changed with L<new(to_level)|Log::Report::Dispatcher::Log4perl/"Constructors">.
+
+=back
+
+$obj-E<gt>B<stackTraceLine>(OPTIONS)
+
+Log::Report::Dispatcher::Log4perl-E<gt>B<stackTraceLine>(OPTIONS)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+=head1 DETAILS
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

@@ -1,0 +1,277 @@
+=head1 NAME
+
+Log::Report::Lexicon::PO - one translation definition
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+This module is administering one translation object.  Sets of PO
+objects are kept in a POT file, implemented in L<Log::Report::Lexicon::POT|Log::Report::Lexicon::POT>.
+
+=head1 METHODS
+
+=head2 Constructors
+
+Log::Report::Lexicon::PO-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+ Option      --Default
+ automatic     ""
+ comment       []
+ format        []
+ fuzzy         false
+ msgid         <required>
+ msgid_plural  undef
+ msgstr        "" or []
+ references    []
+
+. automatic => PARAGRAPH
+
+=over 4
+
+Automaticly added comments.
+See L<addAutomatic()|Log::Report::Lexicon::PO/"Attributes">.
+
+=back
+
+. comment => PARAGRAPH
+
+=over 4
+
+Translator added comments.
+See L<addComment()|Log::Report::Lexicon::PO/"Attributes">.
+
+=back
+
+. format => ARRAY-OF-PAIRS|HASH
+
+=over 4
+
+See L<format()|Log::Report::Lexicon::PO/"Attributes">.
+
+=back
+
+. fuzzy => BOOLEAN
+
+=over 4
+
+The string is not yet translated, some smart guesses may have been made.
+See L<fuzzy()|Log::Report::Lexicon::PO/"Attributes">.
+
+=back
+
+. msgid => STRING
+
+. msgid_plural => STRING
+
+. msgstr => STRING|ARRAY-OF-STRING
+
+=over 4
+
+The translations for the msgid.  When msgid_plural is defined, then an
+ARRAY must be provided.
+
+=back
+
+. references => STRING|ARRAY-OF-LOCATIONS
+
+=over 4
+
+The STRING is a blank separated list of LOCATIONS.
+LOCATIONs are of the  form C<filename:linenumber>, for
+instance C<lib/Foo.pm:42>
+See L<addReferences()|Log::Report::Lexicon::PO/"Attributes">
+
+=back
+
+=back
+
+=head2 Attributes
+
+$obj-E<gt>B<addAutomatic>(LIST|ARRAY|STRING)
+
+=over 4
+
+Add multiple lines to the translator's comment block.  Returns an
+empty string if there are no comments.
+
+=back
+
+$obj-E<gt>B<addComment>(LIST|ARRAY|STRING)
+
+=over 4
+
+Add multiple lines to the translator's comment block.  Returns an
+empty string if there are no comments.
+
+=back
+
+$obj-E<gt>B<addFlags>(STRING)
+
+=over 4
+
+Parse a "flags" line.
+
+=back
+
+$obj-E<gt>B<addReferences>(STRING|LIST|ARRAY)
+
+=over 4
+
+The STRING is a blank separated list of LOCATIONS.  The LIST and
+ARRAY contain separate LOCATIONs.  A LOCATION is of the form
+C<filename:linenumber>.  Returns the internal HASH with references.
+
+=back
+
+$obj-E<gt>B<automatic>([LIST|ARRAY|STRING])
+
+=over 4
+
+Returns a STRING which contains the cleaned paragraph of automatically
+added comments.  If an argument is specified, it will replace the current
+comment.
+
+=back
+
+$obj-E<gt>B<comment>([LIST|ARRAY|STRING])
+
+=over 4
+
+Returns a STRING which contains the cleaned paragraph of translator's
+comment.  If an argument is specified, it will replace the current
+comment.
+
+=back
+
+$obj-E<gt>B<format>(LANGUAGE|PAIRS|ARRAY-OF-PAIRS|HASH)
+
+=over 4
+
+When one LANGUAGE is specified, it looks whether a C<LANGUAGE-format> or
+C<no-LANGUAGE-format> is present in the line of FLAGS.  This will return
+C<1> (true) in the first case, C<0> (false) in the second case.  It will
+return C<undef> (also false) in case that both are not present.
+
+You can also specify PAIRS: the key is a language name, and the
+value is either C<0>, C<1>, or C<undef>.
+
+I<Example:> use of format()
+
+ if($po->format('c')) ...
+ unless($po->format('perl-brace')) ...
+ if(defined $po->format('java')) ...
+
+ $po->format(java => 1);       # results in 'java-format'
+ $po->format(java => 0);       # results in 'no-java-format'
+ $po->format(java => undef);   # results in ''
+
+=back
+
+$obj-E<gt>B<fuzzy>([BOOLEAN])
+
+=over 4
+
+Returns whether the translation needs human inspection.
+
+=back
+
+$obj-E<gt>B<isActive>
+
+=over 4
+
+Returns whether the translation has any references, or is the header.
+
+=back
+
+$obj-E<gt>B<msgid>
+
+=over 4
+
+Returns the actual msgid, which cannot be C<undef>.
+
+=back
+
+$obj-E<gt>B<msgstr>([INDEX, [STRING]])
+
+=over 4
+
+With a STRING, a new translation will be set.  Without STRING, a
+lookup will take place.  When no plural is defined, use INDEX 0
+
+=back
+
+$obj-E<gt>B<plural>([STRING])
+
+=over 4
+
+Returns the actual msgid_plural, which can be C<undef>.
+
+=back
+
+$obj-E<gt>B<references>([STRING|LIST|ARRAY])
+
+=over 4
+
+Returns an unsorted list of LOCATIONS.  When options are specified,
+then those will be used to replace all currently defined references.
+Returns the unsorted LIST of references.
+
+=back
+
+$obj-E<gt>B<removeReferencesTo>(FILENAME)
+
+=over 4
+
+Remove all the references to the indicate FILENAME from the list.  Returns
+the number of refs left.
+
+=back
+
+=head2 Parsing
+
+Log::Report::Lexicon::PO-E<gt>B<fromText>(STRING, [WHERE])
+
+=over 4
+
+Parse the STRING into a new PO object.  The WHERE string should explain
+the location of the STRING, to be used in error messages.
+
+=back
+
+$obj-E<gt>B<toString>(OPTIONS)
+
+=over 4
+
+Format the object into a multi-lined string.
+
+ Option    --Default
+ nr_plurals  undef
+
+. nr_plurals => INTEGER
+
+=over 4
+
+If the number of plurals is specified, then the plural translation
+list can be checked for the correct lenght.  Otherwise, no smart
+behavior is attempted.
+
+=back
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

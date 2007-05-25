@@ -1,0 +1,316 @@
+=head1 NAME
+
+Log::Report::Message - a piece of text to be translated
+
+=head1 SYNOPSIS
+
+ Used internally by Log::Report
+
+=head1 DESCRIPTION
+
+Any used of a translation function, like L<Log::Report::__()|Log::Report/"Language Translations"> or 
+L<Log::Report::__x()|Log::Report/"Language Translations"> will result in this object.  It will capture
+some environmental information, and delay the translation until it
+is needed.
+
+Creating an object first, and translating it later, is slower than
+translating it immediately.  However, on the location where the message
+is produced, we do not yet know to what language to translate: that
+depends on the front-end, the log dispatcher.
+
+See L</DETAILS> section below, for an in-depth description.
+
+=head1 METHODS
+
+=head2 Constructors
+
+$obj-E<gt>B<clone>(OPTIONS, VARIABLES)
+
+=over 4
+
+Returns a new object which copies info from original, and updates it
+with the specified OPTIONS and VARIABLES.  The advantage is that the
+cached translations are shared between the objects.
+
+I<Example:> use of clone()
+
+ my $s = __x "found {nr} files", nr => 5;
+ my $t = $s->clone(nr => 3);
+ my $t = $s->(nr => 3);      # equivalent
+ print $s;     # found 5 files
+ print $t;     # found 3 files
+
+=back
+
+$obj-E<gt>B<concat>(STRING|OBJECT, [REVERSED])
+
+=over 4
+
+This method implements the overloading of concatenation, which is needed
+to delay translations even longer.  When REVERSED is true, the STRING
+or OBJECT (other C<Log::Report::Message>) needs to prepended, otherwise
+appended.
+
+I<Example:> of concatenation
+
+ print __"Hello" . ' ' . __"World!";
+ print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
+
+=back
+
+Log::Report::Message-E<gt>B<new>(OPTIONS, VARIABLES)
+
+=over 4
+
+ Option   --Default
+ _category  undef
+ _count     undef
+ _domain    from use
+ _expand    false
+ _msgid     undef
+ _plural    undef
+
+. _category => INTEGER
+
+. _count => INTEGER
+
+=over 4
+
+When defined, then C<_plural> need to be defined as well.
+
+=back
+
+. _domain => STRING
+
+=over 4
+
+The textdomain in which this msgid is defined.
+
+=back
+
+. _expand => BOOLEAN
+
+=over 4
+
+Indicates whether variables are filled-in.
+
+=back
+
+. _msgid => MSGID
+
+=over 4
+
+The message label, which refers to some translation information.  Usually
+a string which is close the English version of the error message.  This
+will also be used if there is no translation possible
+
+=back
+
+. _plural => MSGID
+
+=over 4
+
+Can be specified when a C<_count> is specified.  This plural form of
+the message is used to simplify translation, and as fallback when no
+translations are possible: therefore, this can best resemble an English
+message.
+
+=back
+
+=back
+
+$obj-E<gt>B<toString>([LOCALE])
+
+=over 4
+
+Translate a message.  If not specified, the default locale is used.
+
+=back
+
+=head1 DETAILS
+
+=head2 OPTIONS and VARIABLES
+
+The L<Log::Report|Log::Report> functions which define translation request can all
+have OPTIONS.  Some can have VARIABLES to be interpolated in the string as
+well.  To distinguish between the OPTIONS and VARIABLES (both a list
+of key-value pairs), the keys of the OPTIONS start with an underscore C<_>.
+As result of this, please avoid the use of keys which start with an
+underscore in variable names.  On the other hand, you are allowed to
+interpolate OPTION values in your strings.
+
+=head3 Interpolating
+
+With the C<__x()> or C<__nx()>, interpolation will take place on the
+translated MSGID string.  The translation can contain the VARIABLE
+and OPTION names inbetween curly brackets.  Text between curly brackets
+which is not a known parameter will be left untouched.
+
+Next to the name, you can specify a format code.  With C<gettext()>,
+you often see this:
+
+ printf gettext("approx pi: %.6f\n"), PI;
+
+Locale::TextDomain has two ways.
+
+ printf __"approx pi: %.6f\n", PI;
+ print __x"approx pi: {approx}\n", approx => sprintf("%.6f", PI);
+
+The first does not respect the wish to be able to reorder the
+arguments during translation.  The second version is quite long.
+With C<Log::Report>, above syntaxes do work, but you can also do
+
+ print __x"approx pi: {pi%.6f}\n", pi => PI;
+
+So: the interpolation syntax is C< { name [format] } >.  Other
+examples:
+
+ print __x "{perms} {links%2d} {user%-8s} {size%10d} {fn}\n"
+         , perms => '-rw-r--r--', links => 1, user => 'me'
+         , size => '12345', fn => $filename;
+
+An additional advantage is the fact that not all languages produce
+comparible length strings.  Now, the translators can take care that
+the layout of tables is optimal.
+
+=head3 Interpolation of OPTIONS
+
+You are permitted the interpolate OPTION values in your string.  This may
+simplify your coding.  The useful names are:
+
+=over 4
+
+=item _msgid
+
+The MSGID as provided with L<Log::Report::__()|Log::Report/"Language Translations"> and L<Log::Report::__x()|Log::Report/"Language Translations">
+
+=item _msgid, _plural, _count
+
+The single MSGID and PLURAL MSGIDs, respectively the COUNT as used with
+L<Log::Report::__n()|Log::Report/"Language Translations"> and L<Log::Report::__nx()|Log::Report/"Language Translations">
+
+=item _textdomain
+
+The label of the textdomain in which the translation takes place.
+
+=back
+
+I<Example:> using the _count
+
+With Locale::TextDomain, you have to do
+
+  use Locale::TextDomain;
+  print __nx ( "One file has been deleted.\n"
+             , "{num} files have been deleted.\n"
+             , $num_files
+             , num => $num_files
+             );
+
+With C<Log::Report>, you can do
+
+  use Log::Report;
+  print __nx ( "One file has been deleted.\n"
+             , "{_count} files have been deleted.\n"
+             , $num_files
+             );
+
+Of course, you need to be aware that the name used to reference the
+counter is pixed to C<_count>.  The first example works as well, but
+is more verbose.
+
+=head3 Interpolation of VARIABLES
+
+There is no way of checking beforehand whether you have provided all required
+values, to be interpolated in the translated string.  A translation could be
+specified like this:
+
+ my @files = @ARGV;
+ local $"  = ', ';
+ my $s = __nx "One file specified ({files})"
+            , "{_count} files specified ({files})"
+            , scalar @files     # actually, 'scalar' is not needed
+            , files => \@files;
+
+For interpolating, the following rules apply:
+
+=over 4
+
+=item .
+
+Simple scalar values are interpolated "as is"
+
+=item .
+
+References to SCALARs will collect the value on the moment that the
+output is made.  The C<Log::Report::Message> object which is created with
+the C<__xn> can be seen as a closure.  The translation can be reused.
+See example below.
+
+=item .
+
+Code references can be used to create the data "under fly".  The
+C<Log::Report::Message> object which is being handled is passed as
+only argument.  This is a hash in which all OPTIONS and VARIABLES
+can be found.
+
+=item .
+
+When the value is an ARRAY, all members will be interpolated with C<$">
+inbetween the elements.
+
+=back
+
+I<Example:> reducing the number of translations
+
+This way of translating is somewhat expensive, because an object to
+handle the C<__x()> is created each time.
+
+ for my $i (1..100_000)
+ {   print __x "Hello World {i}\n", $i;
+ }
+
+The suggestion that Locale::TextDomain makes to improve performance,
+is to get the translation outside the loop, which only works without
+interpolation:
+
+ use Locale::TextDomain;
+ my $i = 42;
+ my $s = __x("Hello World {i}\n", i => $i);
+ foreach $i (1..100_000)
+ {   print $s;
+ }
+
+Oops, not what you mean.
+With Log::Report, you can do
+
+ use Log::Report;
+ my $i;
+ my $s = __x("Hello World {i}", i => \$i);
+ foreach $i (1..100_000)
+ {   print $s;
+ }
+
+Mind you not to write: C<for my $i> in this case!!!!
+You can also write an incomplete translation:
+
+ use Log::Report;
+ my $s = __x "Hello World {i}";
+ foreach my $i (1..100_000)
+ {   print $s->(i => $i);
+ }
+
+In either case, the translation will be looked-up only once.
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.01,
+built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+
