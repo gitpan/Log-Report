@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::File;
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = '0.02';
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -53,7 +53,7 @@ sub close()
 sub filename() {shift->{filename}}
 
 
-sub log($$$$)
+sub log($$$)
 {   my $self = shift;
     $self->{output}->print($self->SUPER::translate(@_));
 }

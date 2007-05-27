@@ -13,7 +13,7 @@ my $not_exist = 'does-not-exist';
 BEGIN
 {   $mailman_po = '/usr/lib/mailman/messages';
     unless(-d $mailman_po)
-    {   plan skip_all => 'cannot find sample translations';
+    {   plan skip_all => 'cannot find sample translations, no problem';
         exit 0;
     }
     plan tests => 12;

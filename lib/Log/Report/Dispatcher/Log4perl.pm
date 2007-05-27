@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Log4perl;
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = '0.02';
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -39,7 +39,7 @@ sub init($)
 
     my $name   = $self->name;
     my $config = delete $args->{config}
-       or error __x"Log::Log4perl back-end {name} requires a config argument"
+       or error __x"Log::Log4perl back-end {name} requires a 'config' parameter"
             , name => $name;
 
     $self->{level}  = { %default_reasonToLevel };

@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = '0.02';
 use base 'Exporter';
 
 # domain 'log-report' via work-arounds:
@@ -17,7 +17,7 @@ use base 'Exporter';
 use POSIX qw/setlocale LC_ALL/;
 
 my @make_msg   = qw/__ __x __n __nx __xn N__ N__n N__w/;
-my @functions  = qw/report dispatcher/;
+my @functions  = qw/report dispatcher try/;
 my @reason_functions = qw/trace assert info notice warning
    mistake error fault alert failure panic/;
 
@@ -28,9 +28,9 @@ require Log::Report::Message;
 require Log::Report::Dispatcher;
 
 # See chapter Run modes
-my %is_reason  = map {($_=>1)} @Log::Report::Util::reasons;
-my %exit_after = map {($_=>1)} qw/ERROR FAULT FAILURE PANIC/;
-my %use_errno  = map {($_=>1)} qw/WARNING FAULT ALERT FAILURE/;
+my %is_reason = map {($_=>1)} @Log::Report::Util::reasons;
+my %is_fatal  = map {($_=>1)} qw/ERROR FAULT FAILURE PANIC/;
+my %use_errno = map {($_=>1)} qw/WARNING FAULT ALERT FAILURE/;
 
 sub _whats_needed(); sub dispatcher($@);
 sub trace(@); sub assert(@); sub info(@); sub notice(@); sub warning(@);
@@ -54,7 +54,7 @@ dispatcher FILE => stderr =>
 
 
 sub report($@)
-{   my $opts   = ref $_[0] eq 'HASH' ? shift : {};
+{   my $opts   = ref $_[0] eq 'HASH' ? +{ %{ (shift) } } : {};
     @_ or return ();
 
     my $reason = shift;
@@ -69,10 +69,12 @@ sub report($@)
     $opts->{errno} ||= $!+0  # want copy!
         if $use_errno{$reason};
 
+    my $stop = $is_fatal{$reason};
+
     # exit when needed, even when message doesn't go anywhere.
     my $disp = $reporter->{needs}{$reason};
     unless($disp)
-    {   exit($opts->{errno} || 1) if $exit_after{$reason};
+    {   if($stop) { $! = $opts->{errno} || 1; die }
         return ();
     }
 
@@ -84,21 +86,43 @@ sub report($@)
     }
     else { @disp = @$disp }
 
-    my $message = shift;  # join does not respect overload of '.'
+    # join does not respect overload of '.'
+    my $message = shift;
     $message   .= shift while @_;
 
-    $_->log($opts, $reason, $message)
-        for @disp;
+    # untranslated message into object
+    ref $message && $message->isa('Log::Report::Message')
+        or $message = Log::Report::Message->new(_prepend => $message);
 
-    exit($opts->{errno} || 1)
-        if $exit_after{$reason};
+    if($reporter->{filters})
+    {
+      DISPATCHER:
+        foreach my $disp (@disp)
+        {   my ($r, $m) = ($reason, $message);
+            foreach my $filter ( @{$reporter->{filters}} )
+            {   next if keys %{$filter->[1]} && !$filter->[1]{$disp->name};
+                ($r, $m) = $filter->[0]->($disp, $opts, $r, $m);
+                $r or next DISPATCHER;
+            }
+            $disp->log($opts, $reason, $message);
+        }
+    }
+    else
+    {   $_->log($opts, $reason, $message)
+            for @disp;
+    }
+
+    if($stop)
+    {   $! = $opts->{errno} || 1;
+        die;
+    }
 
     @disp;
 }
 
 
 sub dispatcher($@)
-{   if($_[0] !~ m/^(?:close|find|list|disable|enable|mode|needs)$/)
+{   if($_[0] !~ m/^(?:close|find|list|disable|enable|mode|needs|filter)$/)
     {   my $disp = Log::Report::Dispatcher->new(@_);
 
         # old dispatcher with same name will be closed in DESTROY
@@ -119,6 +143,14 @@ sub dispatcher($@)
             unless $is_reason{$reason};
         my $disp = $reporter->{needs}{$reason};
         return $disp ? @$disp : ();
+    }
+    if($command eq 'filter')
+    {   my $code = shift;
+        error __"the 'filter' sub-command needs a CODE reference"
+            unless ref $code eq 'CODE';
+        my %names = map { ($_ => 1) } @_;
+        push @{$reporter->{filters}}, [ $code, \%names ];
+        return ();
     }
 
     my $mode    = $command eq 'mode' ? shift : undef;
@@ -154,6 +186,21 @@ sub _whats_needed()
     {   push @{$needs{$_}}, $disp for $disp->needs;
     }
     $reporter->{needs} = \%needs;
+}
+
+
+sub try(&@)
+{   my $code = shift;
+    local $reporter->{dispatchers} = undef;
+    local $reporter->{needs};
+
+    my $disp = dispatcher TRY => 'try', @_;
+
+    eval { $code->() };
+    $disp->died($@);
+
+    $@ = $disp;
+    $disp->success;
 }
 
 
@@ -291,6 +338,10 @@ sub translator($;$$$$)
 
     $translator;
 }
+
+
+sub isValidReason($) { $is_reason{$_[1]} }
+sub isFatal($)       { $is_fatal{$_[1]} }
 
 
 1;

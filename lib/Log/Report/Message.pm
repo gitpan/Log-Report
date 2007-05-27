@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use Log::Report 'log-report';
 use POSIX  qw/locale_h/;
@@ -31,9 +31,17 @@ sub clone(@)
 }
 
 
+sub prepend() {shift->{_prepend}}
+sub msgid()   {shift->{_msgid}}
+sub append()  {shift->{_append}}
+
+
 sub toString(;$)
 {   my ($self, $locale) = @_;
     my $count  = $self->{_count} || 0;
+
+    $self->{_msgid}   # no translation, constant string
+        or return $self->{_prepend};
 
     # create a translation
     my $text = Log::Report->translator($self->{_domain})->translate($self);
@@ -77,6 +85,14 @@ sub _expand($$)
       $format
     ? sprintf($format, $value)
     : "$value";   # enforce stringification on objects
+}
+
+
+sub untranslated()
+{  my $self = shift;
+     (defined $self->{_prepend} ? $self->{_prepend} : '')
+   . (defined $self->{_msgid}   ? $self->{_msgid}   : '')
+   . (defined $self->{_append}  ? $self->{_append}  : '');
 }
 
 

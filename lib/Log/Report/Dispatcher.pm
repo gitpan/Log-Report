@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util qw/parse_locale expand_reasons %reason_code
@@ -16,12 +16,12 @@ use Log::Report::Util qw/parse_locale expand_reasons %reason_code
 use POSIX      qw/strerror locale_h/;
 use List::Util qw/sum/;
 
-my %modes = (NORMAL => 0, VERBOSE => 1, ASSERT => 2, TRACE => 3
+my %modes = (NORMAL => 0, VERBOSE => 1, ASSERT => 2, DEBUG => 3
   , 0 => 0, 1 => 1, 2 => 2, 3 => 3);
 my @default_accept = ('NOTICE-', 'INFO-', 'ASSERT-', 'ALL');
 
 my %predef_dispatchers = map { (uc($_) => __PACKAGE__.'::'.$_) }
-   qw/File Syslog/;
+   qw/File Syslog Try/;
 
 
 sub new(@)
@@ -46,7 +46,6 @@ sub init($)
 {   my ($self, $args) = @_;
     my $mode = $self->_set_mode(delete $args->{mode} || 'NORMAL');
 
-    $self->addFilter(delete $args->{filter});
     $self->{locale} = delete $args->{locale};
 
     my $accept = delete $args->{accept} || $default_accept[$mode];
@@ -69,25 +68,6 @@ sub name {shift->{name}}
 
 
 sub type() {shift->{type}}
-
-
-sub addFilter(@)
-{   my $self = shift;
-
-    foreach my $c (@_)
-    {   defined $c or next;
-        if(ref $c eq 'ARRAY')
-        {   $self->addFilter(@$c);
-            next;
-        }
-
-        ref $c eq 'CODE'
-            or error __x"not a CODE reference: {param}", param => $c;
-
-        push @{$self->{filters}}, $c;
-    }
-    @{$self->{filters}};
-}
 
 
 sub mode() {shift->{mode}}
@@ -139,7 +119,7 @@ sub translate($$$)
      || ($mode==2 && $code >= $reason_code{ALERT})
      || ($mode==3 && $code >= $reason_code{ERROR});
 
-    my $translate = ref $message && $message->isa('Log::Report::Message');
+    my $translate = defined $message->msgid;
     my $locale = $translate ? ($opts->{locale} || $self->{locale}) : 'en_US';
     my $loc    = defined $locale ? setlocale(LC_ALL, $locale) : undef;
 
@@ -150,20 +130,13 @@ sub translate($$$)
         $text .= "\n";
     }
     else
-    {   $text   = "$reason: $message";
+    {   $text   = $reason . ': ' . $message->untranslated;
         $text  .= ': '. strerror($opts->{errno}) if $opts->{errno};
         $text  .= "\n";
     }
 
     if($show_stack)
-    {   my $nest  = 1;
-        my $sub;
-        $sub = (caller $nest++)[3]
-            while defined $sub && $sub ne 'Log::Report::report';
-
-        # skip syntax==SHORT routine entries
-        $nest++ if defined $sub && $sub =~ m/^Log\:\:Report\:\:/;
-        my $stack = $self->collectStack($nest);
+    {   my $stack = $opts->{stack} ||= $self->collectStack;
 
         foreach (@$stack)
         {   $text .= $_->[0] . " " .
@@ -175,16 +148,8 @@ sub translate($$$)
         }
     }
     elsif($show_loc)
-    {   my ($pkg, $fn, $line, $sub);
-        my $nest = 1;
-        do { ($pkg, $fn, $line, $sub) = caller $nest;
-             $nest++;
-        } until($sub eq 'Log::Report::report');
-
-        # skip syntax==SHORT routine entries
-        ($pkg, $fn, $line, $sub) = caller $nest++
-            if((caller $nest)[3] =~ m/^Log\:\:Report\:\:/ );
-
+    {   my $loc = $opts->{location} ||= $self->collectLocation;
+        my ($pkg, $fn, $line, $sub) = @$loc;
         $text .= " " .
           ( $translate
           ? __x('at {filename} line {line}', filename => $fn, line => $line)
@@ -199,8 +164,15 @@ sub translate($$$)
 }
 
 
-sub collectStack($;$)
-{   my ($self, $nest, $max) = @_;
+sub collectStack($)
+{   my ($self, $max) = @_;
+
+    my ($nest, $sub) = (1, undef);
+    $sub = (caller $nest++)[3]
+        while defined $sub && $sub ne 'Log::Report::report';
+
+    # skip syntax==SHORT routine entries
+    $nest++ if defined $sub && $sub =~ m/^Log\:\:Report\:\:/;
 
     # special trick by Perl for Carp::Heavy: adds @DB::args
   { package DB;    # non-blank before package to avoid problem with OODoc
@@ -216,6 +188,22 @@ sub collectStack($;$)
 
     \@stack;
   }
+}
+
+
+sub collectLocation()
+{   my $self = shift;
+    my $nest = 1;
+    my @args;
+
+    do {@args = caller $nest++}
+    until $args[3] eq 'Log::Report::report';  # sub
+
+    # skip syntax==SHORT routine entries
+    @args = caller $nest++
+        if +(caller $nest)[3] =~ m/^Log\:\:Report\:\:/;
+
+    \@args;
 }
 
 

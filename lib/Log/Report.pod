@@ -42,9 +42,13 @@ Log::Report - report a problem, pluggable handlers and language support
  print __"Hello World", "\n";
 
  fault __x "cannot allocate {size} bytes", size => $size;
- fault "cannot allocate $size bytes";  # fails translation
+ fault "cannot allocate $size bytes";      # no translation
+ fault __x "cannot allocate $size bytes";  # wrong, not static
 
  print __xn("found one file", "found {_count} files", @files), "\n";
+
+ try { error };
+ if($@) {...}
 
 =head1 DESCRIPTION
 
@@ -93,7 +97,7 @@ B<dispatcher>((TYPE, OPTIONS)|(COMMAND => NAME, [NAMEs]))
 
 The C<Log::Report> suite has its own dispatcher TYPES, but also connects
 to external dispatching frame-works.  Each need some (minor) conversions,
-especially with respect to translation of "reasons" of the reports
+especially with respect to translation of REASONS of the reports
 into log-levels as the back-end understands.
 
 The OPTIONS are a mixture of parameters needed for the
@@ -102,10 +106,13 @@ See L<Log::Report::Dispatcher|Log::Report::Dispatcher>, the documentation for th
 specific wrappers, and the back-ends for more details.
 
 Implemented COMMANDs are C<close>, C<find>, C<list>, C<disable>,
-C<enable>, C<mode>, and C<needs>.  The commands are followed by a LIST of
-dispatcher NAMEs to be address.  For C<mode> see section L</Run modes>;
-it requires a MODE argument before the LIST of NAMEs.  Non-existing names
-will be ignored.
+C<enable>, C<mode>, C<filter>, and C<needs>.  Most commands are followed
+by a LIST of dispatcher NAMEs to be address.  For C<mode> see section
+L</Run modes>; it requires a MODE argument before the LIST of NAMEs.
+Non-existing names will be ignored.  For C<filter> see
+L<Log::Report::Dispatcher/Filters>; it requires a CODE reference before
+the NAMEs of the dispatchers which will have the it applied (defaults to
+all).
 
 With C<needs>, you only provide a REASON: it will return the list of
 dispatchers which need to be called in case of a message with the REASON
@@ -158,10 +165,12 @@ empty, no back-end has accepted it so the MESSAGE was "lost".  Even when
 no back-end need the message, it program will still exit when there is
 REASON to.
 
- Option--Default
- errno   $! or 1
- locale  undef
- to      undef
+ Option  --Default
+ errno     $! or 1
+ locale    undef
+ location  undef
+ stack     undef
+ to        undef
 
 . errno => INTEGER
 
@@ -181,6 +190,25 @@ trigger an C<die()>.
 =over 4
 
 Use this specific locale, in stead of the user's preference.
+
+=back
+
+. location => STRING
+
+=over 4
+
+When defined, this location is used in the display.  Otherwise, it
+is determined automatically if needed.  An empty string will disable
+any attempt to display this line.
+
+=back
+
+. stack => ARRAY
+
+=over 4
+
+When defined, that data is used to display the call stack.  Otherwise,
+it is collected via C<caller()> if needed.
 
 =back
 
@@ -208,6 +236,40 @@ I<Example:> for use of L<report()|Log::Report/"Report Production and Configurati
  # error message, overruled to be printed in Brazillian
  report {locale => 'pt_BR'}
      WARNING => __$!;
+
+=back
+
+B<try>(CODE, OPTIONS)
+
+=over 4
+
+Execute the CODE, but block all dispatchers as long as it is
+running.  When the execution of the CODE is terminated with an
+error, that is captured.  After the C<try>, the C<$@> will contain a
+L<Log::Report::Dispatcher::Try|Log::Report::Dispatcher::Try> object, which contains the collected
+error messages.
+
+The OPTIONS are passed to the constructor of the try-dispatcher, see
+M<Log::Report::Dispatcher::Try::new().  For instance, you may like to
+add C<< mode => 'DEBUG' >>, or C<< accept => 'ERROR-' >>.
+
+Be warned that the parameter to C<try> is a CODE reference.  This means
+that you shall not use a comma after the block when there are OPTIONS
+specified.  On the other hand, you shall use a semi-colon after the
+block if there are no arguments.
+
+I<Example:> 
+
+ try { ... };       # mind the ';' !!
+ if($@) {           # signals something went wrong
+
+ if(try {...}) {    # block ended normally
+
+ try { ... }        # no comma!!
+    mode => 'DEBUG', accept => 'ERROR-';
+
+ try sub { ... },   # with comma, also \&function
+    mode => 'DEBUG', accept => 'ALL';
 
 =back
 
@@ -530,6 +592,29 @@ I<Example:> use if L<translator()|Log::Report/"Configuration">
  # in one step
  use Log::Report 'my-domain'
    , translator => Log::Report::Translator::POT->new(...);
+
+=back
+
+=head2 Reasons
+
+$obj-E<gt>B<isFatal>(REASON)
+
+Log::Report-E<gt>B<isFatal>(REASON)
+
+=over 4
+
+Returns true if the REASON is severe enough to cause an exception
+(or program termination).
+
+=back
+
+$obj-E<gt>B<isValidReason>(STRING)
+
+Log::Report-E<gt>B<isValidReason>(STRING)
+
+=over 4
+
+Returns true if the STRING is one of the predefined REASONS.
 
 =back
 
@@ -905,6 +990,34 @@ the following approach:
 
 Of course, this comes with a small overall performance penalty.
 
+=head3 Exceptions
+
+The simple view on live says: you 're dead when you die.  However,
+complexer situations try to revive the dead.  Typically, the "die"
+is considered a terminating exception, but not terminating the whole
+program, but only some logical block.  Of course, a wrapper round
+that block must decide what to do with these emerging problems.
+
+Java-like languages do not "die" but throw exceptions which contain the
+information about what went wrong.  Perl modules like Exception::Class
+simulate this.  It's a hassle to create exception class objects for each
+emerging problem, and the same amount of work to walk through all the
+options.
+
+Log::Report follows a simpler scheme.  Fatal messages will "die", which is
+caught with "eval", just the Perl way (used invisible to you).  However,
+the wrapper get's its hands on the message as the user has specified it:
+untranslated, with all unprocessed parameters still at hand.
+
+ try { fault __x "cannot open file {file}", file => $fn };
+ if($@)                         # is Log::Report::Dispatcher::Try
+ {   my $cause = $@->wasFatal;  # is Log::Report::Exception
+     $cause->throw if $cause->message->msgid =~ m/ open /;
+     # all other problems ignored
+ }
+
+See L<Log::Report::Dispatcher::Try|Log::Report::Dispatcher::Try> and L<Log::Report::Exception|Log::Report::Exception>.
+
 =head2 Comparison
 
 =head3 Log::Dispatch and Log::Log4perl
@@ -958,8 +1071,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.01,
-built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+This module is part of Log-Report distribution version 0.02,
+built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

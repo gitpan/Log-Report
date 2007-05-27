@@ -1,6 +1,8 @@
+ChangeLog
 MANIFEST
 META.yml                                 Module meta-data (added by MakeMaker)
 Makefile.PL
+README
 lib/Log/Report.pm
 lib/Log/Report.pod
 lib/Log/Report/Dispatcher.pm
@@ -13,6 +15,10 @@ lib/Log/Report/Dispatcher/LogDispatch.pm
 lib/Log/Report/Dispatcher/LogDispatch.pod
 lib/Log/Report/Dispatcher/Syslog.pm
 lib/Log/Report/Dispatcher/Syslog.pod
+lib/Log/Report/Dispatcher/Try.pm
+lib/Log/Report/Dispatcher/Try.pod
+lib/Log/Report/Exception.pm
+lib/Log/Report/Exception.pod
 lib/Log/Report/Extract/PerlPPI.pm
 lib/Log/Report/Extract/PerlPPI.pod
 lib/Log/Report/Lexicon/Index.pm
@@ -49,4 +55,5 @@ t/50file.t
 t/51syslog.t
 t/52logdisp.t
 t/53log4perl.t
+t/54try.t
 t/hello-world-slovak.po

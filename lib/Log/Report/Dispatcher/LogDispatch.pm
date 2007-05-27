@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::LogDispatch;
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = '0.02';
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -48,7 +48,7 @@ sub init($)
             my @reasons = expand_reasons $reasons;
 
             Log::Dispatch->level_is_valid($level)
-                or error __n"Log::Dispatch level '{level}' not understood"
+                or error __x"Log::Dispatch level '{level}' not understood"
                      , level => $level;
 
             $self->{level}{$_} = $level for @reasons;

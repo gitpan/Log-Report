@@ -62,7 +62,6 @@ Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
  Option --Defined in     --Default
  accept   Log::Report::Dispatcher  depend on mode
  charset                   'utf-8'
- filter   Log::Report::Dispatcher  undef
  locale   Log::Report::Dispatcher  <system locale>
  mode     Log::Report::Dispatcher  'NORMAL'
  replace                   false
@@ -77,8 +76,6 @@ Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
 Only used in combination with a FILENAME.
 
 =back
-
-. filter => FILTER|ARRAY-of-FILTERs
 
 . locale => LOCALE
 
@@ -107,14 +104,6 @@ of a FILENAME.
 =back
 
 =head2 Accessors
-
-$obj-E<gt>B<addFilter>(CODE|LIST-of-CODE|ARRAY-of-CODE)
-
-=over 4
-
-See L<Log::Report::Dispatcher/"Accessors">
-
-=back
 
 $obj-E<gt>B<filename>
 
@@ -167,7 +156,15 @@ See L<Log::Report::Dispatcher/"Accessors">
 
 =head2 Logging
 
-$obj-E<gt>B<collectStack>(NESTING, [MAXDEPTH])
+$obj-E<gt>B<collectLocation>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<collectStack>([MAXDEPTH])
 
 =over 4
 
@@ -205,8 +202,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.01,
-built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+This module is part of Log-Report distribution version 0.02,
+built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

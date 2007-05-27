@@ -5,12 +5,14 @@ use warnings;
 use strict;
 use lib 'lib', '../lib';
 
-use Test::More tests => 35;
+use Test::More tests => 38;
 
 use Log::Report undef, syntax => 'SHORT';
 
+my $disp_stderr = -t STDERR ? 1 : 0;
+
 my @disp = dispatcher 'list';
-cmp_ok(scalar(@disp), '==', 1);
+cmp_ok(scalar(@disp), '==', $disp_stderr);
 
 isa_ok($disp[0], 'Log::Report::Dispatcher');
 
@@ -22,7 +24,7 @@ my $d = dispatcher FILE => 'file1'
   , to => $fh1;
 
 @disp = dispatcher 'list';
-cmp_ok(scalar(@disp), '==', 2);
+cmp_ok(scalar(@disp), '==', 1 + $disp_stderr);
 
 ok(defined $d, 'created file dispatcher');
 isa_ok($d, 'Log::Report::Dispatcher::File');
@@ -46,7 +48,7 @@ ok(defined $e, 'created second disp');
 isa_ok($e, 'Log::Report::Dispatcher::File');
 
 @disp = dispatcher 'list';
-cmp_ok(scalar(@disp), '==', 3);
+cmp_ok(scalar(@disp), '==', 2 + $disp_stderr);
 
 @needs = $e->needs;
 cmp_ok(scalar(@needs), '>=', 3, 'needs');
@@ -68,20 +70,20 @@ cmp_ok(length $file1, '==', 0);
 cmp_ok(length $file2, '==', 0);
 
 trace "trace";
-cmp_ok(length $file1, '==', 0, 'disp1 ignore trace');
+cmp_ok(length $file1, '==', 0, 'disp1 ignores trace');
 my $t = length $file2;
 cmp_ok($t, '>', 0, 'disp2 take trace');
 is($file2, "TRACE: trace\n");
 
 my $linenr = __LINE__ +1;
 assert "assertive";
-cmp_ok(length $file1, '==', 0, 'disp1 ignore assert');
+cmp_ok(length $file1, '==', 0, 'disp1 ignores assert');
 my $t2 = length $file2;
 cmp_ok($t2, '>', $t, 'disp2 take assert');
 is(substr($file2, $t), "ASSERT: assertive\n at $0 line $linenr\n");
 
 info "just to inform you";
-cmp_ok(length $file1, '==', 0, 'disp1 ignore info');
+cmp_ok(length $file1, '==', 0, 'disp1 ignores info');
 my $t3 = length $file2;
 cmp_ok($t3, '>', $t2, 'disp2 take info');
 is(substr($file2, $t2), "INFO: just to inform you\n");
@@ -96,8 +98,19 @@ cmp_ok($t4, '==', $t3, 'disp2 ignores notice');
 warning "oops, be warned!";
 my $s2 = length $file1;
 cmp_ok($s2, '>', $s, 'disp1 take warning');
-like(substr($file1, $s), qr/^WARNING: oops, be warned!: /);
+like(substr($file1, $s), qr/^WARNING: oops, be warned!/);
 my $t5 = length $file2;
 cmp_ok($t5, '==', $t4, 'disp2 ignores warnings');
 
+#
+# test filters
+#
 
+my (@messages, @messages2);
+dispatcher filter => sub { push @messages,  $_[3] }, 'file1';
+dispatcher filter => sub { push @messages2, $_[3] }, 'file2';
+
+notice "here we are";
+cmp_ok(scalar(@messages), '==', 1, 'capture message');
+is($messages[0], 'here we are');
+cmp_ok(scalar(@messages2), '==', 0, 'do not capture message');

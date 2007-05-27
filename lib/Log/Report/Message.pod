@@ -42,33 +42,21 @@ I<Example:> use of clone()
 
 =back
 
-$obj-E<gt>B<concat>(STRING|OBJECT, [REVERSED])
-
-=over 4
-
-This method implements the overloading of concatenation, which is needed
-to delay translations even longer.  When REVERSED is true, the STRING
-or OBJECT (other C<Log::Report::Message>) needs to prepended, otherwise
-appended.
-
-I<Example:> of concatenation
-
- print __"Hello" . ' ' . __"World!";
- print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
-
-=back
-
 Log::Report::Message-E<gt>B<new>(OPTIONS, VARIABLES)
 
 =over 4
 
  Option   --Default
+ _append    undef
  _category  undef
  _count     undef
  _domain    from use
  _expand    false
  _msgid     undef
  _plural    undef
+ _prepend   undef
+
+. _append => STRING
 
 . _category => INTEGER
 
@@ -117,6 +105,51 @@ message.
 
 =back
 
+. _prepend => STRING
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<append>
+
+=over 4
+
+Returns the string or L<Log::Report::Message|Log::Report::Message> object which is appended
+after this one.  Usually C<undef>.
+
+=back
+
+$obj-E<gt>B<concat>(STRING|OBJECT, [REVERSED])
+
+=over 4
+
+This method implements the overloading of concatenation, which is needed
+to delay translations even longer.  When REVERSED is true, the STRING
+or OBJECT (other C<Log::Report::Message>) needs to prepended, otherwise
+appended.
+
+I<Example:> of concatenation
+
+ print __"Hello" . ' ' . __"World!";
+ print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
+
+=back
+
+$obj-E<gt>B<msgid>
+
+=over 4
+
+Returns the msgid which will later be translated.
+
+=back
+
+$obj-E<gt>B<prepend>
+
+=over 4
+
+Returns the string which is prepended to this one.  Usually C<undef>.
+
 =back
 
 $obj-E<gt>B<toString>([LOCALE])
@@ -124,6 +157,15 @@ $obj-E<gt>B<toString>([LOCALE])
 =over 4
 
 Translate a message.  If not specified, the default locale is used.
+
+=back
+
+$obj-E<gt>B<untranslated>
+
+=over 4
+
+Return the concatenation of the prepend, msgid, and append strings.  Variable
+expansions within the msgid is not performed.
 
 =back
 
@@ -303,8 +345,8 @@ In either case, the translation will be looked-up only once.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.01,
-built on May 25, 2007. Website: F<http://perl.overmeer.net/logreport/>
+This module is part of Log-Report distribution version 0.02,
+built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

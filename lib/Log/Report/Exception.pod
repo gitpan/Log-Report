@@ -1,0 +1,86 @@
+=head1 NAME
+
+Log::Report::Exception - a collected report
+
+=head1 SYNOPSIS
+
+ # created within a try block
+ try { error "help!" };
+ my $exception = $@->wasFatal;
+ $exception->throw if $exception;
+
+ $@->reportFatal;  # combination of above two lines
+
+=head1 DESCRIPTION
+
+In Log::Report, exceptions are not as extended as available in
+languages as Java: you do not create classes for them.  The only
+thing an exception object does, is capture some information about
+an (untranslated) report.
+
+=head1 METHODS
+
+=head2 Constructors
+
+Log::Report::Exception-E<gt>B<new>(OPTIONS, VARIABLES)
+
+=over 4
+
+ Option     --Default
+ message      <required>
+ reason       <required>
+ report_opts  {}
+
+. message => Log::Report::Message
+
+. reason => REASON
+
+. report_opts => HASH
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<message>
+
+=over 4
+
+=back
+
+$obj-E<gt>B<reason>
+
+=over 4
+
+=back
+
+$obj-E<gt>B<report_opts>
+
+=over 4
+
+=back
+
+=head2 Reporting Exceptions
+
+$obj-E<gt>B<throw>(OPTIONS)
+
+=over 4
+
+Insert the message contained in the exception into the currently
+defined dispatchers.  The C<throw> name is commonly known
+exception related terminology for C<report>.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.02,
+built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

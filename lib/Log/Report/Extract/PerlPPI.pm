@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Extract::PerlPPI;
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 
@@ -74,8 +74,11 @@ sub process($@)
         {   $pkg     = $node->namespace;
 
             # special hack for module Log::Report itself
-            ($include, $domain)
-                = $pkg eq 'Log::Report' ? (1, 'log-report') : (0, undef);
+            if($pkg eq 'Log::Report')
+            {   ($include, $domain) = (1, 'log-report');
+                $self->_reset($domain, $fn);
+            }
+            else { ($include, $domain) = (0, undef) }
 
             next NODE;
         }

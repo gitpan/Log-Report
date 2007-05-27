@@ -1,0 +1,236 @@
+=head1 NAME
+
+Log::Report::Dispatcher::Try - capture all reports as exceptions
+
+=head1 INHERITANCE
+
+ Log::Report::Dispatcher::Try
+   is a Log::Report::Dispatcher
+
+=head1 SYNOPSIS
+
+ try { ... }
+ print ref $@;  # Log::Report::Dispatcher::Try
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 Constructors
+
+$obj-E<gt>B<close>
+
+=over 4
+
+Only when initiated with a FILENAME, the file will be closed.  In any
+other case, nothing will be done.
+
+=back
+
+Log::Report::Dispatcher::Try-E<gt>B<new>(TYPE, NAME, OPTIONS)
+
+=over 4
+
+ Option    --Defined in     --Default
+ accept      Log::Report::Dispatcher  depend on mode
+ died                         undef
+ exceptions                   []
+ locale      Log::Report::Dispatcher  <system locale>
+ mode        Log::Report::Dispatcher  'NORMAL'
+
+. accept => REASONS
+
+. died => STRING
+
+=over 4
+
+The exit string ($@) of the eval'ed block.
+
+=back
+
+. exceptions => ARRAY-of-EXCEPTIONS
+
+. locale => LOCALE
+
+. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<died>([STRING])
+
+=over 4
+
+The message which was reported by C<eval>, which is used internally
+to catch problems in the try block.
+
+=back
+
+$obj-E<gt>B<exceptions>
+
+=over 4
+
+Returns all collected C<Log::Report::Exceptions>.  The last of
+them may be a fatal one.  The other are non-fatal.
+
+=back
+
+$obj-E<gt>B<isDisabled>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<mode>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<name>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<needs>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+$obj-E<gt>B<type>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+=head2 Logging
+
+$obj-E<gt>B<collectLocation>
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<collectStack>([MAXDEPTH])
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<log>(OPTS, REASON, MESSAGE)
+
+=over 4
+
+Other dispatchers translate the message here, and make it leave
+the program.   However, messages in a "try" block are only
+captured in an intermediate layer: they may never be presented
+to an end-users.  And for sure, we do not know the language yet.
+
+The MESSAGE is either a STRING or a L<Log::Report::Message|Log::Report::Message>.
+
+=back
+
+$obj-E<gt>B<reportAll>
+
+=over 4
+
+Re-cast the messages in all collect exceptions into the defined
+dispatchers, which were disabled during the try block.
+
+=back
+
+$obj-E<gt>B<reportFatal>
+
+=over 4
+
+Re-cast only the fatal message to the defined dispatchers.  If the
+block was left without problems, then nothing will be done.
+
+=back
+
+$obj-E<gt>B<stackTraceLine>(OPTIONS)
+
+Log::Report::Dispatcher::Try-E<gt>B<stackTraceLine>(OPTIONS)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
+
+=over 4
+
+See L<Log::Report::Dispatcher/"Logging">
+
+=back
+
+=head2 Status
+
+$obj-E<gt>B<failed>
+
+=over 4
+
+Returns true if the block was left with an fatal message.
+
+=back
+
+$obj-E<gt>B<printError>
+
+=over 4
+
+If this object is kept in C<$@>, and someone uses this as string, we
+want to show the fatal error message.
+
+=back
+
+$obj-E<gt>B<success>
+
+=over 4
+
+Returns true if the block exited normally.
+
+=back
+
+$obj-E<gt>B<wasFatal>
+
+=over 4
+
+Returns the L<Log::Report::Exception|Log::Report::Exception> which caused the "try" block to
+die, otherwise an empty LIST (undef).
+
+=back
+
+=head1 DETAILS
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.02,
+built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

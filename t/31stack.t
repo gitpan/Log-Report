@@ -13,7 +13,7 @@ use Log::Report::Dispatcher;
 my $stack;
 
 my $start = __LINE__;
-sub hhh(@) { $stack = Log::Report::Dispatcher->collectStack(1) }
+sub hhh(@) { $stack = Log::Report::Dispatcher->collectStack(3) }
 sub ggg(@) { shift; hhh(@_) }
 sub fff(@) { ggg(reverse @_) }
 
