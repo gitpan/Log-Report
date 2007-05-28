@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Try;
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -16,7 +16,7 @@ use Log::Report::Exception;
 
 use overload
     bool => 'failed'
-  , '""' => 'printError';
+  , '""' => 'showStatus';
 
 
 sub init($)
@@ -63,10 +63,10 @@ sub log($$$)
 }
 
 
-sub reportAll() { $_->throw for shift->exceptions }
+sub reportAll(@) { $_->throw(@_) for shift->exceptions }
 
 
-sub reportFatal() { $_->throw for shift->wasFatal }
+sub reportFatal(@) { $_->throw(@_) for shift->wasFatal }
 
 
 sub failed()  {   shift->{died}}
@@ -79,10 +79,9 @@ sub wasFatal()
 }
 
 
-sub printError()
+sub showStatus()
 {   my $fatal = shift->wasFatal or return '';
-    # don't use '.', because it is overloaded for message
-    join('', $fatal->reason, ': ', $fatal->message, "\n");
+    __x"try-block stopped with {reason}", reason => $fatal->reason;
 }
 
 1;

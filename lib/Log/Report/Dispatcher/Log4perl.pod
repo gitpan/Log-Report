@@ -72,12 +72,13 @@ Log::Report::Dispatcher::Log4perl-E<gt>B<new>(TYPE, NAME, OPTIONS)
 The Log::Log4perl infrastructure has all information in a configuration
 file.  In that file, you should find a category with the NAME.
 
- Option  --Defined in     --Default
- accept    Log::Report::Dispatcher  depend on mode
- config                     <required>
- locale    Log::Report::Dispatcher  <system locale>
- mode      Log::Report::Dispatcher  'NORMAL'
- to_level                   []
+ Option       --Defined in     --Default
+ accept         Log::Report::Dispatcher  depend on mode
+ config                          <required>
+ format_reason  Log::Report::Dispatcher  'LOWERCASE'
+ locale         Log::Report::Dispatcher  <system locale>
+ mode           Log::Report::Dispatcher  'NORMAL'
+ to_level                        []
 
 . accept => REASONS
 
@@ -89,6 +90,8 @@ When a SCALAR reference is passed in, that must refer to a string which
 contains the configuration text.  Otherwise, specify an existing FILENAME.
 
 =back
+
+. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
 . locale => LOCALE
 
@@ -211,7 +214,7 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.02,
+This module is part of Log-Report distribution version 0.03,
 built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE

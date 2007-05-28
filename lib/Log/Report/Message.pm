@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use Log::Report 'log-report';
 use POSIX  qw/locale_h/;
@@ -41,7 +41,8 @@ sub toString(;$)
     my $count  = $self->{_count} || 0;
 
     $self->{_msgid}   # no translation, constant string
-        or return $self->{_prepend};
+        or return (defined $self->{_prepend} ? $self->{_prepend} : '')
+                . (defined $self->{_append}  ? $self->{_append}  : '');
 
     # create a translation
     my $text = Log::Report->translator($self->{_domain})->translate($self);
@@ -99,14 +100,12 @@ sub untranslated()
 sub concat($;$)
 {   my ($self, $what, $reversed) = @_;
     if($reversed)
-    {   $self->{_prepend}
-           = defined $self->{_prepend} ? $what . $self->{_prepend} : $what;
+    {   $what .= $self->{_prepend} if defined $self->{_prepend};
+        return ref($self)->new(%$self, _prepend => $what);
     }
-    else
-    {   $self->{_append}
-           = defined $self->{_append} ? $self->{_append} . $what : $what;
-    }
-    $self;
+
+    $what = $self->{_append} . $what if defined $self->{_append};
+    ref($self)->new(%$self, _append => $what);
 }
 
 

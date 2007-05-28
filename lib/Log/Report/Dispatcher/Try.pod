@@ -9,10 +9,44 @@ Log::Report::Dispatcher::Try - capture all reports as exceptions
 
 =head1 SYNOPSIS
 
- try { ... }
- print ref $@;  # Log::Report::Dispatcher::Try
+ try { ... };       # mind the ';' !!
+ if($@) {           # signals something went wrong
+
+ if(try {...}) {    # block ended normally
+
+ try { ... }        # no comma!!
+    mode => 'DEBUG', accept => 'ERROR-';
+
+ try sub { ... },   # with comma
+    mode => 'DEBUG', accept => 'ALL';
+
+ try \&myhandler, accept => 'ERROR-';
+
+ print ref $@;      # Log::Report::Dispatcher::Try
+
+ $@->reportFatal;   # redispatch result of try block
+ $@->reportAll;     # ... also warnings etc
+ if($@) {...}       # if errors
+ if($@->failed) {   # same       # }
+ if($@->success) {  # no errors  # }
+
+ try { report {to => 'stderr'}, FAILURE => 'no network' };
+ $@->reportFatal(to => 'syslog');  # overrule destination
 
 =head1 DESCRIPTION
+
+The L<Log::Report::try()|Log::Report/"Report Production and Configuration"> catches errors in the block (CODE
+reference) which is just following the function name.  All
+dispatchers are temporarily disabled by C<try>, and messages
+which are reported are collected within a temporary dispatcher
+named C<try>.  When the CODE has run, that C<try> dispatcher
+is returned in C<$@>, and all original dispatchers reinstated.
+
+Then, after the C<try> has finished, the routine which used
+the "try" should decide what to do with the collected reports.
+These reports are collected as L<Log::Report::Exception|Log::Report::Exception> objects.
+They can be ignored, or thrown to a higher level try... causing
+an exit of the program if there is none.
 
 =head1 METHODS
 
@@ -31,12 +65,13 @@ Log::Report::Dispatcher::Try-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
 =over 4
 
- Option    --Defined in     --Default
- accept      Log::Report::Dispatcher  depend on mode
- died                         undef
- exceptions                   []
- locale      Log::Report::Dispatcher  <system locale>
- mode        Log::Report::Dispatcher  'NORMAL'
+ Option       --Defined in     --Default
+ accept         Log::Report::Dispatcher  depend on mode
+ died                            undef
+ exceptions                      []
+ format_reason  Log::Report::Dispatcher  'LOWERCASE'
+ locale         Log::Report::Dispatcher  <system locale>
+ mode           Log::Report::Dispatcher  'NORMAL'
 
 . accept => REASONS
 
@@ -49,6 +84,8 @@ The exit string ($@) of the eval'ed block.
 =back
 
 . exceptions => ARRAY-of-EXCEPTIONS
+
+. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
 . locale => LOCALE
 
@@ -147,12 +184,14 @@ The MESSAGE is either a STRING or a L<Log::Report::Message|Log::Report::Message>
 
 =back
 
-$obj-E<gt>B<reportAll>
+$obj-E<gt>B<reportAll>(OPTIONS)
 
 =over 4
 
 Re-cast the messages in all collect exceptions into the defined
-dispatchers, which were disabled during the try block.
+dispatchers, which were disabled during the try block.  The OPTIONS
+will end-up as HASH-of-OPTIONS to L<Log::Report::report()|Log::Report/"Report Production and Configuration">; see
+L<Log::Report::Exception::throw()|Log::Report::Exception/"Reporting Exceptions"> which does the job.
 
 =back
 
@@ -161,7 +200,9 @@ $obj-E<gt>B<reportFatal>
 =over 4
 
 Re-cast only the fatal message to the defined dispatchers.  If the
-block was left without problems, then nothing will be done.
+block was left without problems, then nothing will be done.  The OPTIONS
+will end-up as HASH-of-OPTIONS to L<Log::Report::report()|Log::Report/"Report Production and Configuration">; see
+L<Log::Report::Exception::throw()|Log::Report::Exception/"Reporting Exceptions"> which does the job.
 
 =back
 
@@ -193,12 +234,16 @@ Returns true if the block was left with an fatal message.
 
 =back
 
-$obj-E<gt>B<printError>
+$obj-E<gt>B<showStatus>
 
 =over 4
 
 If this object is kept in C<$@>, and someone uses this as string, we
 want to show the fatal error message.
+
+The message is not very informative for the good cause: we do not want
+people to simply print the C<$@>, but wish for a re-cast of the message
+using L<reportAll()|Log::Report::Dispatcher::Try/"Logging"> or L<reportFatal()|Log::Report::Dispatcher::Try/"Logging">.
 
 =back
 
@@ -223,7 +268,7 @@ die, otherwise an empty LIST (undef).
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.02,
+This module is part of Log-Report distribution version 0.03,
 built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE

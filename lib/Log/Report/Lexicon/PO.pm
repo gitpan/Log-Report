@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Lexicon::PO;
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 
@@ -321,6 +321,12 @@ sub toString(@)
     }
 
     join '', @text;
+}
+
+
+sub unused()
+{   my $self = shift;
+    ! $self->references && ! $self->msgstr(0);
 }
 
 1;

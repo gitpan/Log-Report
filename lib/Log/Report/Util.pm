@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 use base 'Exporter';
 
 our @EXPORT = qw/@reasons %reason_code parse_locale expand_reasons
@@ -46,12 +46,12 @@ sub expand_reasons($)
         {   my $begin = $reason_code{$1 || 'TRACE'};
             my $end   = $reason_code{$2 || 'PANIC'};
             $begin && $end
-                or error __x"unknown reason {which} in '{reasons}'"
-                       , which => ($begin ? $2 : $1), reasons => $reasons;
+                or error __x "unknown reason {which} in '{reasons}'"
+                     , which => ($begin ? $2 : $1), reasons => $reasons;
 
             error __x"reason '{begin}' more serious than '{end}' in '{reasons}"
-                , begin => $1, end => $2, reasons => $reasons
-                if $begin >= $end;
+              , begin => $1, end => $2, reasons => $reasons
+                 if $begin >= $end;
 
             $r{$_}++ for $begin..$end;
         }
@@ -88,3 +88,4 @@ sub unescape_chars($)
     $str;
 }
 
+1;

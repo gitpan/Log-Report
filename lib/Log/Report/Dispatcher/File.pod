@@ -59,13 +59,14 @@ Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
 =over 4
 
- Option --Defined in     --Default
- accept   Log::Report::Dispatcher  depend on mode
- charset                   'utf-8'
- locale   Log::Report::Dispatcher  <system locale>
- mode     Log::Report::Dispatcher  'NORMAL'
- replace                   false
- to                        <required>
+ Option       --Defined in     --Default
+ accept         Log::Report::Dispatcher  depend on mode
+ charset                         'utf-8'
+ format_reason  Log::Report::Dispatcher  'LOWERCASE'
+ locale         Log::Report::Dispatcher  <system locale>
+ mode           Log::Report::Dispatcher  'NORMAL'
+ replace                         false
+ to                              <required>
 
 . accept => REASONS
 
@@ -76,6 +77,8 @@ Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
 Only used in combination with a FILENAME.
 
 =back
+
+. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
 . locale => LOCALE
 
@@ -202,7 +205,7 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.02,
+This module is part of Log-Report distribution version 0.03,
 built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE

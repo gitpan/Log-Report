@@ -59,10 +59,11 @@ All OPTIONS which are not consumed by this base constructor are passed
 to the wrapped back-end.  Some of them will check whether all OPTIONS
 are understood, other ignore unknown OPTIONS.
 
- Option--Default
- accept  depend on mode
- locale  <system locale>
- mode    'NORMAL'
+ Option       --Default
+ accept         depend on mode
+ format_reason  'LOWERCASE'
+ locale         <system locale>
+ mode           'NORMAL'
 
 . accept => REASONS
 
@@ -75,6 +76,16 @@ information, then those levels will not be accepted.
 When the mode equals C<NORMAL> (the default) then C<accept>'s default
 is C<NOTICE->.  In case of C<VERBOSE> it will be C<INFO->, C<ASSERT>
 results in C<ASSERT->, and C<DEBUG> in C<ALL>.
+
+=back
+
+. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
+
+=over 4
+
+How to show the reason text which is printed before the message. When
+a CODE is specified, it will be called with a translated text and the
+returned text is used.
 
 =back
 
@@ -374,7 +385,7 @@ I<Example:> take all mistakes and warnings serious
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.02,
+This module is part of Log-Report distribution version 0.03,
 built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE

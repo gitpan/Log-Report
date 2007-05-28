@@ -7,11 +7,10 @@ use strict;
 
 package Log::Report::Translator::Gettext;
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 use base 'Log::Report::Translator';
 
 use Locale::gettext;
-use POSIX qw/setlocale/;
 
 use Log::Report 'log-report';
 

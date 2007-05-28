@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Lexicon::POT;
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 
@@ -110,7 +110,11 @@ sub write($@)
     my $index = $self->index;
     foreach my $msgid (sort keys %$index)
     {   next if $msgid eq '';
-        $fh->print("\n", $index->{$msgid}->toString(@opt));
+
+        my $po = $index->{$msgid};
+        next if $po->unused;
+
+        $fh->print("\n", $po->toString(@opt));
     }
 
     $fh->close
@@ -252,8 +256,8 @@ sub stats()
     foreach my $po ($self->translations)
     {   next if $po->msgid eq '';
         $stats{msgids}++;
-        $po->fuzzy    and $stats{fuzzy}++;
-        $po->isActive or  $stats{inactive}++;
+        $stats{fuzzy}++    if $po->fuzzy;
+        $stats{inactive}++ if !$po->isActive && !$po->unused;
     }
     \%stats;
 }

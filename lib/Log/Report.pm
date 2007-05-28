@@ -8,13 +8,11 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 use base 'Exporter';
 
 # domain 'log-report' via work-arounds:
 #     Log::Report cannot do "use Log::Report"
-
-use POSIX qw/setlocale LC_ALL/;
 
 my @make_msg   = qw/__ __x __n __nx __xn N__ N__n N__w/;
 my @functions  = qw/report dispatcher try/;

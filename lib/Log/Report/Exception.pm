@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use Log::Report 'log-report';
 use POSIX  qw/locale_h/;
@@ -29,7 +29,8 @@ sub message()     {shift->{message}}
 # function Log::Report::report.
 sub throw(@)
 {   my $self = shift;
-    report $self->{report_opts}, $self->reason, $self->message;
+    my $opts = @_ ? { %{$self->{report_opts}}, @_ } : $self->{report_opts};
+    report $opts, $self->reason, $self->message;
 }
 
 1;
