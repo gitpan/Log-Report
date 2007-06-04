@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 use Log::Report 'log-report';
 use POSIX  qw/locale_h/;

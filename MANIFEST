@@ -3,6 +3,7 @@ MANIFEST
 META.yml                                 Module meta-data (added by MakeMaker)
 Makefile.PL
 README
+bin/xgettext-perl
 lib/Log/Report.pm
 lib/Log/Report.pod
 lib/Log/Report/Dispatcher.pm

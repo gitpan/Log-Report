@@ -11,7 +11,7 @@ Log::Report::Dispatcher::LogDispatch - send messages to Log::Dispatch back-end
 
  use Log::Dispatch::File;
  dispatcher Log::Dispatch::File => 'logger', accept => 'NOTICE-'
-   , to_level => [ 'ALERT-' => 'err' ];
+   , filename => 'logfile', to_level => [ 'ALERT-' => 'err' ];
 
  # disable default dispatcher
  dispatcher close => 'logger';
@@ -219,8 +219,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.03,
-built on May 28, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.04,
+built on June 04, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
