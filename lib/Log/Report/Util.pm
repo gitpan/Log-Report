@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.04';
+$VERSION = '0.05';
 use base 'Exporter';
 
 our @EXPORT = qw/@reasons %reason_code parse_locale expand_reasons
@@ -27,14 +27,16 @@ my @system  = qw/FAULT ALERT FAILURE/;
 
 
 sub parse_locale($)
-{  $_[0] =~
-     m/^ ([a-z]{2})              # ISO 631
-         (?: \_ ([a-zA-Z\d]+)    # ISO 3166
-             (?: \. ([\w-]+) )?  # codeset
-         )?
-         (?: \@ (\S+) )?         # modifier
-           $
-      /x;
+{   return ($1, $2, $3, $4) if $_[0] =~
+      m/^ ([a-z]{2})              # ISO 631
+          (?: \_ ([a-zA-Z\d]+)    # ISO 3166
+              (?: \. ([\w-]+) )?  # codeset
+          )?
+          (?: \@ (\S+) )?         # modifier
+            $
+       /x;
+
+    $_[0] =~ m/^(C|POSIX)$/ ? ($1) : ();
 }
 
 

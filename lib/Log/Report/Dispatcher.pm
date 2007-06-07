@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util qw/parse_locale expand_reasons %reason_code
@@ -41,9 +41,9 @@ sub new(@)
 }
 
 my %format_reason = 
-  ( LOWERCASE => sub { (lc $_[0]) . ': ' }
-  , UPPERCASE => sub { (uc $_[0]) . ': ' }
-  , UCFIRST   => sub { (ucfirst lc $_[0]) . ': '}
+  ( LOWERCASE => sub { lc $_[0] }
+  , UPPERCASE => sub { uc $_[0] }
+  , UCFIRST   => sub { ucfirst lc $_[0] }
   , IGNORE    => sub { '' }
   );
   
@@ -114,7 +114,7 @@ sub log($$$)
 
 my %always_loc = map {($_ => 1)} qw/ASSERT WARNING PANIC/;
 sub translate($$$)
-{   my ($self, $opts, $reason, $message) = @_;
+{   my ($self, $opts, $reason, $msg) = @_;
 
     my $mode = $self->{mode};
     my $code = $reason_code{$reason}
@@ -130,48 +130,46 @@ sub translate($$$)
      || ($mode==2 && $code >= $reason_code{ALERT})
      || ($mode==3 && $code >= $reason_code{ERROR});
 
-    my $translate = defined $message->msgid;
-    my $locale = $translate ? ($opts->{locale} || $self->{locale}) : 'en_US';
-    my $loc    = defined $locale ? setlocale(LC_ALL, $locale) : undef;
+    my $locale
+      = defined $msg->msgid
+      ? ($opts->{locale} || $self->{locale})      # translate whole
+      : Log::Report->_setting($msg->domain, 'native_language');
+    my $oldloc = setlocale(LC_ALL, $locale || 'en_US');
 
-    my $text;
-    if($translate)
-    {   $text  = $self->{format_reason}->((__$reason)->toString)
-              .  $message->toString;
-        $text .= ': ' . strerror($opts->{errno}) if $opts->{errno};
-        $text .= "\n";
-    }
-    else
-    {   $text   = $self->{format_reason}->($reason) . $message->untranslated;
-        $text  .= ': '. strerror($opts->{errno}) if $opts->{errno};
-        $text  .= "\n";
-    }
+    my $r = $self->{format_reason}->((__$reason)->toString);
+    my $e = $opts->{errno} ? strerror($opts->{errno}) : undef;
+
+    my $format
+      = $r && $e ? N__"{reason}: {message}; {error}"
+      : $r       ? N__"{reason}: {message}"
+      : $e       ? N__"{message}; {error}"
+      :            undef;
+
+    my $text = defined $format
+      ? __x($format, message => $msg->toString, reason => $r, error => $e
+           )->toString
+      : $msg->toString;
+    $text .= "\n";
 
     if($show_stack)
     {   my $stack = $opts->{stack} ||= $self->collectStack;
 
         foreach (@$stack)
-        {   $text .= $_->[0] . " " .
-              ( $translate
-              ? __x( 'at {filename} line {line}'
-                   , filename => $_->[1], line => $_->[2] )
-              : "at $_->[1] line $_->[2]"
-              ) . "\n";
+        {   $text .= $_->[0] . " "
+              . __x( 'at {filename} line {line}'
+                   , filename => $_->[1], line => $_->[2] )->toString
+              . "\n";
         }
     }
     elsif($show_loc)
     {   my $loc = $opts->{location} ||= $self->collectLocation;
         my ($pkg, $fn, $line, $sub) = @$loc;
-        $text .= " " .
-          ( $translate
-          ? __x('at {filename} line {line}', filename => $fn, line => $line)
-          : "at $fn line $line"
-          ) . "\n";
+        $text .= " "
+          . __x('at {filename} line {line}', filename => $fn, line => $line)->toString
+          . "\n";
     }
 
-    setlocale(LC_ALL, $loc)
-        if defined $loc;
-
+    setlocale(LC_ALL, $oldloc);
     $text;
 }
 

@@ -4,7 +4,7 @@ Log::Report::Message - a piece of text to be translated
 
 =head1 SYNOPSIS
 
- Used internally by Log::Report
+ # Created by Log::Report's __ functions
 
 =head1 DESCRIPTION
 
@@ -120,19 +120,27 @@ after this one.  Usually C<undef>.
 
 =back
 
-$obj-E<gt>B<concat>(STRING|OBJECT, [REVERSED])
+$obj-E<gt>B<concat>(STRING|OBJECT, [PREPEND])
 
 =over 4
 
 This method implements the overloading of concatenation, which is needed
-to delay translations even longer.  When REVERSED is true, the STRING
+to delay translations even longer.  When PREPEND is true, the STRING
 or OBJECT (other C<Log::Report::Message>) needs to prepended, otherwise
-appended.
+it is appended.
 
 I<Example:> of concatenation
 
  print __"Hello" . ' ' . __"World!";
  print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
+
+=back
+
+$obj-E<gt>B<domain>
+
+=over 4
+
+Returns the domain of the first translatable string in the structure.
 
 =back
 
@@ -185,7 +193,7 @@ interpolate OPTION values in your strings.
 
 With the C<__x()> or C<__nx()>, interpolation will take place on the
 translated MSGID string.  The translation can contain the VARIABLE
-and OPTION names inbetween curly brackets.  Text between curly brackets
+and OPTION names between curly brackets.  Text between curly brackets
 which is not a known parameter will be left untouched.
 
 Next to the name, you can specify a format code.  With C<gettext()>,
@@ -212,7 +220,7 @@ examples:
          , size => '12345', fn => $filename;
 
 An additional advantage is the fact that not all languages produce
-comparible length strings.  Now, the translators can take care that
+comparable length strings.  Now, the translators can take care that
 the layout of tables is optimal.
 
 =head3 Interpolation of OPTIONS
@@ -257,7 +265,7 @@ With C<Log::Report>, you can do
              );
 
 Of course, you need to be aware that the name used to reference the
-counter is pixed to C<_count>.  The first example works as well, but
+counter is fixed to C<_count>.  The first example works as well, but
 is more verbose.
 
 =head3 Interpolation of VARIABLES
@@ -298,7 +306,7 @@ can be found.
 =item .
 
 When the value is an ARRAY, all members will be interpolated with C<$">
-inbetween the elements.
+between the elements.
 
 =back
 
@@ -345,8 +353,8 @@ In either case, the translation will be looked-up only once.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.04,
-built on June 04, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.05,
+built on June 07, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

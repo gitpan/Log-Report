@@ -14,7 +14,7 @@ Log::Report::Translator::Gettext - the GNU gettext infrastructure
  use Log::Report 'my-domain'
    , translator => Log::Report::Translator::Gettext->new;
 
- print __"Hello World\n";  # language determined by enviroment
+ print __"Hello World\n";  # language determined by environment
 
  # internal use
 
@@ -81,8 +81,8 @@ See L<Log::Report::Translator/"Translating">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.04,
-built on June 04, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.05,
+built on June 07, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

@@ -242,7 +242,7 @@ I<Example:> for use of L<report()|Log::Report/"Report Production and Configurati
  warning  __x'Disk {percent%.2f}% full', percent => $p
      if $p > 97;
 
- # error message, overruled to be printed in Brazillian
+ # error message, overruled to be printed in Brazilian
  report {locale => 'pt_BR'}
      WARNING => __$!;
 
@@ -357,7 +357,7 @@ $obj-E<gt>B<panic>(MESSAGE)
 
 =over 4
 
-Short for C<< report PANIc => MESSAGE >>
+Short for C<< report PANIC => MESSAGE >>
 
 =back
 
@@ -378,6 +378,37 @@ Short for C<< report WARNING => MESSAGE >>
 =back
 
 =head2 Language Translations
+
+The language translations are initiate by limited set of functions
+which contain two under-score (E<_>) characters in their name.  Most
+of them return a L<Log::Report::Message|Log::Report::Message> object.
+
+BE WARNED(1) that -in general- its considered very bad practice to
+combine multiple translations into one message; translating
+may also affect the order of the translated components. Besides,
+when the translator only sees smaller parts of the text, his or
+her job becomes more complex.  So:
+
+ print __"Hello" . ', ' . __"World!";  # very bad idea!
+ print __"Hello, World!";    # yes: complete sentence.
+
+The the former case, tricks with overloading used by the
+L<Log::Report::Message|Log::Report::Message> objects will still make delayed translations
+work.
+
+In normal situations, it is not a problem to translate interpolated
+values:
+
+ print __"the color is {c}", c => __"red";
+
+BE WARNED(2) that using C<< __'Hello' >> will produce a syntax error like
+"String found where operator expected at .... Can't find string terminator
+"'" anywhere before EOF".  The first quote is the cause of the complaint,
+but the second generates the error.  In the early days of Perl, the single
+quote was used to separate package name from function name, a role which
+was later replaced by a double-colon.  So C<< __'Hello' >> gets interpreted
+as C<< __::Hello ' >>.  Then, there is a trailing single quote which has
+no counterpart.
 
 B<N__>(MSGID)
 
@@ -538,9 +569,21 @@ packages but one in your distribution, it will only contain the name of
 the DOMAIN.  For one package, it will contain configuration information.
 These OPTIONS are used for all packages which use the same DOMAIN.
 
- Option    --Default
- syntax      'REPORT'
- translator  <rescue>
+ Option         --Default
+ native_language  'en_US'
+ syntax           'REPORT'
+ translator       <rescue>
+
+. native_language => CODESET
+
+=over 4
+
+This is the language which you have used to write the translatable and
+the non-translatable messages in.  In case no translation is needed,
+you still wish the system error messages to be in the same language
+as the report.  Of course, each textdomain can define its own.
+
+=back
 
 . syntax => 'REPORT'|'SHORT'
 
@@ -570,7 +613,8 @@ I<Example:> of import
   , translator => Log::Report::Translator::POT->new
      ( lexicon  => '/home/me/locale'  # bindtextdomain
      , charset  => 'UTF-8'            # codeset
-     );
+     )
+  , native_language => 'nl_NL'; # untranslated msgs are Dutch
 
 =back
 
@@ -646,7 +690,7 @@ The REASON argument to C<report()> replace them all.
 The translations use the beautiful syntax defined by
 Locale::TextDomain, with some extensions (of course).  The main
 difference is that the actual translations are delayed till the delivery
-step.  This means that the popup in the graphical interface of the
+step.  This means that the pop-up in the graphical interface of the
 user will show the text in the language of the user, say Chinese,
 but at the same time syslog may write the English version of the text.
 With a little luck, translations can be avoided.
@@ -659,7 +703,7 @@ The following ideas are the base of this implementation:
 
 =item . simplification
 
-Handling errors and warnings is probably the most labour-intensive
+Handling errors and warnings is probably the most labor-intensive
 task for a programmer: when programs are written correctly, up-to
 three-quarters of the code is related to testing, reporting, and
 handling (problem) conditions.  Simplifying the way to create reports,
@@ -681,13 +725,13 @@ pluggable translation backend.  Translations are postponed until the
 text is dispatched to a user or log-file; the same report can be sent
 to syslog in (for instance) English and to the user interface in Dutch.
 
-=item . avoid dupplication
+=item . avoid duplication
 
 The same message may need to be documented on multiple locations: in
 web-pages for the graphical interface, in pod for the command-line
 configuration.  The same text may even end-up in pdf user-manuals.  When
 the message is written inside the Perl code, it's quite hard to get it
-out, to generate these documents.  Only an abstract message discription
+out, to generate these documents.  Only an abstract message description
 protocol will make flexible re-use possible.
 This component still needs to be implemented.
 
@@ -709,7 +753,7 @@ as a whole will not die, just the execution of a part of the program
 will seize.  However, what if the condition which caused the routine to die
 is solvable on a higher level?  Or what if the user of the code doesn't
 bother that a part fails, because it has implemented alternatives for
-that situation?  Exception handling is quite clumpsy in Perl5.
+that situation?  Exception handling is quite clumsy in Perl5.
 
 The C<Log::Report> set of distributions let modules concentrate on the
 program flow, and let the main program decide on the report handling
@@ -723,7 +767,7 @@ pluggable back-ends.
 Traditionally, perl has a very simple view on error reports: you
 either have a warning or an error.  However, it would be much clearer
 for user's and module-using applications, when a distinction is made
-between various causes.  For instance, a configuarion error is quite
+between various causes.  For instance, a configuration error is quite
 different from a disk-full situation.  In C<Log::Report>, the produced
 reports in the code tell I<what> is wrong.  The main application defines
 loggers, which interpret the cause into (syslog) levels.
@@ -766,7 +810,7 @@ line from a log-file, but simply skips the line.
 
 When a user does something wrong, but what is correctable by smart
 behavior of the program.  For instance, in some configuration file,
-you can fill-in "yes" or "no", but the user wrote "yeh".  The program
+you can fill-in "yes" or "no", but the user wrote "yeah".  The program
 interprets this as "yes", producing a mistake message as warning.
 
 It is much nicer to tell someone that he/she made a mistake, than
@@ -790,10 +834,10 @@ C<$!> (C<$ERRNO>) variable is set here.
 
 =item . alert (system)
 
-Some external cause disturbes the execution of the program, but the
+Some external cause disturbs the execution of the program, but the
 program stays alive and will try to continue operation.  For instance,
 the connection to the database is lost.  After a few attempts, the
-database can be reached and the program continues as if nothing happend.
+database can be reached and the program continues as if nothing happened.
 The cause is external, so C<$!> is set.  Usually, a system administrator
 needs to be informed about the problem.
 
@@ -805,7 +849,7 @@ informed.  The program will die.
 
 =item . panic (program)
 
-All above report classes are expected: some predicitable situation
+All above report classes are expected: some predictable situation
 is encountered, and therefore a message is produced.  However, programs
 often do some internal checking.  Of course, these conditions should
 never be triggered, but if they do... then we can only stop.
@@ -856,7 +900,7 @@ The run-mode change which messages are passed to a dispatcher, but
 from a different angle than the dispatch filters; the mode changes
 behavioral aspects of the messages, which are described in detail in
 L<Log::Report::Dispatcher/Processing the message>.  However, it should
-behave as you expect: the DEBUG mode shows more than the VERBOSe mode,
+behave as you expect: the DEBUG mode shows more than the VERBOSE mode,
 and both show more than the NORMAL mode.
 
 I<Example:> extract run mode from Getopt::Long
@@ -895,7 +939,7 @@ need to replace the dispatcher with a new one with the same name:
   dispatcher FILE => 'myname', to => ..., mode => 'DEBUG';
 
 This may reopen connections (depends on the actual dispatcher), which
-might be not what you wish to happend.  In that case, you must take
+might be not what you wish to happened.  In that case, you must take
 the following approach:
 
   # at the start of your program
@@ -912,20 +956,20 @@ Of course, this comes with a small overall performance penalty.
 =head3 Exceptions
 
 The simple view on live says: you 're dead when you die.  However,
-complexer situations try to revive the dead.  Typically, the "die"
+more complex situations try to revive the dead.  Typically, the "die"
 is considered a terminating exception, but not terminating the whole
 program, but only some logical block.  Of course, a wrapper round
 that block must decide what to do with these emerging problems.
 
 Java-like languages do not "die" but throw exceptions which contain the
-information about what went wrong.  Perl modules like Exception::Class
+information about what went wrong.  Perl modules like C<Exception::Class>
 simulate this.  It's a hassle to create exception class objects for each
 emerging problem, and the same amount of work to walk through all the
 options.
 
 Log::Report follows a simpler scheme.  Fatal messages will "die", which is
 caught with "eval", just the Perl way (used invisible to you).  However,
-the wrapper get's its hands on the message as the user has specified it:
+the wrapper gets its hands on the message as the user has specified it:
 untranslated, with all unprocessed parameters still at hand.
 
  try { fault __x "cannot open file {file}", file => $fn };
@@ -1028,12 +1072,12 @@ automatically.
 The distinction between C<error> and C<fault> is a bit artificial her, just
 to demonstrate the difference between the two.  In this case, I want to
 express very explicitly that the user made an error by passing the name
-of a directory in which a file is not readible.  In the common case,
+of a directory in which a file is not readable.  In the common case,
 the user is not to blame and we can use C<fault>.
 
-A module like Log::Message is an object oriented version of the
-standard Perl functions, and as such not really contributing tp
-abstaction.
+A CPAN module like C<Log::Message> is an object oriented version of the
+standard Perl functions, and as such not really contributing to
+abstraction.
 
 =head3 Log::Dispatch and Log::Log4perl
 
@@ -1041,7 +1085,7 @@ The two major logging frameworks for Perl are Log::Dispatch and
 Log::Log4perl; both provide a pluggable logging interface.
 
 Both frameworks do not have (gettext or maketext) language translation
-support, which has various concequences.  When you wish for to report
+support, which has various consequences.  When you wish for to report
 in some other language, it must be translated before the logging
 function is called.   This may mean that an error message is produced
 in Chinese, and therefore also ends-up in the syslog file in Chinese.
@@ -1052,7 +1096,7 @@ get the message in Chinese, but you get your report in your beloved Dutch.
 When no dispatcher needs to report the message, then no time is lost in
 translating.
 
-With both logging frameworks, you use terminology comparible to
+With both logging frameworks, you use terminology comparable to
 syslog: the module programmer determines the seriousness of the
 error message, not the application which integrates multiple modules.
 This is the way perl programs usually work, but often the cause for
@@ -1086,8 +1130,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.04,
-built on June 04, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.05,
+built on June 07, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

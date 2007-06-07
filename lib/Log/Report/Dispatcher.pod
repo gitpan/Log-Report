@@ -8,8 +8,8 @@ Log::Report::Dispatcher - manage dispatching
  dispatcher 'FILE', 'log'
    , mode => 'DEBUG', to => '/var/log/mydir/myfile';
 
- # The follow will be created for you always (when STDERR leads
- # to a terminal).  Full package name is used, same as 'FILE'
+ # The follow will be created for you always (when STDERR
+ # is open).  Full package name is used, same as 'FILE'
  dispatcher Log::Report::Dispatch::File => 'stderr'
     , to => \*STDERR, accept => 'NOTICE-';
 
@@ -21,7 +21,7 @@ Log::Report::Dispatcher - manage dispatching
 This base-class handles the creation of dispatchers, plus the
 common filtering rules.  
 
-When the program sees a terminal on STDERR (the usual case for any
+When the program sees an open file on STDERR (the usual case for any
 non-daemon), it will create a dispatcher for you to show all messages
 with minimal level NOTICE to it.  That dispatcher is named 'stderr',
 and when you create one with the same name yourself, it will replace
@@ -37,7 +37,7 @@ $obj-E<gt>B<close>
 
 =over 4
 
-Terminate the dispatcher's activities.  The dispatcher gets disabled,
+Terminate the dispatcher activities.  The dispatcher gets disabled,
 to avoid the case that it is accidentally used.  Returns C<undef> (false)
 if the dispatcher was already closed.
 
@@ -107,7 +107,7 @@ C<INFO> or debug messages, C<VERBOSE> (C<1>; shows C<INFO> not debug),
 C<ASSERT> (C<2>; only ignores C<TRACE> messages), or C<DEBUG> (C<3>)
 which shows everything.  See section L<Log::Report/Run modes>.
 
-You are adviced to use the symbolic mode names when the mode is
+You are advised to use the symbolic mode names when the mode is
 changed within your program: the numerical values are available
 for smooth Getopt::Long integration.
 
@@ -144,7 +144,7 @@ $obj-E<gt>B<needs>
 
 =over 4
 
-Returns the list with all REASONS which are needed to fulfil this
+Returns the list with all REASONS which are needed to fulfill this
 dispatcher's needs.  When disabled, the list is empty, but not forgotten.
 
 =back
@@ -247,7 +247,7 @@ may be multi-line (in case a stack trace is produced).
 When a dispatcher is created (via L<new()|Log::Report::Dispatcher/"Constructors"> or L<Log::Report::dispatcher()|Log::Report/"Report Production and Configuration">),
 you must specify the TYPE of the dispatcher.  This can either be a class
 name, which extends a L<Log::Report::Dispatcher|Log::Report::Dispatcher>, or a pre-defined
-abbrevation of a class name.  Implemented are:
+abbreviation of a class name.  Implemented are:
 
 =over 4
 
@@ -385,8 +385,8 @@ I<Example:> take all mistakes and warnings serious
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.04,
-built on June 04, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.05,
+built on June 07, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

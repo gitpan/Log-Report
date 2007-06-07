@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.04';
+$VERSION = '0.05';
 use base 'Exporter';
 
 # domain 'log-report' via work-arounds:
@@ -38,17 +38,23 @@ sub __($); sub __x($@); sub __n($$$@); sub __nx($$$@); sub __xn($$$@);
 sub N__($); sub N__n($$); sub N__w(@);
 
 require Log::Report::Translator::POT;
-my %translator =
- ( 'log-report' => Log::Report::Translator::POT->new(charset => 'utf-8')
- , rescue       => Log::Report::Translator->new
- );
 
 my $reporter;
 my %domain_start;
+my %settings;
+
+#
+# Some initiations
+#
+
+__PACKAGE__->_setting('log-report', translator =>
+    Log::Report::Translator::POT->new(charset => 'utf-8'));
+
+__PACKAGE__->_setting('rescue', translator => Log::Report::Translator->new);
 
 dispatcher FILE => stderr =>
    to => \*STDERR, accept => 'NOTICE-'
-      if -t STDERR;
+      if STDERR->fileno;
 
 
 sub report($@)
@@ -299,6 +305,16 @@ sub import(@)
     {   $class->translator($textdomain, $trans, $pkg, $fn, $linenr);
     }
 
+    if(my $native = delete $opts{native_language})
+    {   my ($lang) = parse_locale $native;
+
+        error "the specified native_language '{locale}' is not a valid locale"
+          , locale => $native unless defined $lang;
+
+        $class->_setting($textdomain, native_language => $native
+          , $pkg, $fn, $linenr);
+    }
+
     push @{$domain_start{$fn}}, [$linenr => $textdomain];
 
     my @export = (@functions, @make_msg);
@@ -312,7 +328,8 @@ sub import(@)
 sub translator($;$$$$)
 {   my ($class, $domain) = (shift, shift);
 
-    @_ or return $translator{$domain || 'rescue'} || $translator{rescue};
+    @_ or return $class->_setting($domain => 'translator')
+              || $class->_setting(rescue  => 'translator');
 
     defined $domain
         or error __"textdomain for translator not defined";
@@ -321,20 +338,41 @@ sub translator($;$$$$)
     ($pkg, $fn, $line) = caller    # direct call, not via import
         unless defined $pkg;
 
-    if(my $t = $translator{$domain})
-    {   error __x"textdomain '{domain}' configured twice. First: {fn} line {nr}"
-            , domain => $domain, fn => $t->{filename}, nr => $t->{linenr};
-    }
-
     $translator->isa('Log::Report::Translator')
         or error __"translator must be a Log::Report::Translator object";
 
-    $translator{$domain} =
-      { translator => $translator
-      , package => $pkg, filename => $fn, linenr => $line
-      };
+    $class->_setting($domain, translator => $translator, $pkg, $fn, $line);
+}
 
-    $translator;
+# c_method setting TEXTDOMAIN, NAME, [VALUE]
+# When a VALUE is provided (of unknown structure) then it is stored for the
+# NAME related to TEXTDOMAIN.  Otherwise, the value related to the NAME is
+# returned.  The VALUEs may only be set once in your program, and count for
+# all packages in the same TEXTDOMAIN.
+
+sub _setting($$;$)
+{   my ($class, $domain, $name, $value) = splice @_, 0, 4;
+    $domain ||= 'rescue';
+
+    defined $value
+        or return $settings{$domain}{$name};
+
+    # Where is the setting done?
+    my ($pkg, $fn, $line) = @_;
+    ($pkg, $fn, $line) = caller    # direct call, not via import
+         unless defined $pkg;
+
+    my $s = $settings{$domain} ||= {_pkg => $pkg, _fn => $fn, _line => $line};
+
+    error __x"only one package can contain configuration; for {domain} already in {pkg} in file {fn} line {line}"
+        , domain => $domain, pkg => $s->{_pkg}
+        , fn => $s->{_fn}, line => $s->{_line}
+           if $s->{_pkg} ne $pkg || $s->{_fn} ne $fn;
+
+    error __x"value for {name} specified twice", name => $name
+        if exists $s->{$name};
+
+    $s->{$name} = $value;
 }
 
 

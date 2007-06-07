@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 use Log::Report 'log-report';
 use POSIX  qw/locale_h/;
@@ -34,6 +34,7 @@ sub clone(@)
 sub prepend() {shift->{_prepend}}
 sub msgid()   {shift->{_msgid}}
 sub append()  {shift->{_append}}
+sub domain()  {shift->{_domain}}
 
 
 sub toString(;$)

@@ -255,7 +255,7 @@ Format the object into a multi-lined string.
 =over 4
 
 If the number of plurals is specified, then the plural translation
-list can be checked for the correct lenght.  Otherwise, no smart
+list can be checked for the correct length.  Otherwise, no smart
 behavior is attempted.
 
 =back
@@ -272,8 +272,8 @@ The message-id has no references anymore and no translations.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.04,
-built on June 04, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.05,
+built on June 07, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

@@ -14,7 +14,7 @@ Log::Report::Dispatcher::Syslog - send messages to syslog
    , format_reason => 'IGNORE'
    , to_prio => [ 'ALERT-' => 'err' ];
 
- # disable default dispatcher
+ # disable default dispatcher, when daemon
  dispatcher close => 'stderr';
 
 =head1 DESCRIPTION
@@ -209,8 +209,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.04,
-built on June 04, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.05,
+built on June 07, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
