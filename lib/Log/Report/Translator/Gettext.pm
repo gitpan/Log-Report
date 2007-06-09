@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Translator::Gettext;
 use vars '$VERSION';
-$VERSION = '0.05';
+$VERSION = '0.06';
 use base 'Log::Report::Translator';
 
 use Locale::gettext;

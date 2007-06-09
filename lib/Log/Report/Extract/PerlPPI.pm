@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Extract::PerlPPI;
 use vars '$VERSION';
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 
