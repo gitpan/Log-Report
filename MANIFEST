@@ -1,6 +1,5 @@
 ChangeLog
 MANIFEST
-META.yml                                 Module meta-data (added by MakeMaker)
 Makefile.PL
 README
 bin/xgettext-perl
@@ -60,3 +59,4 @@ t/53log4perl.t
 t/54try.t
 t/hello-world-slovak.po
 t/pod.t
+META.yml                                 Module meta-data (added by MakeMaker)

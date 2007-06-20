@@ -1,11 +1,11 @@
 # Copyrights 2007 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.00.
+# Pod stripped from pm file by OODoc 1.02.
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 use warnings;
 use strict;
@@ -68,9 +68,13 @@ sub find($$)
     my $index = $self->index;
     keys %$index or return undef;
 
-    my ($lang,$terr,$cs,$modif) = parse_locale $locale
-        or error "illegal locale '{locale}', when looking for {domain}"
-               , locale => $locale, domain => $domain;
+    my ($lang,$terr,$cs,$modif) = parse_locale $locale;
+    unless(defined $lang)
+    {   # avoid problem with recursion, not translatable
+        defined $locale or $locale = '<undef>';
+        warn "illegal locale $locale, when looking for $domain";
+        return undef;
+    }
 
     $terr  = defined $terr  ? '_'.$terr  : '';
     $cs    = defined $cs    ? '.'.$cs    : '';

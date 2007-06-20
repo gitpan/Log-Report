@@ -1,14 +1,14 @@
 # Copyrights 2007 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.00.
+# Pod stripped from pm file by OODoc 1.02.
 
 use warnings;
 use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.06';
+$VERSION = '0.07';
 use base 'Exporter';
 
 our @EXPORT = qw/@reasons %reason_code parse_locale expand_reasons

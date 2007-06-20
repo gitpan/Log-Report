@@ -361,7 +361,7 @@ object.  When the call to L<Log::Report::report()|Log::Report/"Report Production
 comma-separated components, these will already have been joined together
 using concatenation (see L<Log::Report::Message::concat()|Log::Report::Message/"Accessors">.
 
-I<Example:> a filter on syslog
+example: a filter on syslog
 
  dispatcher filter => \&myfilter, 'syslog';
 
@@ -373,7 +373,7 @@ I<Example:> a filter on syslog
      ($reason, $message);
  }
 
-I<Example:> take all mistakes and warnings serious
+example: take all mistakes and warnings serious
 
  dispatch filter => \&take_warns_serious;
  sub take_warns_serious($$$$)
@@ -385,8 +385,8 @@ I<Example:> take all mistakes and warnings serious
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.06,
-built on June 09, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.07,
+built on June 20, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

@@ -39,7 +39,7 @@ The SOURCE specification group all reasons which are usually related to
 the problem: report about problems caused by the user, reported by
 the program, or with system interaction.
 
-I<Example:> of expended REASONS
+example: of expended REASONS
 
  WARNING-FAULT # == WARNING,MISTAKE,ERROR,FAULT
  -INFO         # == TRACE-INFO
@@ -70,8 +70,8 @@ For instance, backslash-t is replaced by a tab character.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.06,
-built on June 09, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.07,
+built on June 20, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

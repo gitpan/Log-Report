@@ -131,7 +131,7 @@ For both the creation as COMMANDs version of this method, all objects
 involved are returned as LIST, non-existing ones skipped.  In SCALAR
 context with only one name, the one object is returned.
 
-I<Example:> play with dispatchers
+example: play with dispatchers
 
  dispatcher Log::Dispatcher::File => mylog =>
    , accept   => 'MISTAKE-'              # for wrapper
@@ -230,7 +230,7 @@ Still, the dispatcher needs to be enabled and accept the REASONs.
 
 =back
 
-I<Example:> for use of L<report()|Log::Report/"Report Production and Configuration">
+example: for use of L<report()|Log::Report/"Report Production and Configuration">
 
  report TRACE => "start processing now";
  report INFO  => '500: ', __'Internal Server Error';
@@ -267,7 +267,7 @@ that you shall not use a comma after the block when there are OPTIONS
 specified.  On the other hand, you shall use a semi-colon after the
 block if there are no arguments.
 
-I<Example:> 
+example: 
 
  try { ... };       # mind the ';' !!
  if($@) {           # signals something went wrong
@@ -417,7 +417,7 @@ B<N__>(MSGID)
 Label to indicate that the string is a text which will be translated
 later.  The function itself does nothing.  See also L<N__w()|Log::Report/"Language Translations">.
 
-I<Example:> how to use N__()
+example: how to use N__()
 
  my @colors = (N__"red", N__"green", N__"blue");
  my @colors = N__w "red green blue";   # same
@@ -439,7 +439,7 @@ Label to indicate that the two MSGIDs are related, the first as
 single, the seconds as its plural.  Only used to find the text
 fragments to be translated.  The function itself does nothing.
 
-I<Example:> how to use L<N__n()|Log::Report/"Language Translations">
+example: how to use L<N__n()|Log::Report/"Language Translations">
 
  my @save = N__n "save file", "save files";
  my @save = (N__n "save file", "save files");
@@ -459,7 +459,7 @@ This extension to the Locale::TextDomain syntax, is a combined
 C<qw> (list of quoted words) and L<N__()|Log::Report/"Language Translations"> into a list of translatable
 words.
 
-I<Example:> of L<N__w()|Log::Report/"Language Translations">
+example: of L<N__w()|Log::Report/"Language Translations">
 
   my @colors = (N__"red", N__"green", N__"blue");
   my @colors = N__w"red green blue";  # same
@@ -478,7 +478,7 @@ Translating is invoked when the object gets stringified.
 
 If you need OPTIONS, then take L<__x()|Log::Report/"Language Translations">.
 
-I<Example:> how to use __()
+example: how to use __()
 
  print __"Hello World";      # translated into user's language
  print __'Hello World';      # syntax error!
@@ -505,7 +505,7 @@ OPTIONS are explained in L<Log::Report::Message::new()|Log::Report::Message/"Con
 Locale::TextDomain subroutine __n does not have OPTIONS, but they mix
 with variables.
 
-I<Example:> how to use __n()
+example: how to use __n()
 
  print __n "one", "more", $a;
  print __n("one", "more", $a), "\n";
@@ -526,7 +526,7 @@ OPTIONS are explained in L<Log::Report::Message::new()|Log::Report::Message/"Con
 Locale::TextDomain subroutine __nx does not support the OPTIONS, but they look
 like variables.
 
-I<Example:> how to use __nx()
+example: how to use __nx()
 
  print __nx "one file", "{_count} files", $nr_files;
  print __nx "one file", "{_count} files", @files;
@@ -604,7 +604,7 @@ which will use the untranslated message-id .
 
 =back
 
-I<Example:> of import
+example: of import
 
  use Log::Report 'my-domain'    # in each package
   , syntax     => 'SHORT';
@@ -630,7 +630,7 @@ When a TRANSLATOR is specified, it will be set to be used for the
 TEXTDOMAIN.  When it is C<undef>, the configuration is removed.
 You can only specify one TRANSLATOR per TEXTDOMAIN.
 
-I<Example:> use if L<translator()|Log::Report/"Configuration">
+example: use if L<translator()|Log::Report/"Configuration">
 
  # in three steps
  use Log::Report;
@@ -903,7 +903,7 @@ L<Log::Report::Dispatcher/Processing the message>.  However, it should
 behave as you expect: the DEBUG mode shows more than the VERBOSE mode,
 and both show more than the NORMAL mode.
 
-I<Example:> extract run mode from Getopt::Long
+example: extract run mode from Getopt::Long
 
 The C<GetOptions()> function will count the number of C<v> options
 on the command-line when a C<+> is after the option name.
@@ -923,11 +923,11 @@ Now, C<-vv> will set C<$mode> to C<2>, as will C<--verbose 2> and
 C<--verbose=2> and C<--mode=ASSERT>.  Of course, you do not need to
 provide all these options to the user: make a choice.
 
-I<Example:> the mode of a dispatcher
+example: the mode of a dispatcher
 
  my $mode = dispatcher(find => 'myname')->mode;
 
-I<Example:> run-time change mode of a dispatcher
+example: run-time change mode of a dispatcher
 
 To change the running mode of the dispatcher, you can do
   dispatcher mode => DEBUG => 'myname';
@@ -1122,16 +1122,20 @@ into the translated text.
 
 =head1 DIAGNOSTICS
 
-I<Error:> in SCALAR context, only one dispatcher name accepted
+Error: in SCALAR context, only one dispatcher name accepted
+
+=over 4
 
 The L<dispatcher()|Log::Report/"Report Production and Configuration"> method returns the L<Log::Report::Dispatcher|Log::Report::Dispatcher>
 objects which it has accessed.  When multiple names where given, it
 wishes to return a LIST of objects, not the count of them.
 
+=back
+
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.06,
-built on June 09, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.07,
+built on June 20, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

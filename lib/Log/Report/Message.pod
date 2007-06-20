@@ -32,7 +32,7 @@ Returns a new object which copies info from original, and updates it
 with the specified OPTIONS and VARIABLES.  The advantage is that the
 cached translations are shared between the objects.
 
-I<Example:> use of clone()
+example: use of clone()
 
  my $s = __x "found {nr} files", nr => 5;
  my $t = $s->clone(nr => 3);
@@ -129,7 +129,7 @@ to delay translations even longer.  When PREPEND is true, the STRING
 or OBJECT (other C<Log::Report::Message>) needs to prepended, otherwise
 it is appended.
 
-I<Example:> of concatenation
+example: of concatenation
 
  print __"Hello" . ' ' . __"World!";
  print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
@@ -245,7 +245,7 @@ The label of the textdomain in which the translation takes place.
 
 =back
 
-I<Example:> using the _count
+example: using the _count
 
 With Locale::TextDomain, you have to do
 
@@ -310,7 +310,7 @@ between the elements.
 
 =back
 
-I<Example:> reducing the number of translations
+example: reducing the number of translations
 
 This way of translating is somewhat expensive, because an object to
 handle the C<__x()> is created each time.
@@ -353,8 +353,8 @@ In either case, the translation will be looked-up only once.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.06,
-built on June 09, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.07,
+built on June 20, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
