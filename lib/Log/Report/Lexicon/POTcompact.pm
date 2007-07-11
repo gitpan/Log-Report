@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Lexicon::POTcompact;
 use vars '$VERSION';
-$VERSION = '0.07';
+$VERSION = '0.08';
 use base 'Exporter';
 
 # permit "mixins", not for end-users

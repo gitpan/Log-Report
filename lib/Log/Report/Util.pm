@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.07';
+$VERSION = '0.08';
 use base 'Exporter';
 
 our @EXPORT = qw/@reasons %reason_code parse_locale expand_reasons
@@ -36,7 +36,7 @@ sub parse_locale($)
             $
        /x;
 
-    $_[0] =~ m/^(C|POSIX)$/ ? ($1) : ();
+    $_[0] =~ m/^(C|POSIX)$/i ? ($1) : ();
 }
 
 

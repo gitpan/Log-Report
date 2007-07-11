@@ -17,7 +17,7 @@ Log::Report - report a problem, pluggable handlers and language support
 
  use Log::Report;
 
- dispatcher FILE => 'stderr', to => \*STDERR
+ dispatcher PERL => 'default'
    , reasons => 'NOTICE-';   # this disp. is automatically added
 
  dispatcher SYSLOG => 'syslog'
@@ -149,9 +149,8 @@ example: play with dispatchers
  if(dispatcher needs => 'INFO') ...
 
  # Getopt::Long integration: see Log::Report::Dispatcher::mode()
- dispatcher FILE => stderr =>
-    to => \*STDERR, mode => 'DEBUG', accept => 'ALL'
-       if $debug;
+ dispatcher PERL => 'default', mode => 'DEBUG', accept => 'ALL'
+     if $debug;
 
 =back
 
@@ -917,7 +916,7 @@ on the command-line when a C<+> is after the option name.
           , 'mode=s'    => \$mode
      or exit 1;
 
- dispatcher FILE => 'stderr', to => \*STDERR, mode => $mode;
+ dispatcher 'PERL', 'default', mode => $mode;
 
 Now, C<-vv> will set C<$mode> to C<2>, as will C<--verbose 2> and
 C<--verbose=2> and C<--mode=ASSERT>.  Of course, you do not need to
@@ -1026,7 +1025,9 @@ Where C<die>, C<warn>, and C<print> are used for various tasks.  With
 C<Log::Report>, you would write
 
  use Log::Report syntax => 'SHORT';
- dispatcher stderr => 'FILE', mode => 'DEBUG', to => \*STDERR;
+
+ # can be left-out when there is no debug/verbose
+ dispatcher PERL => 'default', mode => 'DEBUG';
 
  my $dir = '/etc';
 
@@ -1134,8 +1135,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.07,
-built on June 20, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.08,
+built on July 11, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

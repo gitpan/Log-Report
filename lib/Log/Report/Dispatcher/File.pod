@@ -9,11 +9,10 @@ Log::Report::Dispatcher::File - send messages to a file or file-handle
 
 =head1 SYNOPSIS
 
- # automatically created when STDERR is open
  dispatcher Log::Report::Dispatcher::File => 'stderr'
    , to => \*STDERR, accept => 'NOTICE-';
 
- # disable default dispatcher
+ # close a dispatcher
  dispatcher close => 'stderr';
 
  # let dispatcher open and close the file
@@ -205,8 +204,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.07,
-built on June 20, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.08,
+built on July 11, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

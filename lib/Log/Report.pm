@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.07';
+$VERSION = '0.08';
 use base 'Exporter';
 
 # domain 'log-report' via work-arounds:
@@ -52,10 +52,10 @@ __PACKAGE__->_setting('log-report', translator =>
 
 __PACKAGE__->_setting('rescue', translator => Log::Report::Translator->new);
 
-dispatcher FILE => stderr =>
-   to => \*STDERR, accept => 'NOTICE-'
-      if STDERR->fileno;
+dispatcher PERL => 'default', accept => 'NOTICE-';
 
+
+# $^S = $EXCEPTIONS_BEING_CAUGHT; parse: undef, eval: 1, else 0
 
 sub report($@)
 {   my $opts   = ref $_[0] eq 'HASH' ? +{ %{ (shift) } } : {};
@@ -73,13 +73,14 @@ sub report($@)
     $opts->{errno} ||= $!+0  # want copy!
         if $use_errno{$reason};
 
-    my $stop = $is_fatal{$reason};
+    my $stop = $opts->{is_fatal} ||= $is_fatal{$reason};
 
     # exit when needed, even when message doesn't go anywhere.
     my $disp = $reporter->{needs}{$reason};
     unless($disp)
-    {   if($stop) { $! = $opts->{errno} || 1; die }
-        return ();
+    {   if(!$stop) {return ()}
+        elsif($^S) {$! = $opts->{errno}; die}
+        else       {exit $opts->{errno}}
     }
 
     # explicit destination
@@ -98,6 +99,8 @@ sub report($@)
     ref $message && $message->isa('Log::Report::Message')
         or $message = Log::Report::Message->new(_prepend => $message);
 
+    my @last_call;
+
     if($reporter->{filters})
     {
       DISPATCHER:
@@ -108,17 +111,36 @@ sub report($@)
                 ($r, $m) = $filter->[0]->($disp, $opts, $r, $m);
                 $r or next DISPATCHER;
             }
-            $disp->log($opts, $reason, $message);
+
+            if($disp->isa('Log::Report::Dispatcher::Perl'))
+            {   # can be only one
+                @last_call = ($disp, { %$opts }, $reason, $message);
+            }
+            else
+            {   $disp->log($opts, $reason, $message);
+            }
         }
     }
     else
-    {   $_->log($opts, $reason, $message)
-            for @disp;
+    {   foreach my $disp (@disp)
+        {   if($disp->isa('Log::Report::Dispatcher::Perl'))
+            {   # can be only one
+                @last_call = ($disp, { %$opts }, $reason, $message);
+            }
+            else
+            {   $disp->log($opts, $reason, $message);
+            }
+        }
+    }
+
+    if(@last_call)
+    {   # the PERL dispatcher may terminate the program
+        shift(@last_call)->log(@last_call);
     }
 
     if($stop)
-    {   $! = $opts->{errno} || 1;
-        die;
+    {   if($^S) {$! = $opts->{errno}; die}
+        else    {exit $opts->{errno}}
     }
 
     @disp;

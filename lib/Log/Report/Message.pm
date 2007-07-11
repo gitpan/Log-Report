@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 use Log::Report 'log-report';
 use POSIX  qw/locale_h/;
@@ -71,17 +71,18 @@ sub _expand($$)
 {   my ($self, $key, $format) = @_;
     my $value = $self->{$key};
 
-    defined $value
-        or return "(undef)";
-
     $value = $value->($self)
         while ref $value eq 'CODE';
 
+    defined $value
+        or return "undef";
+
     use locale;
     if(ref $value eq 'ARRAY')
-    {   return $format
-             ? join($", map {sprintf $format, $_} @$value)
-             : join($", @$value);
+    {   my @values = map {defined $_ ? $_ : 'undef'} @$value;
+        return $format
+             ? join($", map {sprintf $format, $_} @values)
+             : join($", @values);
     }
 
       $format

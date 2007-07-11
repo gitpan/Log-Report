@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util qw/parse_locale expand_reasons %reason_code
@@ -21,7 +21,7 @@ my %modes = (NORMAL => 0, VERBOSE => 1, ASSERT => 2, DEBUG => 3
 my @default_accept = ('NOTICE-', 'INFO-', 'ASSERT-', 'ALL');
 
 my %predef_dispatchers = map { (uc($_) => __PACKAGE__.'::'.$_) }
-   qw/File Syslog Try/;
+   qw/File Perl Syslog Try/;
 
 
 sub new(@)
@@ -165,8 +165,9 @@ sub translate($$$)
     {   my $loc = $opts->{location} ||= $self->collectLocation;
         my ($pkg, $fn, $line, $sub) = @$loc;
         $text .= " "
-          . __x('at {filename} line {line}', filename => $fn, line => $line)->toString
-          . "\n";
+              . __x( 'at {filename} line {line}'
+                   , filename => $fn, line => $line)->toString
+              . "\n";
     }
 
     setlocale(LC_ALL, $oldloc)

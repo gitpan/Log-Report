@@ -13,6 +13,8 @@ lib/Log/Report/Dispatcher/Log4perl.pm
 lib/Log/Report/Dispatcher/Log4perl.pod
 lib/Log/Report/Dispatcher/LogDispatch.pm
 lib/Log/Report/Dispatcher/LogDispatch.pod
+lib/Log/Report/Dispatcher/Perl.pm
+lib/Log/Report/Dispatcher/Perl.pod
 lib/Log/Report/Dispatcher/Syslog.pm
 lib/Log/Report/Dispatcher/Syslog.pod
 lib/Log/Report/Dispatcher/Try.pm
