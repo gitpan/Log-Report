@@ -2,6 +2,8 @@
 
 Log::Report::Message - a piece of text to be translated
 
+=head1 INHERITANCE
+
 =head1 SYNOPSIS
 
  # Created by Log::Report's __ functions
@@ -17,8 +19,6 @@ Creating an object first, and translating it later, is slower than
 translating it immediately.  However, on the location where the message
 is produced, we do not yet know to what language to translate: that
 depends on the front-end, the log dispatcher.
-
-See L</DETAILS> section below, for an in-depth description.
 
 =head1 METHODS
 
@@ -49,6 +49,8 @@ Log::Report::Message-E<gt>B<new>(OPTIONS, VARIABLES)
  Option   --Default
  _append    undef
  _category  undef
+ _class     []
+ _classes   []
  _count     undef
  _domain    from use
  _expand    false
@@ -59,6 +61,29 @@ Log::Report::Message-E<gt>B<new>(OPTIONS, VARIABLES)
 . _append => STRING
 
 . _category => INTEGER
+
+. _class => STRING|ARRAY
+
+=over 4
+
+When messages are used for exception based programming, you add
+C<_class> parameters to the argument list.  Later, with for instance
+L<Log::Report::Dispatcher::Try::wasFatal(class)|Log::Report::Dispatcher::Try/"Status">, you can check the
+category of the message.
+
+One message can be part of multiple classes.  The STRING is used as
+comma- and/or blank seperated list of class tokens, the ARRAY lists all
+tokens seperately.
+
+=back
+
+. _classes => STRING|ARRAY
+
+=over 4
+
+Alternative for C<_class>, which cannot be used at the same time.
+
+=back
 
 . _count => INTEGER
 
@@ -120,19 +145,21 @@ after this one.  Usually C<undef>.
 
 =back
 
-$obj-E<gt>B<concat>(STRING|OBJECT, [PREPEND])
+$obj-E<gt>B<classes>
 
 =over 4
 
-This method implements the overloading of concatenation, which is needed
-to delay translations even longer.  When PREPEND is true, the STRING
-or OBJECT (other C<Log::Report::Message>) needs to prepended, otherwise
-it is appended.
+Returns the LIST of classes which are defined for this message; message
+group indicators, as often found in exception-based programming.
 
-example: of concatenation
+=back
 
- print __"Hello" . ' ' . __"World!";
- print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
+$obj-E<gt>B<count>
+
+=over 4
+
+Returns the count, which is used to select the translation
+alternatives.
 
 =back
 
@@ -157,6 +184,58 @@ $obj-E<gt>B<prepend>
 =over 4
 
 Returns the string which is prepended to this one.  Usually C<undef>.
+
+=back
+
+$obj-E<gt>B<valueOf>(PARAMETER)
+
+=over 4
+
+Lookup the named PARAMETER for the message.  All pre-defined names
+have their own method, and should be used with preference.
+
+example: 
+
+When the message was produced with
+  my @files = qw/one two three/;
+  my $msg = __xn "found one file: {files}"
+               , "found {_count} files: {files}"
+               , scalar @files, files => \@files
+               , _class => 'IO, files';
+
+then the values can be takes from the produced message as
+  my $files = $msg->valueOf('files');  # returns ARRAY reference
+  print @$files;              # 3
+  my $count = $msg->count;    # 3
+  my @class = $msg->classes;  # 'IO', 'files'
+  if($msg->inClass('files'))  # true
+
+=back
+
+=head2 Processing
+
+$obj-E<gt>B<concat>(STRING|OBJECT, [PREPEND])
+
+=over 4
+
+This method implements the overloading of concatenation, which is needed
+to delay translations even longer.  When PREPEND is true, the STRING
+or OBJECT (other C<Log::Report::Message>) needs to prepended, otherwise
+it is appended.
+
+example: of concatenation
+
+ print __"Hello" . ' ' . __"World!";
+ print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
+
+=back
+
+$obj-E<gt>B<inClass>(CLASS|REGEX)
+
+=over 4
+
+Returns true if the message is in the specified CLASS (string) or
+matches the REGEX.  The trueth value is the (first matching) class.
 
 =back
 
@@ -243,6 +322,12 @@ L<Log::Report::__n()|Log::Report/"Language Translations"> and L<Log::Report::__n
 
 The label of the textdomain in which the translation takes place.
 
+=item _class or _classes
+
+Are to be used to group reports, and can be queried with L<inClass()|Log::Report::Message/"Processing">,
+L<Log::Report::Exception::inClass()|Log::Report::Exception/"Processing">, or
+L<Log::Report::Dispatcher::Try::wasFatal()|Log::Report::Dispatcher::Try/"Status">.
+
 =back
 
 example: using the _count
@@ -310,7 +395,7 @@ between the elements.
 
 =back
 
-example: reducing the number of translations
+=head3 Avoiding repetative translations
 
 This way of translating is somewhat expensive, because an object to
 handle the C<__x()> is created each time.
@@ -353,8 +438,8 @@ In either case, the translation will be looked-up only once.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.08,
-built on July 11, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.09,
+built on August 09, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

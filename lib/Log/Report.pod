@@ -5,7 +5,7 @@ Log::Report - report a problem, pluggable handlers and language support
 =head1 INHERITANCE
 
  Log::Report
-   is an Exporter
+   is a Exporter
 
 =head1 SYNOPSIS
 
@@ -53,6 +53,9 @@ Log::Report - report a problem, pluggable handlers and language support
  use POSIX ':locale_h';
  setlocale(LC_ALL, 'nl_NL');
  info __"Hello World!";  # in Dutch, if translation table found
+
+ my $msg = __x"something", _class => 'local,mine';
+ if($msg->inClass('local')) ...
 
 =head1 DESCRIPTION
 
@@ -154,13 +157,14 @@ example: play with dispatchers
 
 =back
 
-B<report>([HASH-of-OPTIONS], REASON, MESSAGE [,more MESSAGE parts])
+B<report>([HASH-of-OPTIONS], REASON, MESSAGE|(STRING,PARAMS),)
 
 =over 4
 
-Produce a report for certain REASON.  The MESSAGE is a LIST containing
-strings and L<Log::Report::Message|Log::Report::Message> objects (which are created with the
-special translation syntax like L<__x()|Log::Report/"Language Translations">).  The HASH is an optional
+Produce a report for certain REASON.  The MESSAGE is a
+L<Log::Report::Message|Log::Report::Message> object (which are created with the
+special translation syntax like L<__x()|Log::Report/"Language Translations">).  A not-translated message
+is B<ONE> string with optional parameters.  The HASH is an optional
 first parameter, which can be used to influence the dispatchers.  The
 HASH contains any combination of the OPTIONS listed below.
 
@@ -232,7 +236,7 @@ Still, the dispatcher needs to be enabled and accept the REASONs.
 example: for use of L<report()|Log::Report/"Report Production and Configuration">
 
  report TRACE => "start processing now";
- report INFO  => '500: ', __'Internal Server Error';
+ report INFO  => '500: ' . __'Internal Server Error';
 
  report {to => 'syslog'}, NOTICE => "started process $$";
 
@@ -243,7 +247,7 @@ example: for use of L<report()|Log::Report/"Report Production and Configuration"
 
  # error message, overruled to be printed in Brazilian
  report {locale => 'pt_BR'}
-     WARNING => __$!;
+    , WARNING => "do this at home!";
 
 =back
 
@@ -251,11 +255,16 @@ B<try>(CODE, OPTIONS)
 
 =over 4
 
-Execute the CODE, but block all dispatchers as long as it is
-running.  When the execution of the CODE is terminated with an
-error, that is captured.  After the C<try>, the C<$@> will contain a
-L<Log::Report::Dispatcher::Try|Log::Report::Dispatcher::Try> object, which contains the collected
-error messages.
+Execute the CODE, but block all dispatchers as long as it is running.
+When the execution of the CODE is terminated with an report which triggers
+an error, that is captured.  After the C<try>, the C<$@> will contain
+a L<Log::Report::Dispatcher::Try|Log::Report::Dispatcher::Try> object, which contains the collected
+error messages.  When there where no errors, the result of the code
+execution is returned.
+
+Run-time errors from Perl and die's, croak's and confess's within the
+program (which shouldn't appear, but you never know) are collected into an
+L<Log::Report::Message|Log::Report::Message> object, using L<Log::Report::Die|Log::Report::Die>.
 
 The OPTIONS are passed to the constructor of the try-dispatcher, see
 L<Log::Report::Dispatcher::Try::new()|Log::Report::Dispatcher::Try/"Constructors">.  For instance, you may like to
@@ -1135,8 +1144,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.08,
-built on July 11, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.09,
+built on August 09, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

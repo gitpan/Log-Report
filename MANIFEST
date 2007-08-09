@@ -5,6 +5,8 @@ README
 bin/xgettext-perl
 lib/Log/Report.pm
 lib/Log/Report.pod
+lib/Log/Report/Die.pm
+lib/Log/Report/Die.pod
 lib/Log/Report/Dispatcher.pm
 lib/Log/Report/Dispatcher.pod
 lib/Log/Report/Dispatcher/File.pm
@@ -54,11 +56,13 @@ t/22compact.t
 t/30index.t
 t/31stack.t
 t/40ppi.t
+t/41die.t
 t/50file.t
 t/51syslog.t
 t/52logdisp.t
 t/53log4perl.t
 t/54try.t
+t/DieTests.pm
 t/hello-world-slovak.po
 t/pod.t
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Try;
 use vars '$VERSION';
-$VERSION = '0.08';
+$VERSION = '0.09';
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -59,6 +59,8 @@ sub log($$$)
          , message     => $message
          );
 
+    # later changed into nice message
+    $self->{died} ||= $opts->{is_fatal};
     $self;
 }
 
@@ -73,15 +75,21 @@ sub failed()  {   shift->{died}}
 sub success() { ! shift->{died}}
 
 
-sub wasFatal()
-{   my $self = shift;
-    $self->{died} ? $self->{exceptions}[-1] : ();
+sub wasFatal(@)
+{   my ($self, %args) = @_;
+    $self->{died} or return ();
+    my $ex = $self->{exceptions}[-1];
+    $args{class}  or return $ex;
+    $ex->inClass($args{class}) ? $ex : ();
 }
 
 
 sub showStatus()
-{   my $fatal = shift->wasFatal or return '';
-    __x"try-block stopped with {reason}", reason => $fatal->reason;
+{   my $self  = shift;
+    my $fatal = $self->wasFatal or return '';
+    __x"try-block stopped with {reason}: {text}"
+      , reason => $fatal->reason
+      , text   => $self->died;
 }
 
 1;

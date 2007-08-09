@@ -7,10 +7,11 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 use Log::Report 'log-report';
-use POSIX  qw/locale_h/;
+use POSIX      qw/locale_h/;
+use List::Util qw/first/;
 
 
 use overload
@@ -35,7 +36,25 @@ sub prepend() {shift->{_prepend}}
 sub msgid()   {shift->{_msgid}}
 sub append()  {shift->{_append}}
 sub domain()  {shift->{_domain}}
+sub count()   {shift->{_count}}
 
+
+sub classes()
+{   my $class = $_[0]->{_class} || $_[0]->{_classes} || [];
+    ref $class ? @$class : split(/[\s,]+/, $class);
+}
+
+
+sub valueOf($) { $_[0]->{$_[1]} }
+
+
+sub inClass($)
+{   my @classes = shift->classes;
+       ref $_[0] eq 'Regexp'
+    ? (first { $_ =~ $_[0] } @classes)
+    : (first { $_ eq $_[0] } @classes);
+}
+    
 
 sub toString(;$)
 {   my ($self, $locale) = @_;

@@ -2,6 +2,16 @@
 
 Log::Report::Dispatcher - manage dispatching
 
+=head1 INHERITANCE
+
+ Log::Report::Dispatcher is extended by
+   Log::Report::Dispatcher::File
+   Log::Report::Dispatcher::Log4perl
+   Log::Report::Dispatcher::LogDispatch
+   Log::Report::Dispatcher::Perl
+   Log::Report::Dispatcher::Syslog
+   Log::Report::Dispatcher::Try
+
 =head1 SYNOPSIS
 
  use Log::Report;
@@ -159,6 +169,8 @@ object, but not in case of wrappers like for Log::Dispatch.
 =head2 Logging
 
 $obj-E<gt>B<collectLocation>
+
+Log::Report::Dispatcher-E<gt>B<collectLocation>
 
 =over 4
 
@@ -362,7 +374,7 @@ Be warned about processing the MESSAGE: it is a L<Log::Report::Message|Log::Repo
 object which may have a C<prepend> string and C<append> string or
 object.  When the call to L<Log::Report::report()|Log::Report/"Report Production and Configuration"> contained multiple
 comma-separated components, these will already have been joined together
-using concatenation (see L<Log::Report::Message::concat()|Log::Report::Message/"Accessors">.
+using concatenation (see L<Log::Report::Message::concat()|Log::Report::Message/"Processing">.
 
 example: a filter on syslog
 
@@ -388,8 +400,8 @@ example: take all mistakes and warnings serious
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.08,
-built on July 11, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.09,
+built on August 09, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

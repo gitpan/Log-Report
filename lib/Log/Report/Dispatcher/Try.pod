@@ -14,6 +14,9 @@ Log::Report::Dispatcher::Try - capture all reports as exceptions
 
  if(try {...}) {    # block ended normally
 
+ my $x = try {read_temperature()};
+ my @x = try {read_lines_from_file()};
+
  try { ... }        # no comma!!
     mode => 'DEBUG', accept => 'ERROR-';
 
@@ -157,6 +160,8 @@ See L<Log::Report::Dispatcher/"Accessors">
 
 $obj-E<gt>B<collectLocation>
 
+Log::Report::Dispatcher::Try-E<gt>B<collectLocation>
+
 =over 4
 
 See L<Log::Report::Dispatcher/"Logging">
@@ -191,7 +196,7 @@ $obj-E<gt>B<reportAll>(OPTIONS)
 Re-cast the messages in all collect exceptions into the defined
 dispatchers, which were disabled during the try block.  The OPTIONS
 will end-up as HASH-of-OPTIONS to L<Log::Report::report()|Log::Report/"Report Production and Configuration">; see
-L<Log::Report::Exception::throw()|Log::Report::Exception/"Reporting Exceptions"> which does the job.
+L<Log::Report::Exception::throw()|Log::Report::Exception/"Processing"> which does the job.
 
 =back
 
@@ -202,7 +207,7 @@ $obj-E<gt>B<reportFatal>
 Re-cast only the fatal message to the defined dispatchers.  If the
 block was left without problems, then nothing will be done.  The OPTIONS
 will end-up as HASH-of-OPTIONS to L<Log::Report::report()|Log::Report/"Report Production and Configuration">; see
-L<Log::Report::Exception::throw()|Log::Report::Exception/"Reporting Exceptions"> which does the job.
+L<Log::Report::Exception::throw()|Log::Report::Exception/"Processing"> which does the job.
 
 =back
 
@@ -255,12 +260,25 @@ Returns true if the block exited normally.
 
 =back
 
-$obj-E<gt>B<wasFatal>
+$obj-E<gt>B<wasFatal>(OPTIONS)
 
 =over 4
 
 Returns the L<Log::Report::Exception|Log::Report::Exception> which caused the "try" block to
 die, otherwise an empty LIST (undef).
+
+ Option--Default
+ class   undef
+
+. class => CLASS|REGEX
+
+=over 4
+
+Only return the exception if it was fatal, and in the same time in
+the specified CLASS (as string) or matches the REGEX.
+See L<Log::Report::Message::inClass()|Log::Report::Message/"Processing">
+
+=back
 
 =back
 
@@ -268,8 +286,8 @@ die, otherwise an empty LIST (undef).
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.08,
-built on July 11, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.09,
+built on August 09, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

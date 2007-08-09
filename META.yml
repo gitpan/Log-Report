@@ -1,8 +1,8 @@
 --- #YAML:1.0
 name:                Log-Report
-version:             0.08
+version:             0.09
 abstract:            report a problem, pluggable handlers and language support
-license:             ~
+license:             perl
 generated_by:        ExtUtils::MakeMaker version 6.32
 distribution_type:   module
 requires:     

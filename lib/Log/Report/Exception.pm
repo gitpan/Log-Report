@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 use Log::Report 'log-report';
 use POSIX  qw/locale_h/;
@@ -16,6 +16,8 @@ use POSIX  qw/locale_h/;
 sub new($@)
 {   my ($class, %args) = @_;
     $args{report_opts} ||= {};
+use Carp;
+$args{message} or confess @_;
     bless \%args, $class;
 }
 
@@ -23,6 +25,9 @@ sub new($@)
 sub report_opts() {shift->{report_opts}}
 sub reason()      {shift->{reason}}
 sub message()     {shift->{message}}
+
+
+sub inClass($) { $_[0]->message->inClass($_[1]) }
 
 
 # if we would used "report" here, we get a naming conflict with

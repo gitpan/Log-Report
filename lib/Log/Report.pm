@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.08';
+$VERSION = '0.09';
 use base 'Exporter';
 
 # domain 'log-report' via work-arounds:
@@ -24,6 +24,7 @@ our @EXPORT_OK = (@make_msg, @functions, @reason_functions);
 require Log::Report::Util;
 require Log::Report::Message;
 require Log::Report::Dispatcher;
+require Log::Report::Dispatcher::Try;
 
 # See chapter Run modes
 my %is_reason = map {($_=>1)} @Log::Report::Util::reasons;
@@ -63,7 +64,7 @@ sub report($@)
 
     my $reason = shift;
     $is_reason{$reason}
-       or error __"Token '{token}' not recognized as reason"
+       or error __x"Token '{token}' not recognized as reason"
             , token => $reason;
 
     my @disp;
@@ -73,14 +74,33 @@ sub report($@)
     $opts->{errno} ||= $!+0  # want copy!
         if $use_errno{$reason};
 
+    exists $opts->{location}
+        or $opts->{location} = [ Log::Report::Dispatcher->collectLocation ];
+
     my $stop = $opts->{is_fatal} ||= $is_fatal{$reason};
+
+    my $stop_msg;
+    if($stop && $^S)   # within nested eval, we like a nice message
+    {   my $loc   = $opts->{location};
+        $stop_msg = $loc ? "fatal at $loc->[1] line $loc->[2]\n" : "fatal\n";
+    }
 
     # exit when needed, even when message doesn't go anywhere.
     my $disp = $reporter->{needs}{$reason};
     unless($disp)
     {   if(!$stop) {return ()}
-        elsif($^S) {$! = $opts->{errno}; die}
+        elsif($^S) {$! = $opts->{errno}; die $stop_msg}
         else       {exit $opts->{errno}}
+    }
+
+    my $message = shift;
+    if(ref $message && $message->isa('Log::Report::Message'))
+    {   @_==0 or panic "a message object is reported, which does not allow additional parameters";
+    }
+    else
+    {   # untranslated message into object
+        @_%2 and panic "odd length parameter list with non-translated";
+        $message = Log::Report::Message->new(_prepend => $message, @_);
     }
 
     # explicit destination
@@ -90,14 +110,6 @@ sub report($@)
         }
     }
     else { @disp = @$disp }
-
-    # join does not respect overload of '.'
-    my $message = shift;
-    $message   .= shift while @_;
-
-    # untranslated message into object
-    ref $message && $message->isa('Log::Report::Message')
-        or $message = Log::Report::Message->new(_prepend => $message);
 
     my @last_call;
 
@@ -139,8 +151,8 @@ sub report($@)
     }
 
     if($stop)
-    {   if($^S) {$! = $opts->{errno}; die}
-        else    {exit $opts->{errno}}
+    {   if($^S) {$! = $opts->{errno}; die $stop_msg}
+        else    {exit $opts->{errno} || 0}
     }
 
     @disp;
@@ -217,16 +229,32 @@ sub _whats_needed()
 
 sub try(&@)
 {   my $code = shift;
+
+    @_ % 2
+      and report {location => [caller 0]}, PANIC =>
+          __x"odd length parameter list for try(): forgot the terminating ';'?";
+
     local $reporter->{dispatchers} = undef;
     local $reporter->{needs};
 
     my $disp = dispatcher TRY => 'try', @_;
 
-    eval { $code->() };
-    $disp->died($@);
+    my ($ret, @ret);
+    if(!defined wantarray)  { eval { $code->() } } # VOID   context
+    elsif(wantarray) { @ret = eval { $code->() } } # LIST   context
+    else             { $ret = eval { $code->() } } # SCALAR context
 
+    my $err = $@;
+    if($err && !$disp->wasFatal)
+    {   require Log::Report::Die;
+        ($err, my($opts, $reason, $msg)) = Log::Report::Die::die_decode($err);
+        $disp->log($opts, $reason, $msg);
+    }
+
+    $disp->died($err);
     $@ = $disp;
-    $disp->success;
+
+    wantarray ? @ret : $ret;
 }
 
 
