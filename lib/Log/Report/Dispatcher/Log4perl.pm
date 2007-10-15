@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Log4perl;
 use vars '$VERSION';
-$VERSION = '0.09';
+$VERSION = '0.10';
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';

@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.09';
+$VERSION = '0.10';
 use base 'Exporter';
 
 # domain 'log-report' via work-arounds:
@@ -29,7 +29,7 @@ require Log::Report::Dispatcher::Try;
 # See chapter Run modes
 my %is_reason = map {($_=>1)} @Log::Report::Util::reasons;
 my %is_fatal  = map {($_=>1)} qw/ERROR FAULT FAILURE PANIC/;
-my %use_errno = map {($_=>1)} qw/WARNING FAULT ALERT FAILURE/;
+my %use_errno = map {($_=>1)} qw/FAULT ALERT FAILURE/;
 
 sub _whats_needed(); sub dispatcher($@);
 sub trace(@); sub assert(@); sub info(@); sub notice(@); sub warning(@);
