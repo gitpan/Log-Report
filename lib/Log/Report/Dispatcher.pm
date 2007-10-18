@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util qw/parse_locale expand_reasons %reason_code
