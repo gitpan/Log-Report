@@ -10,10 +10,14 @@ Log::Report::Translator::POT - translation based on POT files
 =head1 SYNOPSIS
 
  # internal use
- my $msg = Log::Report::Message->new(_msgid => "Hello World\n"
-             , _domain => 'my-domain');
- print Log::Report::Translator::POT->new(lexicon => ...)
-             ->translate('nl-BE', $msg);
+ my $msg = Log::Report::Message->new
+   ( _msgid  => "Hello World\n"
+   , _domain => 'my-domain'
+   );
+
+ print Log::Report::Translator::POT
+    ->new(lexicon => ...)
+    ->translate('nl-BE', $msg);
 
  # normal use (end-users view)
  use Log::Report 'my-domain'
@@ -82,8 +86,8 @@ See L<Log::Report::Translator/"Translating">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.11,
-built on October 18, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.12,
+built on October 23, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

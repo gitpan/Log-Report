@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.11';
+$VERSION = '0.12';
 use base 'Exporter';
 
 # domain 'log-report' via work-arounds:

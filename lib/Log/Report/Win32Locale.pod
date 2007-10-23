@@ -1,0 +1,93 @@
+=head1 NAME
+
+Log::Report::Win32Locale - unix/windows locales
+
+=head1 INHERITANCE
+
+ Log::Report::Win32Locale
+   is a Exporter
+
+=head1 DESCRIPTION
+
+Windows uses different locales to represent languages: codepages. Programs
+which are written with Log::Report however, will contain ISO encoded
+language names; this module translates between them.
+
+The algorithms in this module are based on Win32::Locale and Win32::Codepage.
+
+=head1 FUNCTIONS
+
+B<codepage_to_iso>(CODEPAGE)
+
+=over 4
+
+Translate windows CODEPAGE into ISO code.  The CODEPAGE is numeric
+or a hex string like '0x0304'.
+
+=back
+
+B<iso_locale>([CODEPAGE])
+
+=over 4
+
+Returns the ISO string for the Microsoft codepage locale.  Might return
+
+C<undef>/false.  By default, the actual codepage is used.
+=fuction charset_encoding
+Returns the encoding name (usable with module Encode) based on the current
+codepage.  For example, C<cp1252> for iso-8859-1 (latin-1) or C<cp932> for
+Shift-JIS Japanese.  Returns undef if the encoding cannot be identified.
+
+=back
+
+B<iso_to_codepage>(ISO)
+
+=over 4
+
+Returns the numeric value of the codepage.  The ISO may look like
+this: C<xx-YY>.  Then, first the C<xx-YY> is looked-up.  If that does
+not exist, C<xx> is tried.
+
+=back
+
+B<ms_codepage_id>
+
+=over 4
+
+Returns the numeric language ID for the current codepage language.
+For example, the numeric value for C<0x0409> for C<en-US>, and C<0x0411>
+for C<ja>.  Returns false if the codepage cannot be identified.
+
+=back
+
+B<ms_install_codepage_id>
+
+=over 4
+
+Returns the numeric language ID for the installed codepage language.
+This is like L<ms_codepage_id()|Log::Report::Win32Locale/"FUNCTIONS">, but refers to the codepage that was
+the default when Windows was first installed.
+
+=back
+
+B<ms_locale>
+
+=over 4
+
+Returns the locale setting from the control panel.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.12,
+built on October 23, 2007. Website: F<http://perl.overmeer.net/log-report/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

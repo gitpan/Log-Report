@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Translator::POT;
 use vars '$VERSION';
-$VERSION = '0.11';
+$VERSION = '0.12';
 use base 'Log::Report::Translator';
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -18,6 +18,12 @@ use POSIX qw/:locale_h/;
 
 my %indices;
 
+# Sometimes, Perl is lazy.  Work-around for missing LC_MESSAGES
+eval "&LC_MESSAGES";
+if($@ =~ /^Your vendor has not/)
+{   *LC_MESSAGES = sub { 5 };
+}
+
 
 sub translate($)
 {   my ($self, $msg) = @_;
@@ -26,14 +32,16 @@ sub translate($)
     my $locale = setlocale(LC_MESSAGES)
         or return $self->SUPER::translate($msg);
 
-    my $pot    = exists $self->{pots}{$locale} ? $self->{pots}{$locale}
+    my $pot
+      = exists $self->{pots}{$locale}
+      ? $self->{pots}{$locale}
       : $self->load($domain, $locale);
 
     defined $pot
         or return $self->SUPER::translate($msg);
 
        $pot->msgstr($msg->{_msgid}, $msg->{_count})
-    || return $self->SUPER::translate($msg);
+    || $self->SUPER::translate($msg);   # default translation is 'none'
 }
 
 sub load($$)
@@ -41,22 +49,23 @@ sub load($$)
 
     foreach my $lex ($self->lexicons)
     {   my $potfn = $lex->find($domain, $locale);
-        if($potfn)
-        {   my $po = Log::Report::Lexicon::POTcompact
-               ->read($potfn, charset => $self->charset);
 
-            info __x "read pot-file {filename} for {domain} in {locale}"
-              , filename => $potfn, domain => $domain, locale => $locale
-                  if $domain ne 'log-report';  # avoid recursion
+        !$potfn && $lex->list($domain)
+            and last; # there are tables for domain, but not our lang
 
-            return $self->{pots}{$locale} = $po;
-        }
+        $potfn or next;
 
-        # there are tables for domain, but not ours
-        last if $lex->list($domain);
+        my $po = Log::Report::Lexicon::POTcompact
+           ->read($potfn, charset => $self->charset);
+
+        info __x "read pot-file {filename} for {domain} in {locale}"
+          , filename => $potfn, domain => $domain, locale => $locale
+              if $domain ne 'log-report';  # avoid recursion
+
+        return $self->{pots}{$locale} = $po;
     }
 
-    $self->{pots}{$locale} = undef
+    $self->{pots}{$locale} = undef;
 }
 
 1;

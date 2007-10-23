@@ -69,8 +69,8 @@ of a L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index>.
 example: default lexicon directory
 
  # file xxx/perl5.8.8/My/Module.pm
- use Log::Report 'my-domain',
-     translator => Log::Report::Translator::POT->new;
+ use Log::Report 'my-domain'
+   , translator => Log::Report::Translator::POT->new;
 
  # lexicon now in xxx/perl5.8.8/My/Module/messages/
 
@@ -121,8 +121,8 @@ message object, for performance reasons.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.11,
-built on October 18, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.12,
+built on October 23, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

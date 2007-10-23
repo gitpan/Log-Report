@@ -43,6 +43,8 @@ lib/Log/Report/Translator/POT.pm
 lib/Log/Report/Translator/POT.pod
 lib/Log/Report/Util.pm
 lib/Log/Report/Util.pod
+lib/Log/Report/Win32Locale.pm
+lib/Log/Report/Win32Locale.pod
 lib/Log/Report/messages/log-report.utf-8.po
 lib/Log/Report/messages/log-report/nl_NL.po
 t/00use.t

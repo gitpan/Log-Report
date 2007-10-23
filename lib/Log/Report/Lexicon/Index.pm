@@ -5,7 +5,7 @@
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 use warnings;
 use strict;
@@ -14,6 +14,20 @@ use File::Find  ();
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util  qw/parse_locale/;
+
+# On windows, other locale names are used.  They will get translated
+# into the Linux (ISO) convensions.
+
+my $locale_unifier;
+if($^O eq 'MSWin32')
+{   require Log::Report::Win32Locale;
+    Log::Report::Win32Locale->import;
+    $locale_unifier = sub { iso_locale $_[0] };
+}
+else
+{   # some UNIXes do not understand "POSIX"
+    $locale_unifier = sub { uc $_[0] eq 'POSIX' ? 'c' : lc $_[0] };
+}
 
 
 sub new($;@)
@@ -63,12 +77,12 @@ sub _find($$) { $_[0]->{"$_[1].po"} }
 sub find($$)
 {   my $self   = shift;
     my $domain = lc shift;
-    my $locale = lc shift;
+    my $locale = $locale_unifier->(shift);
 
     my $index = $self->index;
     keys %$index or return undef;
 
-    my ($lang,$terr,$cs,$modif) = parse_locale $locale;
+    my ($lang, $terr, $cs, $modif) = parse_locale $locale;
     unless(defined $lang)
     {   # avoid problem with recursion, not translatable
         defined $locale or $locale = '<undef>';
@@ -81,10 +95,10 @@ sub find($$)
     $modif = defined $modif ? '@'.$modif : '';
 
     (my $normcs = $cs) =~ s/[^a-z\d]//g;
-    $normcs = "iso$normcs"
-        if length $normcs && $normcs !~ /\D/;
-    $normcs = '.'.$normcs
-        if length $normcs;
+    if(length $normcs)
+    {   $normcs = "iso$normcs" if $normcs !~ /\D/;
+        $normcs = '.'.$normcs;
+    }
 
     my $fn;
 
@@ -97,7 +111,7 @@ sub find($$)
         ||  _find($index, "$lang$f");
     }
 
-       $fn
+    $fn
     || _find($index, "$domain/$lang$terr$cs$modif")
     || _find($index, "$domain/$lang$terr$normcs$modif")
     || _find($index, "$domain/$lang$terr$modif")
