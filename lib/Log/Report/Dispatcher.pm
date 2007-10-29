@@ -7,14 +7,20 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util qw/parse_locale expand_reasons %reason_code
   escape_chars/;
 
-use POSIX      qw/strerror locale_h/;
+use POSIX      qw/strerror/;
 use List::Util qw/sum/;
+
+eval { POSIX->import('locale_h') };
+if($@)
+{   no strict 'refs';
+    *setlocale = sub { $_[1] }; *LC_ALL = sub { undef };
+}
 
 my %modes = (NORMAL => 0, VERBOSE => 1, ASSERT => 2, DEBUG => 3
   , 0 => 0, 1 => 1, 2 => 2, 3 => 3);
@@ -139,8 +145,8 @@ sub translate($$$)
       : Log::Report->_setting($msg->domain, 'native_language');
 
     # not all implementations of setlocale() return the old value
-    my $oldloc = setlocale LC_ALL;
-    setlocale(LC_ALL, $locale || 'en_US');
+    my $oldloc = setlocale(&LC_ALL);
+    setlocale(&LC_ALL, $locale || 'en_US');
 
     my $r = $self->{format_reason}->((__$reason)->toString);
     my $e = $opts->{errno} ? strerror($opts->{errno}) : undef;
@@ -181,7 +187,7 @@ sub translate($$$)
         }
     }
 
-    setlocale(LC_ALL, $oldloc)
+    setlocale(&LC_ALL, $oldloc)
         if defined $oldloc;
 
     $text;
