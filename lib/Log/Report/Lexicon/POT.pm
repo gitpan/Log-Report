@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Lexicon::POT;
 use vars '$VERSION';
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 

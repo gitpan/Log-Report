@@ -5,7 +5,7 @@
 
 package Log::Report::Win32Locale;
 use vars '$VERSION';
-$VERSION = '0.13';
+$VERSION = '0.14';
 use base 'Exporter';
 
 our @EXPORT = qw/codepage_to_iso iso_to_codepage
@@ -20,6 +20,7 @@ while(<DATA>)
    $codepage2iso{hex $codepage} = $iso;
 }
 my $iso2codepage = reverse $codepage2iso;
+close DATA;
 
 
 sub codepage_to_iso($)

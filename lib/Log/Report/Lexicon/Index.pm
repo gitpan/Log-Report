@@ -5,7 +5,7 @@
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 use warnings;
 use strict;
@@ -22,7 +22,7 @@ my $locale_unifier;
 if($^O eq 'MSWin32')
 {   require Log::Report::Win32Locale;
     Log::Report::Win32Locale->import;
-    $locale_unifier = sub { iso_locale $_[0] };
+    $locale_unifier = sub { iso_locale($_[0]) };
 }
 else
 {   # some UNIXes do not understand "POSIX"

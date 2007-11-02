@@ -17,6 +17,16 @@ The algorithms in this module are based on Win32::Locale and Win32::Codepage.
 
 =head1 FUNCTIONS
 
+B<charset_encoding>
+
+=over 4
+
+Returns the encoding name (usable with module Encode) based on the current
+codepage.  For example, C<cp1252> for iso-8859-1 (latin-1) or C<cp932> for
+Shift-JIS Japanese.  Returns undef if the encoding cannot be identified.
+
+=back
+
 B<codepage_to_iso>(CODEPAGE)
 
 =over 4
@@ -31,12 +41,7 @@ B<iso_locale>([CODEPAGE])
 =over 4
 
 Returns the ISO string for the Microsoft codepage locale.  Might return
-
 C<undef>/false.  By default, the actual codepage is used.
-=fuction charset_encoding
-Returns the encoding name (usable with module Encode) based on the current
-codepage.  For example, C<cp1252> for iso-8859-1 (latin-1) or C<cp932> for
-Shift-JIS Japanese.  Returns undef if the encoding cannot be identified.
 
 =back
 
@@ -80,8 +85,8 @@ Returns the locale setting from the control panel.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.13,
-built on October 29, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.14,
+built on November 02, 2007. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

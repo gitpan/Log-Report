@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Syslog;
 use vars '$VERSION';
-$VERSION = '0.13';
+$VERSION = '0.14';
 use base 'Log::Report::Dispatcher';
 
 use Sys::Syslog 0.11, qw/:standard :macros/;
