@@ -53,9 +53,22 @@ B<parse_locale>(STRING)
 
 =over 4
 
-Returns a LIST of four elements when successful, and an empty
-LIST when the locale is not correct.  The LIST order is country,
-territory, character-set (codeset), and modifier.
+Decompose a locale string.
+
+For simplicity of the caller's code, the capatization of the returned
+fields is standardized to the preferred, although the match is case-
+insensitive as required by the RFC. The territory in returned in capitals
+(ISO3166), the language is lower-case (ISO639), the script as upper-case
+first, the character-set as lower-case, and the modifier and variant unchanged.
+
+In LIST context, four elements are returned: language, territory,
+character-set (codeset), and modifier.  Those four are important for the
+usual unix translationg infrastructure.  Only the "country" is obligatory,
+the others can be C<undef>.  It may also return C<C> and C<POSIX>.
+
+In SCALAR context, a HASH is returned which can contain more information:
+language, script, territory, variant, codeset, and modifiers.  The
+variant (RFC3066 is probably never used)
 
 =back
 
@@ -70,12 +83,12 @@ For instance, backslash-t is replaced by a tab character.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.14,
-built on November 02, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.15,
+built on February 25, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

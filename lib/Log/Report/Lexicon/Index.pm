@@ -1,11 +1,11 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.14';
+$VERSION = '0.15';
 
 use warnings;
 use strict;
@@ -72,7 +72,7 @@ sub addFile($;$)
 
 # location to work-around platform dependent mutulations.
 # may be extended with mo files as well.
-sub _find($$) { $_[0]->{"$_[1].po"} }
+sub _find($$) { $_[0]->{lc($_[1]). '.po'} }
 
 sub find($$)
 {   my $self   = shift;
@@ -101,7 +101,6 @@ sub find($$)
     }
 
     my $fn;
-
     for my $f ("/lc_messages/$domain", "/$domain")
     {   $fn
         ||= _find($index, "$lang$terr$cs$modif$f")

@@ -1,13 +1,13 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.14';
+$VERSION = '0.15';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util qw/parse_locale expand_reasons %reason_code
@@ -32,9 +32,6 @@ my %predef_dispatchers = map { (uc($_) => __PACKAGE__.'::'.$_) }
 
 sub new(@)
 {   my ($class, $type, $name, %args) = @_;
-
-use Carp;
-@_%2 or confess "@_";
 
     my $backend
       = $predef_dispatchers{$type}          ? $predef_dispatchers{$type}
@@ -81,7 +78,10 @@ sub close()
     $self;
 }
 
-DESTROY() { shift->close }
+# horrible errors on some Perl versions if called during destruction
+my $in_global_destruction = 0;
+END { $in_global_destruction++ }
+sub DESTROY { $in_global_destruction or shift->close }
 
 
 sub name {shift->{name}}
@@ -121,7 +121,7 @@ sub log($$$)
 }
 
 
-my %always_loc = map {($_ => 1)} qw/ASSERT WARNING PANIC/;
+my %always_loc = map {($_ => 1)} qw/ASSERT PANIC/;
 sub translate($$$)
 {   my ($self, $opts, $reason, $msg) = @_;
 

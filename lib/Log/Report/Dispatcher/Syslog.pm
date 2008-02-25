@@ -1,16 +1,16 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Syslog;
 use vars '$VERSION';
-$VERSION = '0.14';
+$VERSION = '0.15';
 use base 'Log::Report::Dispatcher';
 
-use Sys::Syslog 0.11, qw/:standard :macros/;
+use Sys::Syslog 0.11, qw/:standard :extended :macros/;
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util  qw/@reasons expand_reasons/;
 
@@ -36,7 +36,12 @@ my %default_reasonToPrio =
 
 sub init($)
 {   my ($self, $args) = @_;
+    $args->{format_reason} ||= 'IGNORE';
+
     $self->SUPER::init($args);
+
+    setlogsock(delete $args->{logsocket})
+        if $args->{logsocket};
 
     my $ident = delete $args->{identity} || basename $0;
     my $flags = delete $args->{flags}    || 'pid,nowait';

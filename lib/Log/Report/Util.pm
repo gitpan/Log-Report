@@ -1,14 +1,14 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 
 use warnings;
 use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.14';
+$VERSION = '0.15';
 use base 'Exporter';
 
 our @EXPORT = qw/@reasons %reason_code parse_locale expand_reasons
@@ -27,16 +27,46 @@ my @system  = qw/FAULT ALERT FAILURE/;
 
 
 sub parse_locale($)
-{   return ($1, $2, $3, $4) if $_[0] =~
-      m/^ ([a-z]{2})              # ISO 631
-          (?: \_ ([a-zA-Z\d]+)    # ISO 3166
-              (?: \. ([\w-]+) )?  # codeset
-          )?
-          (?: \@ (\S+) )?         # modifier
-            $
-       /x;
+{   my $locale = shift;
+    defined $locale && length $locale
+        or return;
 
-    $_[0] =~ m/^(C|POSIX)$/i ? ($1) : ();
+    return if $locale !~
+      m/^ ([a-z_]+)
+          (?: \. ([\w-]+) )?  # codeset
+          (?: \@ (\S+) )?         # modifier
+        $/ix;
+
+    my ($lang, $codeset, $modifier) = ($1, $2, $3);
+
+    my @subtags  = split /[_-]/, $lang;
+    my $primary  = lc shift @subtags;
+
+    my $language
+      = $primary eq 'c'             ? 'C'
+      : $primary eq 'posix'         ? 'POSIX'
+      : $primary =~ m/^[a-z]{2,3}$/ ? $primary            # ISO639-1 and -2
+      : $primary eq 'i' && @subtags ? lc(shift @subtags)  # IANA
+      : $primary eq 'x' && @subtags ? lc(shift @subtags)  # Private
+      : error __x"unknown locale language in locale {locale}"
+           , locale => $locale;
+
+    my $script;
+    $script = ucfirst lc shift @subtags
+        if @subtags > 1 && length $subtags[0] > 3;
+
+    my $territory = @subtags ? uc(shift @subtags) : undef;
+
+    return ($language, $territory, $codeset, $modifier)
+        if wantarray;
+
+    +{ language  => $language
+     , script    => $script
+     , territory => $territory
+     , codeset   => $codeset
+     , modifier  => $modifier
+     , variant   => join('-', @subtags)
+     };
 }
 
 

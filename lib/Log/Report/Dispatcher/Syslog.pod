@@ -59,16 +59,16 @@ Log::Report::Dispatcher::Syslog-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
 With syslog, people tend not to include the REASON of the message
 in the logs, because that is already used to determine the destination
-of the message.  Use L<new(format_reason)|Log::Report::Dispatcher/"Constructors"> with C<IGNORE> to achieve
-that.
+of the message.
 
  Option       --Defined in     --Default
  accept         Log::Report::Dispatcher  depend on mode
  facility                        'user'
  flags                           'pid,nowait'
- format_reason  Log::Report::Dispatcher  'LOWERCASE'
+ format_reason  Log::Report::Dispatcher  'IGNORE'
  identity                        <basename $0>
  locale         Log::Report::Dispatcher  <system locale>
+ logsocket                       undef
  mode           Log::Report::Dispatcher  'NORMAL'
  to_prio                         []
 
@@ -87,8 +87,8 @@ only defines 'user' and 'local0' upto 'local7'.
 
 =over 4
 
-Any combination of C<pid>, C<ndelay>, and C<nowait>, used with
-C<openlog(3)> if needed
+Any combination of flags as defined by Sys::Syslog, for instance
+C<pid>, C<ndelay>, and C<nowait>.
 
 =back
 
@@ -97,6 +97,15 @@ C<openlog(3)> if needed
 . identity => STRING
 
 . locale => LOCALE
+
+. logsocket => 'unix'|'inet'|'stream'
+
+=over 4
+
+If specified, the log socket type will be initialized to this before
+openlog is called.  If not specified, the system default is used.
+
+=back
 
 . mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
 
@@ -211,12 +220,12 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.14,
-built on November 02, 2007. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.15,
+built on February 25, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

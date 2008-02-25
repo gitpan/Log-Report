@@ -1,13 +1,13 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Try;
 use vars '$VERSION';
-$VERSION = '0.14';
+$VERSION = '0.15';
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -79,8 +79,7 @@ sub wasFatal(@)
 {   my ($self, %args) = @_;
     $self->{died} or return ();
     my $ex = $self->{exceptions}[-1];
-    $args{class}  or return $ex;
-    $ex->inClass($args{class}) ? $ex : ();
+    (!$args{class} || $ex->inClass($args{class})) ? $ex : ();
 }
 
 
