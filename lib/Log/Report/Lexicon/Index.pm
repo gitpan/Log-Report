@@ -1,11 +1,11 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.03.
+# Pod stripped from pm file by OODoc 1.04.
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.15';
+$VERSION = '0.16';
 
 use warnings;
 use strict;
@@ -31,8 +31,8 @@ else
 
 
 sub new($;@)
-{   my $class = shift;
-    bless {dir => @_}, $class;  # dir before first argument.
+{   my ($class, $dir) = (shift, shift);
+    bless {dir => $dir, @_}, $class;  # dir before first argument.
 }
 
 
@@ -54,7 +54,9 @@ sub index()
              $self->addFile($key, $_);
              1;
            }
-         , follow   => 1, no_chdir => 1
+         , follow      => 1
+         , no_chdir    => 1
+         , follow_skip => 2
        } , $dir
     );
 
@@ -119,14 +121,24 @@ sub find($$)
 }
 
 
-sub list($)
+sub list($;$)
 {   my $self   = shift;
     my $domain = lc shift;
+    my $filter = shift;
     my $index  = $self->index;
 
-    map { $index->{$_} }
-       grep m! ^\Q$domain\E/ | \b\Q$domain\E[^/]*$ !x
-          , keys %$index;
+    my @list   =
+        map { $index->{$_} }
+            grep { m! \b\Q$domain\E\b !x }
+                keys %$index;
+
+    defined $filter
+        or return @list;
+
+    $filter    = qr/\.\Q$filter\E$/i
+        if defined $filter && ref $filter ne 'Regexp';
+
+    grep { $_ =~ $filter } @list;
 }
 
 

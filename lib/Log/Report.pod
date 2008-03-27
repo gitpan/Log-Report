@@ -294,7 +294,7 @@ available when syntax is C<SHORT> (see L<import()|Log::Report/"Configuration">).
 additional options to influence the behavior of C<report()>, which are
 usually not needed anyway.
 
-$obj-E<gt>B<alert>(MESSAGE)
+B<alert>(MESSAGE)
 
 =over 4
 
@@ -302,7 +302,7 @@ Short for C<< report ALERT => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<assert>(MESSAGE)
+B<assert>(MESSAGE)
 
 =over 4
 
@@ -310,7 +310,7 @@ Short for C<< report ASSERT => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<error>(MESSAGE)
+B<error>(MESSAGE)
 
 =over 4
 
@@ -318,7 +318,7 @@ Short for C<< report ERROR => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<failure>(MESSAGE)
+B<failure>(MESSAGE)
 
 =over 4
 
@@ -326,7 +326,7 @@ Short for C<< report FAILURE => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<fault>(MESSAGE)
+B<fault>(MESSAGE)
 
 =over 4
 
@@ -334,7 +334,7 @@ Short for C<< report FAULT => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<info>(MESSAGE)
+B<info>(MESSAGE)
 
 =over 4
 
@@ -342,7 +342,7 @@ Short for C<< report INFO => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<mistake>(MESSAGE)
+B<mistake>(MESSAGE)
 
 =over 4
 
@@ -350,7 +350,7 @@ Short for C<< report MISTAKE => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<notice>(MESSAGE)
+B<notice>(MESSAGE)
 
 =over 4
 
@@ -358,7 +358,7 @@ Short for C<< report NOTICE => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<panic>(MESSAGE)
+B<panic>(MESSAGE)
 
 =over 4
 
@@ -366,7 +366,7 @@ Short for C<< report PANIC => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<trace>(MESSAGE)
+B<trace>(MESSAGE)
 
 =over 4
 
@@ -374,7 +374,7 @@ Short for C<< report TRACE => MESSAGE >>
 
 =back
 
-$obj-E<gt>B<warning>(MESSAGE)
+B<warning>(MESSAGE)
 
 =over 4
 
@@ -1141,8 +1141,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.15,
-built on February 25, 2008. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.16,
+built on March 27, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
