@@ -400,8 +400,8 @@ example: take all mistakes and warnings serious
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.16,
-built on March 27, 2008. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.17,
+built on April 18, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

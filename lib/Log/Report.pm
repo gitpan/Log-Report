@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.16';
+$VERSION = '0.17';
 use base 'Exporter';
 
 # domain 'log-report' via work-arounds:
@@ -26,7 +26,7 @@ require Log::Report::Message;
 require Log::Report::Dispatcher;
 require Log::Report::Dispatcher::Try;
 
-# See chapter Run modes
+# See section Run modes
 my %is_reason = map {($_=>1)} @Log::Report::Util::reasons;
 my %is_fatal  = map {($_=>1)} qw/ERROR FAULT FAILURE PANIC/;
 my %use_errno = map {($_=>1)} qw/FAULT ALERT FAILURE/;
@@ -43,6 +43,7 @@ require Log::Report::Translator::POT;
 my $reporter;
 my %domain_start;
 my %settings;
+my $default_mode = 0;
 
 #
 # Some initiations
@@ -161,10 +162,12 @@ sub report($@)
 
 sub dispatcher($@)
 {   if($_[0] !~ m/^(?:close|find|list|disable|enable|mode|needs|filter)$/)
-    {   my $disp = Log::Report::Dispatcher->new(@_);
+    {   my ($type, $name) = (shift, shift);
+        my $disp = Log::Report::Dispatcher->new($type, $name
+          , mode => $default_mode, @_);
 
         # old dispatcher with same name will be closed in DESTROY
-        $reporter->{dispatchers}{$disp->name} = $disp;
+        $reporter->{dispatchers}{$name} = $disp;
         _whats_needed;
         return ($disp);
     }
@@ -191,14 +194,17 @@ sub dispatcher($@)
         return ();
     }
 
-    my $mode    = $command eq 'mode' ? shift : undef;
+    my $mode  = $command eq 'mode' ? shift : undef;
+    my @disps = @_==1 && $_[0] eq 'ALL' ? keys %{$reporter->{dispatchers}} : @_;
 
-    error __"in SCALAR context, only one dispatcher name accepted"
-        if @_ > 1 && !wantarray && defined wantarray;
+    my @dispatchers = grep defined, @{$reporter->{dispatchers}}{@disps};
+    @dispatchers or return;
 
-    my @dispatchers = grep defined, @{$reporter->{dispatchers}}{@_};
+    error __"only one dispatcher name accepted in SCALAR context"
+        if @dispatchers > 1 && !wantarray && defined wantarray;
+
     if($command eq 'close')
-    {   delete @{$reporter->{dispatchers}}{@_};
+    {   delete @{$reporter->{dispatchers}}{@disps};
         $_->close for @dispatchers;
     }
     elsif($command eq 'enable')  { $_->_disabled(0) for @dispatchers }
@@ -365,11 +371,20 @@ sub import(@)
           , $pkg, $fn, $linenr);
     }
 
+    if(exists $opts{mode})
+    {   $default_mode = delete $opts{mode} || 0;
+        dispatcher mode => $default_mode, 'ALL';
+    }
+
     push @{$domain_start{$fn}}, [$linenr => $textdomain];
 
     my @export = (@functions, @make_msg);
-    push @export, @reason_functions
-        if $syntax eq 'SHORT';
+
+    if($syntax eq 'SHORT') { push @export, @reason_functions }
+    elsif($syntax ne 'REPORT')
+    {   error __x"syntax flag must be either SHORT or REPORT, not `{syntax}'"
+          , syntax => $syntax;
+    }
 
     $class->export_to_level(1, undef, @export);
 }

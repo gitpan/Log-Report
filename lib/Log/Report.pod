@@ -118,7 +118,8 @@ Implemented COMMANDs are C<close>, C<find>, C<list>, C<disable>,
 C<enable>, C<mode>, C<filter>, and C<needs>.  Most commands are followed
 by a LIST of dispatcher NAMEs to be address.  For C<mode> see section
 L</Run modes>; it requires a MODE argument before the LIST of NAMEs.
-Non-existing names will be ignored.  For C<filter> see
+Non-existing names will be ignored. When C<ALL> is specified, then
+all existing dispatchers will get addressed.  For C<filter> see
 L<Log::Report::Dispatcher/Filters>; it requires a CODE reference before
 the NAMEs of the dispatchers which will have the it applied (defaults to
 all).
@@ -144,6 +145,7 @@ example: play with dispatchers
  dispatcher disable => 'syslog';
  dispatcher enable => 'mylog', 'syslog'; # more at a time
  dispatcher mode => DEBUG => 'mylog';
+ dispatcher mode => DEBUG => 'ALL';
 
  my @need_info = dispatcher needs => 'INFO';
  if(dispatcher needs => 'INFO') ...
@@ -575,9 +577,20 @@ the DOMAIN.  For one package, it will contain configuration information.
 These OPTIONS are used for all packages which use the same DOMAIN.
 
  Option         --Default
+ mode             'NORMAL'
  native_language  'en_US'
  syntax           'REPORT'
  translator       <rescue>
+
+. mode => LEVEL
+
+=over 4
+
+This sets the default mode for all created dispatchers.  You can
+also selectively change the output mode, like
+ dispatcher PERL => 'default', mode => 3
+
+=back
 
 . native_language => CODESET
 
@@ -611,10 +624,12 @@ which will use the untranslated message-id .
 
 example: of import
 
- use Log::Report 'my-domain'    # in each package
+ use Log::Report mode => 3;     # or 'DEBUG'
+
+ use Log::Report 'my-domain'    # in each package producing messages
   , syntax     => 'SHORT';
 
- use Log::Report 'my-domain'    # in one package
+ use Log::Report 'my-domain'    # in one package, top of distr
   , translator => Log::Report::Translator::POT->new
      ( lexicon  => '/home/me/locale'  # bindtextdomain
      , charset  => 'UTF-8'            # codeset
@@ -1141,8 +1156,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.16,
-built on March 27, 2008. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.17,
+built on April 18, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

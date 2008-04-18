@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Die;
 use vars '$VERSION';
-$VERSION = '0.16';
+$VERSION = '0.17';
 use base 'Exporter';
 
 our @EXPORT = qw/die_decode/;

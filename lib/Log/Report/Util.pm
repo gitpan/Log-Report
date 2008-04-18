@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.16';
+$VERSION = '0.17';
 use base 'Exporter';
 
 our @EXPORT = qw/@reasons %reason_code

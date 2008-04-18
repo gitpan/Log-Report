@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Syslog;
 use vars '$VERSION';
-$VERSION = '0.16';
+$VERSION = '0.17';
 use base 'Log::Report::Dispatcher';
 
 use Sys::Syslog 0.11, qw/:standard :extended :macros/;
@@ -62,7 +62,7 @@ sub init($)
             $self->{prio}{$_} = $prio for @reasons;
         }
     }
-            
+
     $self;
 }
 

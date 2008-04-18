@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.16';
+$VERSION = '0.17';
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util qw/parse_locale expand_reasons %reason_code
@@ -93,14 +93,18 @@ sub type() {shift->{type}}
 sub mode() {shift->{mode}}
 
 # only to be used via Log::Report::dispatcher(mode => ...)
-# because requires re-investigating needs
+# because requires re-investigating collective dispatcher needs
 sub _set_mode($)
 {   my $self = shift;
     my $mode = $self->{mode} = $modes{$_[0]};
     defined $mode
         or error __x"unknown run mode '{mode}'", mode => $_[0];
 
-    info __x"switching to run mode {mode}", mode => $mode;
+    $self->{needs}  = [ expand_reasons $default_accept[$mode] ];
+
+    info __x"switching to run mode {mode}, accept {accept}"
+       , mode => $mode, accept => $default_accept[$mode];
+
     $mode;
 }
 
@@ -247,7 +251,7 @@ sub stackTraceLine(@)
     my @params    = @{$args{params}};
     my $call      = $args{call};
 
-    my $obj = ref $params[0] && $call =~ m/^(.*\:\:)/ && $params[0]->isa($1)
+    my $obj = ref $params[0] && $call =~ m/^(.*\:\:)/ && UNIVERSAL::isa($params[0], $1)
       ? shift @params : undef;
 
     my $listtail  = '';
@@ -302,6 +306,8 @@ sub stackTraceCall($$$;$)
 
 sub stackTraceParam($$$)
 {   my ($thing, $args, $abstract, $param) = @_;
+    defined $param
+        or return 'undef';
 
     return $param   # int or float
         if $param =~ /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;

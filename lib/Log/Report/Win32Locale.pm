@@ -2,10 +2,12 @@
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.04.
+use warnings;
+use strict;
 
 package Log::Report::Win32Locale;
 use vars '$VERSION';
-$VERSION = '0.16';
+$VERSION = '0.17';
 use base 'Exporter';
 
 our @EXPORT = qw/codepage_to_iso iso_to_codepage
