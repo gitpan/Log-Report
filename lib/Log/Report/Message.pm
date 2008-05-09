@@ -7,7 +7,8 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.17';
+$VERSION = '0.18';
+
 
 use Log::Report 'log-report';
 use POSIX      qw/locale_h/;

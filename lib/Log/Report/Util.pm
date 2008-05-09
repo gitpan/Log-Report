@@ -8,7 +8,8 @@ use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.17';
+$VERSION = '0.18';
+
 use base 'Exporter';
 
 our @EXPORT = qw/@reasons %reason_code
@@ -31,11 +32,15 @@ sub parse_locale($)
     defined $locale && length $locale
         or return;
 
-    return if $locale !~
+    if($locale !~
       m/^ ([a-z_]+)
           (?: \. ([\w-]+) )?  # codeset
-          (?: \@ (\S+) )?         # modifier
-        $/ix;
+          (?: \@ (\S+) )?     # modifier
+        $/ix)
+    {   # Windows Finnish_Finland.1252?
+        $locale =~ s/.*\.//;
+        return wantarray ? ($locale) : { language => $locale };
+    }
 
     my ($lang, $codeset, $modifier) = ($1, $2, $3);
 

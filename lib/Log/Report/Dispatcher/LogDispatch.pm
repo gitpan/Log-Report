@@ -7,7 +7,8 @@ use strict;
 
 package Log::Report::Dispatcher::LogDispatch;
 use vars '$VERSION';
-$VERSION = '0.17';
+$VERSION = '0.18';
+
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';

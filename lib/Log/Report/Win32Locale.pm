@@ -7,7 +7,8 @@ use strict;
 
 package Log::Report::Win32Locale;
 use vars '$VERSION';
-$VERSION = '0.17';
+$VERSION = '0.18';
+
 use base 'Exporter';
 
 our @EXPORT = qw/codepage_to_iso iso_to_codepage
@@ -21,7 +22,7 @@ while(<DATA>)
 {  my ($codepage, $iso) = split;
    $codepage2iso{hex $codepage} = $iso;
 }
-my $iso2codepage = reverse $codepage2iso;
+my %iso2codepage = reverse %codepage2iso;
 close DATA;
 
 
@@ -42,7 +43,7 @@ sub iso_to_codepage($)
 
 
 sub iso_locale(;$)
-{   codepage_to_iso(shift || ms_codepage_id || ms_locale);
+{   codepage_to_iso(shift || ms_codepage_id() || ms_locale());
 }
 
 # the following functions are rewrites of Win32::Codepage version 1.00
