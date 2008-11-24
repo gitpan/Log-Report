@@ -14,8 +14,8 @@ Log::Report::Dispatcher::Try - capture all reports as exceptions
 
  if(try {...}) {    # block ended normally
 
- my $x = try {read_temperature()};
- my @x = try {read_lines_from_file()};
+ my $x = try { read_temperature() };
+ my @x = try { read_lines_from_file() };
 
  try { ... }        # no comma!!
     mode => 'DEBUG', accept => 'ERROR-';
@@ -33,7 +33,9 @@ Log::Report::Dispatcher::Try - capture all reports as exceptions
  if($@->failed) {   # same       # }
  if($@->success) {  # no errors  # }
 
- try { report {to => 'stderr'}, FAILURE => 'no network' };
+ try { # something causes an error report, which is caught
+       report {to => 'stderr'}, FAILURE => 'no network';
+     };
  $@->reportFatal(to => 'syslog');  # overrule destination
 
 =head1 DESCRIPTION
@@ -70,6 +72,7 @@ Log::Report::Dispatcher::Try-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
  Option       --Defined in     --Default
  accept         Log::Report::Dispatcher  depend on mode
+ charset        Log::Report::Dispatcher  UTF-8 or UTF-16
  died                            undef
  exceptions                      []
  format_reason  Log::Report::Dispatcher  'LOWERCASE'
@@ -77,6 +80,8 @@ Log::Report::Dispatcher::Try-E<gt>B<new>(TYPE, NAME, OPTIONS)
  mode           Log::Report::Dispatcher  'NORMAL'
 
 . accept => REASONS
+
+. charset => CHARSET
 
 . died => STRING
 
@@ -286,8 +291,8 @@ See L<Log::Report::Message::inClass()|Log::Report::Message/"Processing">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.18,
-built on May 09, 2008. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.19,
+built on November 24, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

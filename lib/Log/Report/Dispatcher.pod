@@ -69,6 +69,7 @@ are understood, other ignore unknown OPTIONS.
 
  Option       --Default
  accept         depend on mode
+ charset        UTF-8 or UTF-16
  format_reason  'LOWERCASE'
  locale         <system locale>
  mode           'NORMAL'
@@ -84,6 +85,18 @@ information, then those levels will not be accepted.
 When the mode equals C<NORMAL> (the default) then C<accept>'s default
 is C<NOTICE->.  In case of C<VERBOSE> it will be C<INFO->, C<ASSERT>
 results in C<ASSERT->, and C<DEBUG> in C<ALL>.
+
+=back
+
+. charset => CHARSET
+
+=over 4
+
+Write the messages in the specified character-set (codeset).  By
+default, this will be UTF-16 on Windows and real UTF-8 (not perl's
+internal encoding) on all other systems.
+Conversion errors will not be reported, but result in replacement
+characters.
 
 =back
 
@@ -400,8 +413,8 @@ example: take all mistakes and warnings serious
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.18,
-built on May 09, 2008. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.19,
+built on November 24, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

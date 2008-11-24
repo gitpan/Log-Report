@@ -1,13 +1,13 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 1.05.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Syslog;
 use vars '$VERSION';
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 use base 'Log::Report::Dispatcher';
 
@@ -77,6 +77,7 @@ sub close()
 sub log($$$$)
 {   my $self = shift;
     my $text = $self->SUPER::translate(@_) or return;
+
     my $prio = $self->reasonToPrio($_[1]);
 
     # handle each line in message separately

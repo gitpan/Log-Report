@@ -60,7 +60,7 @@ Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
  Option       --Defined in     --Default
  accept         Log::Report::Dispatcher  depend on mode
- charset                         'utf-8'
+ charset        Log::Report::Dispatcher  LOCALE
  format_reason  Log::Report::Dispatcher  'LOWERCASE'
  locale         Log::Report::Dispatcher  <system locale>
  mode           Log::Report::Dispatcher  'NORMAL'
@@ -69,13 +69,7 @@ Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
 . accept => REASONS
 
-. charset => STRING
-
-=over 4
-
-Only used in combination with a FILENAME.
-
-=back
+. charset => CHARSET
 
 . format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
@@ -89,6 +83,10 @@ Only used in combination with a FILENAME.
 
 Only used in combination with a FILENAME: throw away the old file
 if it exists.  Probably you wish to append to existing information.
+
+Use the LOCALE setting by default, which is LC_CTYPE or LC_ALL or LANG
+(in that order).  If these contain a character-set which Perl understands,
+then that is used, otherwise silently ignored.
 
 =back
 
@@ -206,8 +204,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.18,
-built on May 09, 2008. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.19,
+built on November 24, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

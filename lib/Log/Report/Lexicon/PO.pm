@@ -1,14 +1,14 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 1.05.
 
 use warnings;
 use strict;
 
 package Log::Report::Lexicon::PO;
 use vars '$VERSION';
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';

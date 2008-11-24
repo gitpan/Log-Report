@@ -1,23 +1,32 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 1.05.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher::File;
 use vars '$VERSION';
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 use base 'Log::Report::Dispatcher';
 
 use Log::Report 'log-report', syntax => 'SHORT';
-use IO::File;
+use IO::File ();
+use Encode   qw/find_encoding/;
 
 
 sub init($)
 {   my ($self, $args) = @_;
+
+    if(!$args->{charset})
+    {   my $lc = $ENV{LC_CTYPE} || $ENV{LC_ALL} || $ENV{LANG} || '';
+        my $cs = $lc =~ m/\.([\w-]+)/ ? $1 : '';
+        $args->{charset} = length $cs && find_encoding $cs ? $cs : undef;
+    }
+
     $self->SUPER::init($args);
+
     my $name = $self->name;
     my $to   = delete $args->{to}
         or error __x"dispatcher {name} needs parameter 'to'", name => $name;
@@ -28,9 +37,7 @@ sub init($)
     }
     else
     {   $self->{filename} = $to;
-        my $mode    = $args->{replace} ? '>' : '>>';
-        my $charset = delete $args->{charset} || 'utf-8';
-        my $binmode = "$mode:encoding($charset)";
+        my $binmode = $args->{replace} ? '>' : '>>';
 
         $self->{output} = IO::File->new($to, $binmode)
             or fault __x"cannot write log into {file} with {binmode}"

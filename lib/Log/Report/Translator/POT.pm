@@ -1,13 +1,13 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 1.05.
 use warnings;
 use strict;
 
 package Log::Report::Translator::POT;
 use vars '$VERSION';
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 use base 'Log::Report::Translator';
 
@@ -19,11 +19,9 @@ use POSIX qw/:locale_h/;
 
 my %indices;
 
-# Sometimes, Perl is lazy.  Work-around for missing LC_MESSAGES
+# Work-around for missing LC_MESSAGES on old Perls
 eval "&LC_MESSAGES";
-if($@ =~ /^Your vendor has not/)
-{   *LC_MESSAGES = sub () { 5 };
-}
+*LC_MESSAGES = sub(){5} if $@;
 
 
 sub translate($)
