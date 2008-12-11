@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.19';
+$VERSION = '0.20';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -69,11 +69,14 @@ sub init($)
         or error __x"illegal format_reason '{format}' for dispatcher",
              format => $f;
 
-    my $cs  = delete $args->{charset} || ($^O eq 'MSWin32'?'UTF-16':'UTF-8');
-    my $enc = find_encoding $cs
-        or error __x"Perl does not support charset {cs}", cs => $cs;
-    $self->{charset_enc}
-      = sub { no warnings 'utf8'; $enc->decode($_[0], FB_DEFAULT) };
+    my $csenc;
+    if(my $cs  = delete $args->{charset})
+    {   my $enc = find_encoding $cs
+            or error __x"Perl does not support charset {cs}", cs => $cs;
+        $csenc = sub { no warnings 'utf8'; $enc->encode($_[0]) };
+    }
+
+    $self->{charset_enc} = $csenc || sub { $_[0] };
 
     $self;
 }

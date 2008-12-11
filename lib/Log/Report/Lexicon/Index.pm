@@ -5,7 +5,7 @@
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.19';
+$VERSION = '0.20';
 
 
 use warnings;
@@ -89,7 +89,7 @@ sub find($$)
     unless(defined $lang)
     {   # avoid problem with recursion, not translatable
         defined $locale or $locale = '<undef>';
-        warn "illegal locale $locale, when looking for $domain";
+        warning "illegal locale $locale, when looking for $domain";
         return undef;
     }
 

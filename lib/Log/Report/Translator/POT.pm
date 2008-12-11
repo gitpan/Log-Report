@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Translator::POT;
 use vars '$VERSION';
-$VERSION = '0.19';
+$VERSION = '0.20';
 
 use base 'Log::Report::Translator';
 
@@ -19,9 +19,11 @@ use POSIX qw/:locale_h/;
 
 my %indices;
 
-# Work-around for missing LC_MESSAGES on old Perls
-eval "&LC_MESSAGES";
-*LC_MESSAGES = sub(){5} if $@;
+# Work-around for missing LC_MESSAGES on old Perls and Windows
+{ no warnings;
+  eval "&LC_MESSAGES";
+  *LC_MESSAGES = sub(){5} if $@;
+}
 
 
 sub translate($)

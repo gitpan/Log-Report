@@ -64,7 +64,7 @@ of the message.
 
  Option       --Defined in     --Default
  accept         Log::Report::Dispatcher  depend on mode
- charset        Log::Report::Dispatcher  UTF-8 or UTF-16
+ charset        Log::Report::Dispatcher  <undef>
  facility                        'user'
  flags                           'pid,nowait'
  format_reason  Log::Report::Dispatcher  'IGNORE'
@@ -224,8 +224,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.19,
-built on November 24, 2008. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.20,
+built on December 11, 2008. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
