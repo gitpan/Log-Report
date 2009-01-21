@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Log-Report
-version:             0.20
+version:             0.21
 abstract:            report a problem, pluggable handlers and language support
 license:             perl
 author:              

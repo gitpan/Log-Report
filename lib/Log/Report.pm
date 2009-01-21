@@ -1,4 +1,4 @@
-# Copyrights 2007-2008 by Mark Overmeer.
+# Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.05.
@@ -8,9 +8,11 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.20';
+$VERSION = '0.21';
 
 use base 'Exporter';
+
+use List::Util qw/first/;
 
 # domain 'log-report' via work-arounds:
 #     Log::Report cannot do "use Log::Report"
@@ -444,6 +446,13 @@ sub _setting($$;$)
 
 sub isValidReason($) { $is_reason{$_[1]} }
 sub isFatal($)       { $is_fatal{$_[1]} }
+
+
+sub needs(@)
+{   my $thing = shift;
+    my $self  = ref $thing ? $thing : $reporter;
+    first {$self->{needs}{$_}} @_;
+}
 
 
 1;
