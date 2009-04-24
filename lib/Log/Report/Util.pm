@@ -1,14 +1,14 @@
 # Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 
 use warnings;
 use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.22';
+$VERSION = '0.23';
 
 use base 'Exporter';
 
@@ -53,7 +53,7 @@ sub parse_locale($)
       : $primary =~ m/^[a-z]{2,3}$/ ? $primary            # ISO639-1 and -2
       : $primary eq 'i' && @subtags ? lc(shift @subtags)  # IANA
       : $primary eq 'x' && @subtags ? lc(shift @subtags)  # Private
-      : error __x"unknown locale language in locale {locale}"
+      : error __x"unknown locale language in locale `{locale}'"
            , locale => $locale;
 
     my $script;

@@ -1,13 +1,13 @@
 # Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.22';
+$VERSION = '0.23';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -54,10 +54,12 @@ my %format_reason =
   , UCFIRST   => sub { ucfirst lc $_[0] }
   , IGNORE    => sub { '' }
   );
-  
+
+my $default_mode = 'NORMAL';
+
 sub init($)
 {   my ($self, $args) = @_;
-    my $mode = $self->_set_mode(delete $args->{mode} || 'NORMAL');
+    my $mode = $self->_set_mode(delete $args->{mode} || $default_mode);
 
     $self->{locale} = delete $args->{locale};
 
@@ -77,7 +79,6 @@ sub init($)
     }
 
     $self->{charset_enc} = $csenc || sub { $_[0] };
-
     $self;
 }
 
@@ -94,6 +95,8 @@ my $in_global_destruction = 0;
 END { $in_global_destruction++ }
 sub DESTROY { $in_global_destruction or shift->close }
 
+#----------------------------
+
 
 sub name {shift->{name}}
 
@@ -102,6 +105,9 @@ sub type() {shift->{type}}
 
 
 sub mode() {shift->{mode}}
+
+#Please use C<dispatcher mode => $MODE;>
+sub defaultMode($) {$default_mode = $_[1]}
 
 # only to be used via Log::Report::dispatcher(mode => ...)
 # because requires re-investigating collective dispatcher needs

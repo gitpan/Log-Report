@@ -67,5 +67,4 @@ t/54try.t
 t/99pod.t
 t/DieTests.pm
 t/hello-world-slovak.po
-t/pod.t
 META.yml                                 Module meta-data (added by MakeMaker)

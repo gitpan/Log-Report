@@ -1,17 +1,17 @@
 # Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Syslog;
 use vars '$VERSION';
-$VERSION = '0.22';
+$VERSION = '0.23';
 
 use base 'Log::Report::Dispatcher';
 
-use Sys::Syslog 0.24, qw/:standard :extended :macros/;
+use Sys::Syslog qw/:standard :extended :macros/;
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util  qw/@reasons expand_reasons/;
 

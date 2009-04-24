@@ -1,13 +1,13 @@
 # Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.22';
+$VERSION = '0.23';
 
 
 use Log::Report 'log-report';
@@ -100,6 +100,7 @@ sub _expand($$)
     use locale;
     if(ref $value eq 'ARRAY')
     {   my @values = map {defined $_ ? $_ : 'undef'} @$value;
+        @values or return '(none)';
         return $format
              ? join($", map {sprintf $format, $_} @values)
              : join($", @values);
