@@ -113,8 +113,8 @@ Returns the translated string for MSGID.  When not specified, COUNT is 1
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.23,
-built on April 24, 2009. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.24,
+built on April 27, 2009. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

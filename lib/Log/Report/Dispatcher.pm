@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.23';
+$VERSION = '0.24';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -167,7 +167,8 @@ sub translate($$$)
 
     # not all implementations of setlocale() return the old value
     my $oldloc = setlocale(&LC_ALL);
-    setlocale(&LC_ALL, $locale || 'en_US');
+    #setlocale(&LC_ALL, $locale || 'en_US');
+    setlocale(&LC_ALL, $locale) if $locale;
 
     my $r = $self->{format_reason}->((__$reason)->toString);
     my $e = $opts->{errno} ? strerror($opts->{errno}) : undef;
