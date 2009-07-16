@@ -7,11 +7,14 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.24';
+$VERSION = '0.25';
 
 
 use Log::Report 'log-report';
 use POSIX  qw/locale_h/;
+
+
+use overload '""' => 'toString';
 
 
 sub new($@)
@@ -36,6 +39,12 @@ sub throw(@)
     my $opts   = @_ ? { %{$self->{report_opts}}, @_ } : $self->{report_opts};
     my $reason = delete $opts->{reason} || $self->reason;
     report $opts, $reason, $self->message;
+}
+
+
+sub toString()
+{   my $self = shift;
+    $self->reason . ": " . $self->message . "\n";
 }
 
 1;

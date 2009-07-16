@@ -2,8 +2,6 @@
 
 Log::Report::Lexicon::POT - manage PO files
 
-=head1 INHERITANCE
-
 =head1 SYNOPSIS
 
  # this is usually not for end-users, See ::Extract::PerlPPI
@@ -311,8 +309,8 @@ Error: textdomain parameter is required
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.24,
-built on April 27, 2009. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.25,
+built on July 16, 2009. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

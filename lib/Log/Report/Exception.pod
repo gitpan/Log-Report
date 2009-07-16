@@ -2,8 +2,6 @@
 
 Log::Report::Exception - a collected report
 
-=head1 INHERITANCE
-
 =head1 SYNOPSIS
 
  # created within a try block
@@ -97,10 +95,25 @@ example: overrule defaults to report
 
 =back
 
+$obj-E<gt>B<toString>
+
+=over 4
+
+Prints the reason and the message.  Differently from L<throw()|Log::Report::Exception/"Processing">, this
+only represents the textual content: it does not re-cast the exceptions to
+higher levels.
+
+example: printing exceptions
+
+ print $_->toString for $@->exceptions;
+ print $_ for $@->exceptions;   # via overloading
+
+=back
+
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.24,
-built on April 27, 2009. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.25,
+built on July 16, 2009. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

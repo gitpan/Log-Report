@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Try;
 use vars '$VERSION';
-$VERSION = '0.24';
+$VERSION = '0.25';
 
 use base 'Log::Report::Dispatcher';
 
@@ -70,6 +70,8 @@ sub reportAll(@) { $_->throw(@_) for shift->exceptions }
 
 
 sub reportFatal(@) { $_->throw(@_) for shift->wasFatal }
+
+#-----------------
 
 
 sub failed()  {   shift->{died}}

@@ -4,7 +4,7 @@
 # Pod stripped from pm file by OODoc 1.06.
 package Log::Report::Translator;
 use vars '$VERSION';
-$VERSION = '0.24';
+$VERSION = '0.25';
 
 
 use warnings;

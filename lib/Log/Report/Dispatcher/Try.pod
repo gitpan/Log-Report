@@ -38,6 +38,8 @@ Log::Report::Dispatcher::Try - capture all reports as exceptions
      };
  $@->reportFatal(to => 'syslog');  # overrule destination
 
+ print $@->exceptions; # no re-cast, just print
+
 =head1 DESCRIPTION
 
 The L<Log::Report::try()|Log::Report/"Report Production and Configuration"> catches errors in the block (CODE
@@ -185,10 +187,10 @@ $obj-E<gt>B<log>(OPTS, REASON, MESSAGE)
 
 =over 4
 
-Other dispatchers translate the message here, and make it leave
-the program.   However, messages in a "try" block are only
-captured in an intermediate layer: they may never be presented
-to an end-users.  And for sure, we do not know the language yet.
+Other dispatchers translate the message here, and make it leave the
+program.  However, messages in a "try" block are only captured in
+an intermediate layer: they may never be presented to an end-users.
+And for sure, we do not know the language yet.
 
 The MESSAGE is either a STRING or a L<Log::Report::Message|Log::Report::Message>.
 
@@ -199,7 +201,7 @@ $obj-E<gt>B<reportAll>(OPTIONS)
 =over 4
 
 Re-cast the messages in all collect exceptions into the defined
-dispatchers, which were disabled during the try block.  The OPTIONS
+dispatchers, which were disabled during the try block. The OPTIONS
 will end-up as HASH-of-OPTIONS to L<Log::Report::report()|Log::Report/"Report Production and Configuration">; see
 L<Log::Report::Exception::throw()|Log::Report::Exception/"Processing"> which does the job.
 
@@ -291,8 +293,8 @@ See L<Log::Report::Message::inClass()|Log::Report::Message/"Processing">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.24,
-built on April 27, 2009. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.25,
+built on July 16, 2009. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
