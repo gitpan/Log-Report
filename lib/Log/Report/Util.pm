@@ -1,4 +1,4 @@
-# Copyrights 2007-2009 by Mark Overmeer.
+# Copyrights 2007-2010 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.06.
@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.25';
+$VERSION = '0.26';
 
 use base 'Exporter';
 

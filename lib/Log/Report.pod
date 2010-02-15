@@ -27,14 +27,14 @@ Log::Report - report a problem, pluggable handlers and language support
  report ERROR => __x('gettext string', param => $param, ...)
      if $condition;
 
- # Syntax SHORT, adding error() and many other
- use Log::Report 'my-domain', syntax => 'SHORT';
+ # when syntax=SHORT (default since 0.26), many useful functions
  error __x('gettext string', param => $param, ...)
      if $condition;
 
  # Overrule standard behavior for single message with HASH as
  # first parameter.  Only long syntax
  use Errno qw/ENOMEM/;
+ use Log::Report syntax => 'REPORT';
  report {to => 'syslog', errno => ENOMEM}
    , FAULT => __x"cannot allocate {size} bytes", size => $size;
 
@@ -588,7 +588,7 @@ These OPTIONS are used for all packages which use the same DOMAIN.
  Option         --Default
  mode             'NORMAL'
  native_language  'en_US'
- syntax           'REPORT'
+ syntax           'SHORT'
  translator       <rescue>
 
 . mode => LEVEL
@@ -612,13 +612,14 @@ as the report.  Of course, each textdomain can define its own.
 
 =back
 
-. syntax => 'REPORT'|'SHORT'
+. syntax => 'REPORT'|'SHORT'|'LONG'
 
 =over 4
 
 The SHORT syntax will add the report abbreviations (like function
 L<error()|Log::Report/"Abbreviations for report()">) to your name-space.  Otherwise, each message must be produced
-with L<report()|Log::Report/"Report Production and Configuration">.
+with L<report()|Log::Report/"Report Production and Configuration">. C<LONG> is an alternative to C<REPORT>: both do not
+polute your namespace with the useful abbrev functions.
 
 =back
 
@@ -635,15 +636,15 @@ example: of import
 
  use Log::Report mode => 3;     # or 'DEBUG'
 
- use Log::Report 'my-domain'    # in each package producing messages
-  , syntax     => 'SHORT';
+ use Log::Report 'my-domain';   # in each package producing messages
 
  use Log::Report 'my-domain'    # in one package, top of distr
   , translator => Log::Report::Translator::POT->new
      ( lexicon  => '/home/me/locale'  # bindtextdomain
      , charset  => 'UTF-8'            # codeset
      )
-  , native_language => 'nl_NL'; # untranslated msgs are Dutch
+  , native_language => 'nl_NL'  # untranslated msgs are Dutch
+  , syntax          => 'REPORT';# report ERROR, not error()
 
 =back
 
@@ -1185,12 +1186,12 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.25,
-built on July 16, 2009. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.26,
+built on February 15, 2010. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2009 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
