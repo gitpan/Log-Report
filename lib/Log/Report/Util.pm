@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.26';
+$VERSION = '0.27';
 
 use base 'Exporter';
 

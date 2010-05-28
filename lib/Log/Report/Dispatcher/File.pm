@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::File;
 use vars '$VERSION';
-$VERSION = '0.26';
+$VERSION = '0.27';
 
 use base 'Log::Report::Dispatcher';
 
@@ -39,9 +39,10 @@ sub init($)
     {   $self->{filename} = $to;
         my $binmode = $args->{replace} ? '>' : '>>';
 
-        $self->{output} = IO::File->new($to, $binmode)
+        my $f = $self->{output} = IO::File->new($to, $binmode)
             or fault __x"cannot write log into {file} with {binmode}"
                    , binmode => $binmode, file => $to;
+        $f->autoflush;
 
         trace "opened dispatcher $name to $to with $binmode";
     }

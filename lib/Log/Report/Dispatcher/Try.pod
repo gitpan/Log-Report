@@ -293,8 +293,8 @@ See L<Log::Report::Message::inClass()|Log::Report::Message/"Processing">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.26,
-built on February 15, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.27,
+built on May 28, 2010. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
