@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.27';
+$VERSION = '0.28';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -59,8 +59,8 @@ my $default_mode = 'NORMAL';
 
 sub init($)
 {   my ($self, $args) = @_;
-    my $mode = $self->_set_mode(delete $args->{mode} || $default_mode);
 
+    my $mode = $self->_set_mode(delete $args->{mode} || $default_mode);
     $self->{locale} = delete $args->{locale};
 
     my $accept = delete $args->{accept} || $default_accept[$mode];

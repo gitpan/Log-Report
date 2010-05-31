@@ -86,8 +86,8 @@ See L<Log::Report::Translator/"Translating">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.27,
-built on May 28, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.28,
+built on May 31, 2010. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

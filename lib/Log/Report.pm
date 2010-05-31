@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.27';
+$VERSION = '0.28';
 
 use base 'Exporter';
 
@@ -168,6 +168,7 @@ sub dispatcher($@)
     {   my ($type, $name) = (shift, shift);
         my $disp = Log::Report::Dispatcher->new($type, $name
           , mode => $default_mode, @_);
+        defined $disp or return;  # use defined, because $disp is overloaded
 
         # old dispatcher with same name will be closed in DESTROY
         $reporter->{dispatchers}{$name} = $disp;
@@ -225,7 +226,7 @@ sub dispatcher($@)
     wantarray ? @dispatchers : $dispatchers[0];
 }
 
-END { $_->close for values %{$reporter->{dispatchers}} }
+END { $_->close for grep defined, values %{$reporter->{dispatchers}} }
 
 # _whats_needed
 # Investigate from all dispatchers which reasons will need to be

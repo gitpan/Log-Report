@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Try;
 use vars '$VERSION';
-$VERSION = '0.27';
+$VERSION = '0.28';
 
 use base 'Log::Report::Dispatcher';
 
@@ -22,7 +22,7 @@ use overload
 
 sub init($)
 {   my ($self, $args) = @_;
-    $self->SUPER::init($args);
+    defined $self->SUPER::init($args) or return;
     $self->{exceptions} = delete $args->{exceptions} || [];
     $self->{died} = delete $args->{died};
     $self;

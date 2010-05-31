@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.27';
+$VERSION = '0.28';
 
 
 use Log::Report 'log-report';
@@ -44,7 +44,8 @@ sub throw(@)
 
 sub toString()
 {   my $self = shift;
-    $self->reason . ": " . $self->message . "\n";
+    my $msg  = $self->message;
+    $self->reason . ': ' . (ref $msg ? $msg->toString : $msg) . "\n";
 }
 
 1;
