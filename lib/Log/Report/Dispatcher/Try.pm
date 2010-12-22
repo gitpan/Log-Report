@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Try;
 use vars '$VERSION';
-$VERSION = '0.28';
+$VERSION = '0.90';
 
 use base 'Log::Report::Dispatcher';
 
@@ -53,12 +53,12 @@ sub log($$$)
     $opts->{stack}    ||= [];
     $opts->{location} ||= '';
 
-    push @{$self->{exceptions}},
-       Log::Report::Exception->new
-         ( reason      => $reason
-         , report_opts => $opts
-         , message     => $message
-         );
+    push @{$self->{exceptions}}
+      , Log::Report::Exception->new
+          ( reason      => $reason
+          , report_opts => $opts
+          , message     => $message
+          );
 
     # later changed into nice message
     $self->{died} ||= $opts->{is_fatal};

@@ -176,9 +176,10 @@ is B<ONE> string with optional parameters.  The HASH is an optional
 first parameter, which can be used to influence the dispatchers.  The
 HASH contains any combination of the OPTIONS listed below.
 
-When C<syntax => 'SHORT'> is configured, you will also have abbreviations
-available, where the REASON is the name of the function.  See for
-instance L<info()|Log::Report/"Abbreviations for report()">.  In that case, you loose the chance for OPTIONS.
+When C<syntax => 'SHORT'> is configured (the default), you will also have
+abbreviations available, where the REASON is the name of the function.
+See for instance L<info()|Log::Report/"Abbreviations for report()">. In that case, you loose the chance for
+OPTIONS.
 
 Returns is the LIST of dispatchers used to log the MESSAGE.  When
 empty, no back-end has accepted it so the MESSAGE was "lost".  Even when
@@ -187,6 +188,7 @@ REASON to.
 
  Option  --Default
  errno     $! or 1
+ is_fatal  <depends on reason>
  locale    undef
  location  undef
  stack     undef
@@ -202,6 +204,17 @@ default to C<1> (historical UNIX behavior). When the message REASON
 (combined with the run-mode) is severe enough to stop the program,
 this value as return code.  The use of this option itself will not
 trigger an C<die()>.
+
+=back
+
+. is_fatal => BOOLEAN
+
+=over 4
+
+Some logged exceptions are fatal, other aren't.  The default usually
+is correct. However, you may want an error to be caught (usually with
+L<try()|Log::Report/"Report Production and Configuration">), redispatch it to syslog, but without it killing the main
+program.
 
 =back
 
@@ -1186,8 +1199,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.28,
-built on May 31, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.90,
+built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

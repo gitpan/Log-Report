@@ -101,6 +101,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 $obj-E<gt>B<collectStack>([MAXDEPTH])
 
+Log::Report::Dispatcher::Perl-E<gt>B<collectStack>([MAXDEPTH])
+
 =over 4
 
 See L<Log::Report::Dispatcher/"Logging">
@@ -137,8 +139,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.28,
-built on May 31, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.90,
+built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

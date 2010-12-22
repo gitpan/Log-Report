@@ -5,7 +5,7 @@
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.28';
+$VERSION = '0.90';
 
 
 use warnings;

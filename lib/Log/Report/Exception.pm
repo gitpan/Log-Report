@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.28';
+$VERSION = '0.90';
 
 
 use Log::Report 'log-report';
@@ -35,17 +35,24 @@ sub inClass($) { $_[0]->message->inClass($_[1]) }
 # if we would used "report" here, we get a naming conflict with
 # function Log::Report::report.
 sub throw(@)
-{   my $self   = shift;
-    my $opts   = @_ ? { %{$self->{report_opts}}, @_ } : $self->{report_opts};
-    my $reason = delete $opts->{reason} || $self->reason;
-    report $opts, $reason, $self->message;
+{   my $self    = shift;
+    my $opts    = @_ ? { %{$self->{report_opts}}, @_ } : $self->{report_opts};
+    my $reason  = delete $opts->{reason} || $self->reason;
+
+    $opts->{stack} = Log::Report::Dispatcher->collectStack
+        if $opts->{stack} && @{$opts->{stack}};
+
+    report $opts, $reason, $self;
 }
+
+# where the throw is handled is not interesting
+sub PROPAGATE($$) {shift}
 
 
 sub toString()
 {   my $self = shift;
     my $msg  = $self->message;
-    $self->reason . ': ' . (ref $msg ? $msg->toString : $msg) . "\n";
+    lc($self->reason) . ': ' . (ref $msg ? $msg->toString : $msg) . "\n";
 }
 
 1;

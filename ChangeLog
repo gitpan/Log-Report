@@ -1,6 +1,26 @@
 
 ==== version history of Log::Report
 
+version 0.90: Wed Dec 22 16:29:51 CET 2010
+
+	Changes:
+
+	- ::Exception stringifies with lowercase reason, was uppercase
+
+	Fixes:
+
+	- repair Log::Report::report(is_fatal) option.
+
+	- reimplementation of totalDigits and fractionDigits facets,
+	  triggered by rt.cpan.org#63464 [mimon-cz]
+
+	- fix handling results of filters
+
+	Improvements:
+
+	- reorder checks in report() to be faster when the message
+	  is ignored (for instance trace)
+
 version 0.28: Mon May 31 16:00:12 CEST 2010
 
 	Fixes:
