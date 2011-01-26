@@ -34,20 +34,20 @@ L<Log::Report::Lexicon::POT|Log::Report::Lexicon::POT>.
 
 =head2 Constructors
 
-Log::Report::Lexicon::POTcompact-E<gt>B<read>(FILENAME, OPTIONS)
-
 =over 4
+
+=item Log::Report::Lexicon::POTcompact-E<gt>B<read>(FILENAME, OPTIONS)
 
 Read the POT table information from FILENAME, as compact as possible.
 Comments, plural-form, and such are lost on purpose: they are not
 needed for translations.
 
- Option --Default
- charset  <required>
+ -Option --Default
+  charset  <required>
 
-. charset => STRING
+=over 2
 
-=over 4
+=item charset => STRING
 
 The character-set which is used for the file.  You must specify
 this explicitly, while it cannot be trustfully detected automatically.
@@ -58,53 +58,37 @@ this explicitly, while it cannot be trustfully detected automatically.
 
 =head2 Attributes
 
-$obj-E<gt>B<filename>
-
 =over 4
+
+=item $obj-E<gt>B<filename>
 
 Returns the name of the source file for this data.
 
-=back
-
-$obj-E<gt>B<index>
-
-=over 4
+=item $obj-E<gt>B<index>
 
 Returns a HASH of all defined PO objects, organized by msgid.  Please try
 to avoid using this: use L<msgid()|Log::Report::Lexicon::POTcompact/"Managing PO's"> for lookup.
 
-=back
-
-$obj-E<gt>B<nrPlurals>
-
-=over 4
+=item $obj-E<gt>B<nrPlurals>
 
 =back
 
 =head2 Managing PO's
 
-$obj-E<gt>B<header>(FIELD)
-
 =over 4
+
+=item $obj-E<gt>B<header>(FIELD)
 
 The translation of a blank MSGID is used to store a MIME header, which
 contains meta-data.  The FIELD content is returned.
 
-=back
-
-$obj-E<gt>B<msgid>(STRING)
-
-=over 4
+=item $obj-E<gt>B<msgid>(STRING)
 
 Lookup the translations with the STRING.  Returns a SCALAR, when only
 one translation is known, and an ARRAY wherein there are multiple.
 Returns C<undef> when the translation is not defined.
 
-=back
-
-$obj-E<gt>B<msgstr>(MSGID, [COUNT])
-
-=over 4
+=item $obj-E<gt>B<msgstr>(MSGID, [COUNT])
 
 Returns the translated string for MSGID.  When not specified, COUNT is 1
 (the single form).
@@ -113,12 +97,12 @@ Returns the translated string for MSGID.  When not specified, COUNT is 1
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

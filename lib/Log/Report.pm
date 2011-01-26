@@ -1,14 +1,14 @@
-# Copyrights 2007-2010 by Mark Overmeer.
+# Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.06.
+# Pod stripped from pm file by OODoc 1.07.
 
 use warnings;
 use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.90';
+$VERSION = '0.91';
 
 use base 'Exporter';
 
@@ -218,7 +218,7 @@ END { $_->close for grep defined, values %{$reporter->{dispatchers}} }
 
 # _whats_needed
 # Investigate from all dispatchers which reasons will need to be
-# passed on.   After dispatchers are added, enabled, or disabled,
+# passed on. After dispatchers are added, enabled, or disabled,
 # this method shall be called to re-investigate the back-ends.
 
 sub _whats_needed()
@@ -293,7 +293,10 @@ sub __($)
 
 # label "msgid" added before first argument
 sub __x($@)
-{   Log::Report::Message->new
+{   @_%2 or error __x"even length parameter list for __x at {where}",
+        where => join(' line ', (caller)[1,2]);
+
+    Log::Report::Message->new
      ( _msgid  => @_
      , _expand => 1
      , _domain => _default_domain(caller)

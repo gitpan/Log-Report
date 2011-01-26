@@ -23,25 +23,21 @@ exist yet, one C<textdomain/xx.po> file will be created.
 
 =head2 Constructors
 
-Log::Report::Extract::PerlPPI-E<gt>B<new>(OPTIONS)
-
 =over 4
 
- Option --Default
- charset  'utf-8'
- lexicon  <required>
+=item Log::Report::Extract::PerlPPI-E<gt>B<new>(OPTIONS)
 
-. charset => STRING
+ -Option --Default
+  charset  'utf-8'
+  lexicon  <required>
 
-=over 4
+=over 2
+
+=item charset => STRING
 
 The character-set used in the PO files.
 
-=back
-
-. lexicon => DIRECTORY
-
-=over 4
+=item lexicon => DIRECTORY
 
 The place where the lexicon is kept.  When no lexicon is defined yet,
 this will be the directory where an C<domain/xx.po> file will be created.
@@ -52,25 +48,17 @@ this will be the directory where an C<domain/xx.po> file will be created.
 
 =head2 Accessors
 
-$obj-E<gt>B<charset>
-
 =over 4
+
+=item $obj-E<gt>B<charset>
 
 Returns the character-set used inside the POT files.
 
-=back
-
-$obj-E<gt>B<domains>
-
-=over 4
+=item $obj-E<gt>B<domains>
 
 Returns a sorted list of all known domain names.
 
-=back
-
-$obj-E<gt>B<index>
-
-=over 4
+=item $obj-E<gt>B<index>
 
 Returns the L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index> object, which is listing
 the files in the lexicon directory tree.
@@ -79,33 +67,29 @@ the files in the lexicon directory tree.
 
 =head2 Processors
 
-$obj-E<gt>B<process>(FILENAME, OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<process>(FILENAME, OPTIONS)
 
 Update the domains mentioned in the FILENAME.  All textdomains defined
 in the file will get updated automatically, but not written before
 all files where processed.
 
- Option --Default
- charset  'iso-8859-1'
+ -Option --Default
+  charset  'iso-8859-1'
 
-. charset => STRING
+=over 2
+
+=item charset => STRING
 
 =back
 
-$obj-E<gt>B<showStats>([DOMAINs])
-
-=over 4
+=item $obj-E<gt>B<showStats>([DOMAINs])
 
 Show a status about the DOMAIN (by default all domains).  At least mode
 verbose is required to see this.
 
-=back
-
-$obj-E<gt>B<write>([DOMAIN])
-
-=over 4
+=item $obj-E<gt>B<write>([DOMAIN])
 
 Update the information of the files related to DOMAIN, by default all
 processed DOMAINS.  All information known about the DOMAIN is removed
@@ -115,12 +99,12 @@ from the cache.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

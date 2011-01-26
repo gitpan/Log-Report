@@ -37,17 +37,12 @@ using L<new(to_level)|Log::Report::Dispatcher::LogDispatch/"Constructors">.  See
 
 =head2 Constructors
 
-$obj-E<gt>B<close>
-
 =over 4
 
+=item $obj-E<gt>B<close>
 See L<Log::Report::Dispatcher/"Constructors">
 
-=back
-
-Log::Report::Dispatcher::LogDispatch-E<gt>B<new>(TYPE, NAME, OPTIONS)
-
-=over 4
+=item Log::Report::Dispatcher::LogDispatch-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
 The Log::Dispatch infrastructure has quite a large number of output
 TYPEs, each extending the Log::Dispatch::Output base-class.  You
@@ -58,56 +53,44 @@ parameters, so you will need to restrict the options to what is supported
 for the specific back-end.  See their respective manual-pages.  The errors
 produced by the back-ends quite horrible and untranslated, sorry.
 
- Option       --Defined in     --Default
- accept         Log::Report::Dispatcher  depend on mode
- callbacks                       []
- charset        Log::Report::Dispatcher  <undef>
- format_reason  Log::Report::Dispatcher  'LOWERCASE'
- locale         Log::Report::Dispatcher  <system locale>
- max_level                       undef
- min_level                       debug
- mode           Log::Report::Dispatcher  'NORMAL'
- to_level                        []
+ -Option       --Defined in     --Default
+  accept         Log::Report::Dispatcher  depend on mode
+  callbacks                       []
+  charset        Log::Report::Dispatcher  <undef>
+  format_reason  Log::Report::Dispatcher  'LOWERCASE'
+  locale         Log::Report::Dispatcher  <system locale>
+  max_level                       undef
+  min_level                       debug
+  mode           Log::Report::Dispatcher  'NORMAL'
+  to_level                        []
 
-. accept => REASONS
+=over 2
 
-. callbacks => CODE|ARRAY-of-CODE
+=item accept => REASONS
 
-=over 4
+=item callbacks => CODE|ARRAY-of-CODE
 
 See Log::Dispatch::Output.
 
-=back
+=item charset => CHARSET
 
-. charset => CHARSET
+=item format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
-. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
+=item locale => LOCALE
 
-. locale => LOCALE
-
-. max_level => LEVEL
-
-=over 4
+=item max_level => LEVEL
 
 Like C<min_level>.
 
-=back
-
-. min_level => LEVEL
-
-=over 4
+=item min_level => LEVEL
 
 Restrict the messages which are passed through based on the LEVEL,
 so after the reason got translated into a Log::Dispatch compatible
 LEVEL.  The default will use Log::Report restrictions only.
 
-=back
+=item mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
 
-. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
-
-. to_level => ARRAY-of-PAIRS
-
-=over 4
+=item to_level => ARRAY-of-PAIRS
 
 See L<reasonToLevel()|Log::Report::Dispatcher::LogDispatch/"Logging">.
 
@@ -117,121 +100,69 @@ See L<reasonToLevel()|Log::Report::Dispatcher::LogDispatch/"Logging">.
 
 =head2 Accessors
 
-$obj-E<gt>B<backend>
-
 =over 4
+
+=item $obj-E<gt>B<backend>
 
 Returns the Log::Dispatch::Output object which is used for logging.
 
-=back
-
-$obj-E<gt>B<isDisabled>
-
-=over 4
-
+=item $obj-E<gt>B<isDisabled>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<mode>
-
-=over 4
-
+=item $obj-E<gt>B<mode>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<name>
-
-=over 4
-
+=item $obj-E<gt>B<name>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<needs>
-
-=over 4
-
+=item $obj-E<gt>B<needs>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<type>
-
-=over 4
-
+=item $obj-E<gt>B<type>
 See L<Log::Report::Dispatcher/"Accessors">
 
 =back
 
 =head2 Logging
 
-$obj-E<gt>B<collectLocation>
-
-Log::Report::Dispatcher::LogDispatch-E<gt>B<collectLocation>
-
 =over 4
 
+=item $obj-E<gt>B<collectLocation>
+
+=item Log::Report::Dispatcher::LogDispatch-E<gt>B<collectLocation>
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
+=item $obj-E<gt>B<collectStack>([MAXDEPTH])
 
-$obj-E<gt>B<collectStack>([MAXDEPTH])
-
-Log::Report::Dispatcher::LogDispatch-E<gt>B<collectStack>([MAXDEPTH])
-
-=over 4
-
+=item Log::Report::Dispatcher::LogDispatch-E<gt>B<collectStack>([MAXDEPTH])
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
-
-$obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
-
-$obj-E<gt>B<reasonToLevel>(REASON)
-
-=over 4
+=item $obj-E<gt>B<reasonToLevel>(REASON)
 
 Returns a level which is understood by Log::Dispatch, based on
 a translation table.  This can be changed with L<new(to_level)|Log::Report::Dispatcher::LogDispatch/"Constructors">.
 
-=back
+=item $obj-E<gt>B<stackTraceLine>(OPTIONS)
 
-$obj-E<gt>B<stackTraceLine>(OPTIONS)
+=item Log::Report::Dispatcher::LogDispatch-E<gt>B<stackTraceLine>(OPTIONS)
+See L<Log::Report::Dispatcher/"Logging">
 
-Log::Report::Dispatcher::LogDispatch-E<gt>B<stackTraceLine>(OPTIONS)
-
-=over 4
-
+=item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
 See L<Log::Report::Dispatcher/"Logging">
 
 =back
-
-$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
-See L<Log::Report::Dispatcher/"Logging">
-
-=back
-
-=head1 DETAILS
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -59,135 +59,92 @@ an exit of the program if there is none.
 
 =head2 Constructors
 
-$obj-E<gt>B<close>
-
 =over 4
+
+=item $obj-E<gt>B<close>
 
 Only when initiated with a FILENAME, the file will be closed.  In any
 other case, nothing will be done.
 
-=back
+=item Log::Report::Dispatcher::Try-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
-Log::Report::Dispatcher::Try-E<gt>B<new>(TYPE, NAME, OPTIONS)
+ -Option       --Defined in     --Default
+  accept         Log::Report::Dispatcher  depend on mode
+  charset        Log::Report::Dispatcher  <undef>
+  died                            undef
+  exceptions                      []
+  format_reason  Log::Report::Dispatcher  'LOWERCASE'
+  locale         Log::Report::Dispatcher  <system locale>
+  mode           Log::Report::Dispatcher  'NORMAL'
 
-=over 4
+=over 2
 
- Option       --Defined in     --Default
- accept         Log::Report::Dispatcher  depend on mode
- charset        Log::Report::Dispatcher  <undef>
- died                            undef
- exceptions                      []
- format_reason  Log::Report::Dispatcher  'LOWERCASE'
- locale         Log::Report::Dispatcher  <system locale>
- mode           Log::Report::Dispatcher  'NORMAL'
+=item accept => REASONS
 
-. accept => REASONS
+=item charset => CHARSET
 
-. charset => CHARSET
-
-. died => STRING
-
-=over 4
+=item died => STRING
 
 The exit string ($@) of the eval'ed block.
 
+=item exceptions => ARRAY-of-EXCEPTIONS
+
+=item format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
+
+=item locale => LOCALE
+
+=item mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
+
 =back
-
-. exceptions => ARRAY-of-EXCEPTIONS
-
-. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
-
-. locale => LOCALE
-
-. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
 
 =back
 
 =head2 Accessors
 
-$obj-E<gt>B<died>([STRING])
-
 =over 4
+
+=item $obj-E<gt>B<died>([STRING])
 
 The message which was reported by C<eval>, which is used internally
 to catch problems in the try block.
 
-=back
-
-$obj-E<gt>B<exceptions>
-
-=over 4
+=item $obj-E<gt>B<exceptions>
 
 Returns all collected C<Log::Report::Exceptions>.  The last of
 them may be a fatal one.  The other are non-fatal.
 
-=back
-
-$obj-E<gt>B<isDisabled>
-
-=over 4
-
+=item $obj-E<gt>B<isDisabled>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<mode>
-
-=over 4
-
+=item $obj-E<gt>B<mode>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<name>
-
-=over 4
-
+=item $obj-E<gt>B<name>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<needs>
-
-=over 4
-
+=item $obj-E<gt>B<needs>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<type>
-
-=over 4
-
+=item $obj-E<gt>B<type>
 See L<Log::Report::Dispatcher/"Accessors">
 
 =back
 
 =head2 Logging
 
-$obj-E<gt>B<collectLocation>
-
-Log::Report::Dispatcher::Try-E<gt>B<collectLocation>
-
 =over 4
 
+=item $obj-E<gt>B<collectLocation>
+
+=item Log::Report::Dispatcher::Try-E<gt>B<collectLocation>
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
+=item $obj-E<gt>B<collectStack>([MAXDEPTH])
 
-$obj-E<gt>B<collectStack>([MAXDEPTH])
-
-Log::Report::Dispatcher::Try-E<gt>B<collectStack>([MAXDEPTH])
-
-=over 4
-
+=item Log::Report::Dispatcher::Try-E<gt>B<collectStack>([MAXDEPTH])
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
-
-$obj-E<gt>B<log>(OPTS, REASON, MESSAGE)
-
-=over 4
+=item $obj-E<gt>B<log>(OPTS, REASON, MESSAGE)
 
 Other dispatchers translate the message here, and make it leave the
 program.  However, messages in a "try" block are only captured in
@@ -196,61 +153,39 @@ And for sure, we do not know the language yet.
 
 The MESSAGE is either a STRING or a L<Log::Report::Message|Log::Report::Message>.
 
-=back
-
-$obj-E<gt>B<reportAll>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<reportAll>(OPTIONS)
 
 Re-cast the messages in all collect exceptions into the defined
 dispatchers, which were disabled during the try block. The OPTIONS
 will end-up as HASH-of-OPTIONS to L<Log::Report::report()|Log::Report/"Report Production and Configuration">; see
 L<Log::Report::Exception::throw()|Log::Report::Exception/"Processing"> which does the job.
 
-=back
-
-$obj-E<gt>B<reportFatal>
-
-=over 4
+=item $obj-E<gt>B<reportFatal>
 
 Re-cast only the fatal message to the defined dispatchers.  If the
 block was left without problems, then nothing will be done.  The OPTIONS
 will end-up as HASH-of-OPTIONS to L<Log::Report::report()|Log::Report/"Report Production and Configuration">; see
 L<Log::Report::Exception::throw()|Log::Report::Exception/"Processing"> which does the job.
 
-=back
+=item $obj-E<gt>B<stackTraceLine>(OPTIONS)
 
-$obj-E<gt>B<stackTraceLine>(OPTIONS)
-
-Log::Report::Dispatcher::Try-E<gt>B<stackTraceLine>(OPTIONS)
-
-=over 4
-
+=item Log::Report::Dispatcher::Try-E<gt>B<stackTraceLine>(OPTIONS)
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
-
-$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
+=item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
 See L<Log::Report::Dispatcher/"Logging">
 
 =back
 
 =head2 Status
 
-$obj-E<gt>B<failed>
-
 =over 4
+
+=item $obj-E<gt>B<failed>
 
 Returns true if the block was left with an fatal message.
 
-=back
-
-$obj-E<gt>B<showStatus>
-
-=over 4
+=item $obj-E<gt>B<showStatus>
 
 If this object is kept in C<$@>, and someone uses this as string, we
 want to show the fatal error message.
@@ -259,29 +194,21 @@ The message is not very informative for the good cause: we do not want
 people to simply print the C<$@>, but wish for a re-cast of the message
 using L<reportAll()|Log::Report::Dispatcher::Try/"Logging"> or L<reportFatal()|Log::Report::Dispatcher::Try/"Logging">.
 
-=back
-
-$obj-E<gt>B<success>
-
-=over 4
+=item $obj-E<gt>B<success>
 
 Returns true if the block exited normally.
 
-=back
-
-$obj-E<gt>B<wasFatal>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<wasFatal>(OPTIONS)
 
 Returns the L<Log::Report::Exception|Log::Report::Exception> which caused the "try" block to
 die, otherwise an empty LIST (undef).
 
- Option--Default
- class   undef
+ -Option--Default
+  class   undef
 
-. class => CLASS|REGEX
+=over 2
 
-=over 4
+=item class => CLASS|REGEX
 
 Only return the exception if it was fatal, and in the same time in
 the specified CLASS (as string) or matches the REGEX.
@@ -291,16 +218,32 @@ See L<Log::Report::Message::inClass()|Log::Report::Message/"Processing">
 
 =back
 
-=head1 DETAILS
+=head1 OVERLOADING
+
+=over 4
+
+=item overload: B<boolean>
+
+Returns true if the previous try block did produce a terminal
+error.  This "try" object is assigned to C<$@>, and the usual
+perl syntax is C<if($@) {...error-handler...}>.
+
+=item overload: B<stringify>
+
+When C<$@> is used the traditional way, it is checked to have
+a string content.  In this case, stringify into the fatal error
+or nothing.
+
+=back
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

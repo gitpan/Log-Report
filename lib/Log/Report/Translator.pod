@@ -33,26 +33,22 @@ language packs are not installed.
 
 =head2 Constructors
 
-Log::Report::Translator-E<gt>B<new>(OPTIONS)
-
 =over 4
 
- Option --Default
- charset  <from locale>
- lexicon  <see text>
+=item Log::Report::Translator-E<gt>B<new>(OPTIONS)
 
-. charset => STRING
+ -Option --Default
+  charset  <from locale>
+  lexicon  <see text>
 
-=over 4
+=over 2
+
+=item charset => STRING
 
 When the locale contains a codeset in its name, then that will be
 used.  Otherwise, the default is C<utf-8>.
 
-=back
-
-. lexicon => DIRECTORY|ARRAY-of-DIRECTORYs
-
-=over 4
+=item lexicon => DIRECTORY|ARRAY-of-DIRECTORYs
 
 The DIRECTORY where the translations can be found.  See
 L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index> for the expected structure of such
@@ -78,17 +74,13 @@ example: default lexicon directory
 
 =head2 Accessors
 
-$obj-E<gt>B<charset>
-
 =over 4
+
+=item $obj-E<gt>B<charset>
 
 Returns the default charset, which can be overrule by the locale.
 
-=back
-
-$obj-E<gt>B<lexicons>
-
-=over 4
+=item $obj-E<gt>B<lexicons>
 
 Returns a list of L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index> objects, where the
 translation files may be located.
@@ -97,19 +89,15 @@ translation files may be located.
 
 =head2 Translating
 
-$obj-E<gt>B<load>(DOMAIN, LOCALE)
-
 =over 4
+
+=item $obj-E<gt>B<load>(DOMAIN, LOCALE)
 
 Load the translation information in the text DOMAIN for the indicated LOCALE.
 Multiple calls to L<load()|Log::Report::Translator/"Translating"> should not cost significant performance: the
 data must be cached.
 
-=back
-
-$obj-E<gt>B<translate>(MESSAGE)
-
-=over 4
+=item $obj-E<gt>B<translate>(MESSAGE)
 
 Returns the translation of the MESSAGE, a C<Log::Report::Message> object,
 based on the current locale.
@@ -121,12 +109,12 @@ message object, for performance reasons.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

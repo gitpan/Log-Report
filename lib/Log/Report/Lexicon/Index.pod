@@ -18,9 +18,9 @@ created.
 
 =head2 Constructors
 
-Log::Report::Lexicon::Index-E<gt>B<new>(DIRECTORY, OPTIONS)
-
 =over 4
+
+=item Log::Report::Lexicon::Index-E<gt>B<new>(DIRECTORY, OPTIONS)
 
 Create an index for a certain directory.  If the directory does not
 exist, then the object will still be created.
@@ -29,9 +29,9 @@ exist, then the object will still be created.
 
 =head2 Accessors
 
-$obj-E<gt>B<directory>
-
 =over 4
+
+=item $obj-E<gt>B<directory>
 
 Returns the directory name.
 
@@ -39,19 +39,15 @@ Returns the directory name.
 
 =head2 Search
 
-$obj-E<gt>B<addFile>(BASENAME, [ABSOLUTE])
-
 =over 4
+
+=item $obj-E<gt>B<addFile>(BASENAME, [ABSOLUTE])
 
 Add a certain file to the index.  This method returns the ABSOLUTE
 path to that file, which must be used to access it.  When not explicitly
 specified, the ABSOLUTE path will be calculated.
 
-=back
-
-$obj-E<gt>B<find>(TEXTDOMAIN, LOCALE)
-
-=over 4
+=item $obj-E<gt>B<find>(TEXTDOMAIN, LOCALE)
 
 Lookup the best translation table, according to the rules described
 in chapter L</DETAILS>, below.
@@ -59,22 +55,14 @@ in chapter L</DETAILS>, below.
 Returned is a filename, or C<undef> if nothing is defined for the
 LOCALE (there is no default on this level).
 
-=back
-
-$obj-E<gt>B<index>
-
-=over 4
+=item $obj-E<gt>B<index>
 
 For internal use only.
 Force the creation of the index (if not already done).  Returns a hash
 with key-value pairs, where the key is the lower-cased version of the
 filename, and the value the case-sensitive version of the filename.
 
-=back
-
-$obj-E<gt>B<list>(DOMAIN, [EXTENSION])
-
-=over 4
+=item $obj-E<gt>B<list>(DOMAIN, [EXTENSION])
 
 Returned is a list of filenames which is used to update the list of
 MSGIDs when source files have changed.  All translation files which
@@ -95,12 +83,6 @@ example:
 
 =head1 DETAILS
 
-It's always complicated to find the lexicon files, because the perl
-package can be installed on any weird operating system.  Therefore,
-you may need to specify the lexicon directory or alternative directories
-explicitly.  However, you may also choose to install the lexicon files
-in between the perl modules.
-
 =head2 merge lexicon files with perl modules
 
 By default, the filename which contains the package which contains the
@@ -111,24 +93,6 @@ the locale indication, the lc-category (usually LC_MESSAGES), and
 the C<textdomain> followed by C<.po> are added.  This is exactly as
 C<gettext(1)> does, but then using the PO text file instead of the MO
 binary file.
-
-example: lexicon in module tree
-
-My module is named C<Some::Module> and installed in
-some of perl's directories, say C<~perl5.8.8>.  The module is defining
-textdomain C<my-domain>.  The translation is made into C<nl-NL.utf-8>
-(locale for Dutch spoken in The Netherlands, utf-8 encoded text file).
-
-The default location for the translation table is under
- ~perl5.8.8/Some/Module/messages/
-
-for instance
- ~perl5.8.8/Some/Module/messages/nl-NL.utf-8/LC_MESSAGES/my-domain.po
-
-There are alternatives, as described in L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index>,
-for instance
- ~perl5.8.8/Some/Module/messages/my-domain/nl-NL.utf-8.po
- ~perl5.8.8/Some/Module/messages/my-domain/nl.po
 
 =head2 Locale search
 
@@ -199,14 +163,20 @@ In order of attempts:
 Filenames may get mutilated by the platform (which we will try to hide
 from you [please help improve this]), and are treated case-INsensitive!
 
+It's always complicated to find the lexicon files, because the perl
+package can be installed on any weird operating system.  Therefore,
+you may need to specify the lexicon directory or alternative directories
+explicitly.  However, you may also choose to install the lexicon files
+in between the perl modules.
+
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -15,18 +15,14 @@ infrastructure.
 
 =head1 FUNCTIONS
 
-B<escape_chars>(STRING)
-
 =over 4
+
+=item B<escape_chars>(STRING)
 
 Replace all escape characters into their readable counterpart.  For
 instance, a new-line is replaced by backslash-n.
 
-=back
-
-B<expand_reasons>(REASONS)
-
-=over 4
+=item B<expand_reasons>(REASONS)
 
 Returns a sub-set of all existing message reason labels, based on the
 content REASONS string. The following rules apply:
@@ -47,11 +43,7 @@ example: of expended REASONS
  USER          # == MISTAKE,ERROR
  ALL           # == TRACE-PANIC
 
-=back
-
-B<parse_locale>(STRING)
-
-=over 4
+=item B<parse_locale>(STRING)
 
 Decompose a locale string.
 
@@ -70,25 +62,28 @@ In SCALAR context, a HASH is returned which can contain more information:
 language, script, territory, variant, codeset, and modifiers.  The
 variant (RFC3066 is probably never used)
 
-=back
-
-B<unescape_chars>(STRING)
-
-=over 4
+=item B<unescape_chars>(STRING)
 
 Replace all backslash-something escapes by their escape character.
 For instance, backslash-t is replaced by a tab character.
 
 =back
 
+=head1 SYNOPSYS
+
+ my ($language, $territory, $charset, $modifier)
+    = parse_locale 'nl_BE.utf-8@home';
+
+ my @take = expand_reasons 'INFO-ERROR,PANIC';
+
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

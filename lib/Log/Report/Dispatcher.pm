@@ -1,13 +1,13 @@
-# Copyrights 2007-2010 by Mark Overmeer.
+# Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.06.
+# Pod stripped from pm file by OODoc 1.07.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.90';
+$VERSION = '0.91';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -29,7 +29,7 @@ my %modes = (NORMAL => 0, VERBOSE => 1, ASSERT => 2, DEBUG => 3
 my @default_accept = ('NOTICE-', 'INFO-', 'ASSERT-', 'ALL');
 
 my %predef_dispatchers = map { (uc($_) => __PACKAGE__.'::'.$_) }
-   qw/File Perl Syslog Try/;
+   qw/File Perl Syslog Try Callback/;
 
 
 sub new(@)
@@ -127,7 +127,7 @@ sub _set_mode($)
 
 # only to be called from Log::Report::dispatcher()!!
 # because requires re-investigating needs
-sub _disable($)
+sub _disabled($)
 {   my $self = shift;
     @_ ? ($self->{disabled} = shift) : $self->{disabled};
 }

@@ -109,9 +109,9 @@ L<Log::Report::Dispatcher::Try|Log::Report::Dispatcher::Try>.
 
 =head2 Report Production and Configuration
 
-B<dispatcher>((TYPE, OPTIONS)|(COMMAND => NAME, [NAMEs]))
-
 =over 4
+
+=item B<dispatcher>((TYPE, OPTIONS)|(COMMAND => NAME, [NAMEs]))
 
 The C<Log::Report> suite has its own dispatcher TYPES, but also connects
 to external dispatching frame-works.  Each need some (minor) conversions,
@@ -163,11 +163,7 @@ example: play with dispatchers
  dispatcher PERL => 'default', mode => 'DEBUG', accept => 'ALL'
      if $debug;
 
-=back
-
-B<report>([HASH-of-OPTIONS], REASON, MESSAGE|(STRING,PARAMS),)
-
-=over 4
+=item B<report>([HASH-of-OPTIONS], REASON, MESSAGE|(STRING,PARAMS),)
 
 Produce a report for certain REASON.  The MESSAGE is a
 L<Log::Report::Message|Log::Report::Message> object (which are created with the
@@ -186,17 +182,17 @@ empty, no back-end has accepted it so the MESSAGE was "lost".  Even when
 no back-end need the message, it program will still exit when there is
 REASON to.
 
- Option  --Default
- errno     $! or 1
- is_fatal  <depends on reason>
- locale    undef
- location  undef
- stack     undef
- to        undef
+ -Option  --Default
+  errno     $! or 1
+  is_fatal  <depends on reason>
+  locale    undef
+  location  undef
+  stack     undef
+  to        undef
 
-. errno => INTEGER
+=over 2
 
-=over 4
+=item errno => INTEGER
 
 When the REASON includes the error text (See L</Run modes>), you can
 overrule the error code kept in C<$!>.  In other cases, the return code
@@ -205,49 +201,29 @@ default to C<1> (historical UNIX behavior). When the message REASON
 this value as return code.  The use of this option itself will not
 trigger an C<die()>.
 
-=back
-
-. is_fatal => BOOLEAN
-
-=over 4
+=item is_fatal => BOOLEAN
 
 Some logged exceptions are fatal, other aren't.  The default usually
 is correct. However, you may want an error to be caught (usually with
 L<try()|Log::Report/"Report Production and Configuration">), redispatch it to syslog, but without it killing the main
 program.
 
-=back
-
-. locale => LOCALE
-
-=over 4
+=item locale => LOCALE
 
 Use this specific locale, in stead of the user's preference.
 
-=back
-
-. location => STRING
-
-=over 4
+=item location => STRING
 
 When defined, this location is used in the display.  Otherwise, it
 is determined automatically if needed.  An empty string will disable
 any attempt to display this line.
 
-=back
-
-. stack => ARRAY
-
-=over 4
+=item stack => ARRAY
 
 When defined, that data is used to display the call stack.  Otherwise,
 it is collected via C<caller()> if needed.
 
-=back
-
-. to => NAME|ARRAY-of-NAMEs
-
-=over 4
+=item to => NAME|ARRAY-of-NAMEs
 
 Sent the MESSAGE only to the NAMEd dispatchers.  Ignore unknown NAMEs.
 Still, the dispatcher needs to be enabled and accept the REASONs.
@@ -270,11 +246,7 @@ example: for use of L<report()|Log::Report/"Report Production and Configuration"
  report {locale => 'pt_BR'}
     , WARNING => "do this at home!";
 
-=back
-
-B<try>(CODE, OPTIONS)
-
-=over 4
+=item B<try>(CODE, OPTIONS)
 
 Execute the CODE, but block all dispatchers as long as it is running.
 When the execution of the CODE is terminated with an report which triggers
@@ -318,89 +290,49 @@ available when syntax is C<SHORT> (see L<import()|Log::Report/"Configuration">).
 additional options to influence the behavior of C<report()>, which are
 usually not needed anyway.
 
-B<alert>(MESSAGE)
-
 =over 4
+
+=item B<alert>(MESSAGE)
 
 Short for C<< report ALERT => MESSAGE >>
 
-=back
-
-B<assert>(MESSAGE)
-
-=over 4
+=item B<assert>(MESSAGE)
 
 Short for C<< report ASSERT => MESSAGE >>
 
-=back
-
-B<error>(MESSAGE)
-
-=over 4
+=item B<error>(MESSAGE)
 
 Short for C<< report ERROR => MESSAGE >>
 
-=back
-
-B<failure>(MESSAGE)
-
-=over 4
+=item B<failure>(MESSAGE)
 
 Short for C<< report FAILURE => MESSAGE >>
 
-=back
-
-B<fault>(MESSAGE)
-
-=over 4
+=item B<fault>(MESSAGE)
 
 Short for C<< report FAULT => MESSAGE >>
 
-=back
-
-B<info>(MESSAGE)
-
-=over 4
+=item B<info>(MESSAGE)
 
 Short for C<< report INFO => MESSAGE >>
 
-=back
-
-B<mistake>(MESSAGE)
-
-=over 4
+=item B<mistake>(MESSAGE)
 
 Short for C<< report MISTAKE => MESSAGE >>
 
-=back
-
-B<notice>(MESSAGE)
-
-=over 4
+=item B<notice>(MESSAGE)
 
 Short for C<< report NOTICE => MESSAGE >>
 
-=back
-
-B<panic>(MESSAGE)
-
-=over 4
+=item B<panic>(MESSAGE)
 
 Short for C<< report PANIC => MESSAGE >>
 
-=back
-
-B<trace>(MESSAGE)
-
-=over 4
+=item B<trace>(MESSAGE)
 
 Short for C<< report TRACE => MESSAGE >>
 
-=back
-
-B<warning>(MESSAGE)
-
-=over 4
+=item B<warning>(MESSAGE)
 
 Short for C<< report WARNING => MESSAGE >>
 
@@ -439,9 +371,9 @@ was later replaced by a double-colon.  So C<< __'Hello' >> gets interpreted
 as C<< __::Hello ' >>.  Then, there is a trailing single quote which has
 no counterpart.
 
-B<N__>(MSGID)
-
 =over 4
+
+=item B<N__>(MSGID)
 
 Label to indicate that the string is a text which will be translated
 later.  The function itself does nothing.  See also L<N__w()|Log::Report/"Language Translations">.
@@ -458,11 +390,7 @@ Using L<__()|Log::Report/"Language Translations">, would work as well
 However: this will always create all L<Log::Report::Message|Log::Report::Message> objects,
 where maybe only one is used.
 
-=back
-
-B<N__n>(SINGLE_MSGID, PLURAL_MSGID)
-
-=over 4
+=item B<N__n>(SINGLE_MSGID, PLURAL_MSGID)
 
 Label to indicate that the two MSGIDs are related, the first as
 single, the seconds as its plural.  Only used to find the text
@@ -478,11 +406,7 @@ example: how to use L<N__n()|Log::Report/"Language Translations">
  print __n @save, $nr_files;  # wrong!
  print __n $save[0], $save[1], $nr_files;
 
-=back
-
-B<N__w>(STRING)
-
-=over 4
+=item B<N__w>(STRING)
 
 This extension to the Locale::TextDomain syntax, is a combined
 C<qw> (list of quoted words) and L<N__()|Log::Report/"Language Translations"> into a list of translatable
@@ -494,11 +418,7 @@ example: of L<N__w()|Log::Report/"Language Translations">
   my @colors = N__w"red green blue";  # same
   print __ $colors[1];
 
-=back
-
-B<__>(MSGID)
-
-=over 4
+=item B<__>(MSGID)
 
 This function (name is two under-score characters) will cause the
 MSGID to be replaced by the translations when doing the actual output.
@@ -519,11 +439,7 @@ example: how to use __()
  print $s;                   # ok, translated
  print $s->toString('fr');   # ok, forced into French
 
-=back
-
-B<__n>(MSGID, PLURAL_MSGID, COUNT, OPTIONS)
-
-=over 4
+=item B<__n>(MSGID, PLURAL_MSGID, COUNT, OPTIONS)
 
 It depends on the value of COUNT (and the selected language) which
 text will be displayed.  When translations can not be performed, then
@@ -541,11 +457,7 @@ example: how to use __n()
  print +(__n "one", "more", $a), "\n";
  print __n "one\n", "more\n", $a;
 
-=back
-
-B<__nx>(MSGID, PLURAL_MSGID, COUNT, OPTIONS, VARIABLES)
-
-=over 4
+=item B<__nx>(MSGID, PLURAL_MSGID, COUNT, OPTIONS, VARIABLES)
 
 It depends on the value of COUNT (and the selected language) which
 text will be displayed.  See details in L<__n()|Log::Report/"Language Translations">.  After translation,
@@ -563,11 +475,7 @@ example: how to use __nx()
  local $" = ', ';
  print __nx "one file: {f}", "{_count} files: {f}", @files, f => \@files;
 
-=back
-
-B<__x>(MSGID, OPTIONS, VARIABLES)
-
-=over 4
+=item B<__x>(MSGID, OPTIONS, VARIABLES)
 
 Translate the MSGID, and then expand the VARIABLES in that
 string.  Of course, translation and expanding is delayed as long
@@ -577,11 +485,7 @@ OPTIONS and VARIABLES are explained in L<Log::Report::Message::new()|Log::Report
 Locale::TextDomain subroutine __x does not support the OPTIONS, but they
 mix with variables.
 
-=back
-
-B<__xn>(SINGLE_MSGID, PLURAL_MSGID, COUNT, OPTIONS, VARIABLES)
-
-=over 4
+=item B<__xn>(SINGLE_MSGID, PLURAL_MSGID, COUNT, OPTIONS, VARIABLES)
 
 Same as L<__xn()|Log::Report/"Language Translations">.
 
@@ -589,56 +493,44 @@ Same as L<__xn()|Log::Report/"Language Translations">.
 
 =head2 Configuration
 
-$obj-E<gt>B<import>([DOMAIN], OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<import>([DOMAIN], OPTIONS)
 
 The import is automatically called when the package is compiled.  For all
 packages but one in your distribution, it will only contain the name of
 the DOMAIN.  For one package, it will contain configuration information.
 These OPTIONS are used for all packages which use the same DOMAIN.
 
- Option         --Default
- mode             'NORMAL'
- native_language  'en_US'
- syntax           'SHORT'
- translator       <rescue>
+ -Option         --Default
+  mode             'NORMAL'
+  native_language  'en_US'
+  syntax           'SHORT'
+  translator       <rescue>
 
-. mode => LEVEL
+=over 2
 
-=over 4
+=item mode => LEVEL
 
 This sets the default mode for all created dispatchers.  You can
 also selectively change the output mode, like
  dispatcher PERL => 'default', mode => 3
 
-=back
-
-. native_language => CODESET
-
-=over 4
+=item native_language => CODESET
 
 This is the language which you have used to write the translatable and
 the non-translatable messages in.  In case no translation is needed,
 you still wish the system error messages to be in the same language
 as the report.  Of course, each textdomain can define its own.
 
-=back
-
-. syntax => 'REPORT'|'SHORT'|'LONG'
-
-=over 4
+=item syntax => 'REPORT'|'SHORT'|'LONG'
 
 The SHORT syntax will add the report abbreviations (like function
 L<error()|Log::Report/"Abbreviations for report()">) to your name-space.  Otherwise, each message must be produced
 with L<report()|Log::Report/"Report Production and Configuration">. C<LONG> is an alternative to C<REPORT>: both do not
 polute your namespace with the useful abbrev functions.
 
-=back
-
-. translator => Log::Report::Translator
-
-=over 4
+=item translator => Log::Report::Translator
 
 Without explicit translator, a dummy translator is used for the domain
 which will use the untranslated message-id .
@@ -659,11 +551,7 @@ example: of import
   , native_language => 'nl_NL'  # untranslated msgs are Dutch
   , syntax          => 'REPORT';# report ERROR, not error()
 
-=back
-
-Log::Report-E<gt>B<translator>(TEXTDOMAIN, [TRANSLATOR])
-
-=over 4
+=item Log::Report-E<gt>B<translator>(TEXTDOMAIN, [TRANSLATOR])
 
 Returns the translator configured for the TEXTDOMAIN. By default,
 a translator is configured which does not translate but directly
@@ -693,32 +581,24 @@ example: use if L<translator()|Log::Report/"Configuration">
 
 =head2 Reasons
 
-$obj-E<gt>B<isFatal>(REASON)
-
-Log::Report-E<gt>B<isFatal>(REASON)
-
 =over 4
+
+=item $obj-E<gt>B<isFatal>(REASON)
+
+=item Log::Report-E<gt>B<isFatal>(REASON)
 
 Returns true if the REASON is severe enough to cause an exception
 (or program termination).
 
-=back
+=item $obj-E<gt>B<isValidReason>(STRING)
 
-$obj-E<gt>B<isValidReason>(STRING)
-
-Log::Report-E<gt>B<isValidReason>(STRING)
-
-=over 4
+=item Log::Report-E<gt>B<isValidReason>(STRING)
 
 Returns true if the STRING is one of the predefined REASONS.
 
-=back
+=item $obj-E<gt>B<needs>(REASON, [REASONS])
 
-$obj-E<gt>B<needs>(REASON, [REASONS])
-
-Log::Report-E<gt>B<needs>(REASON, [REASONS])
-
-=over 4
+=item Log::Report-E<gt>B<needs>(REASON, [REASONS])
 
 Returns true when the reporter needs any of the REASONS, when any of
 the active dispatchers is collecting messages in the specified level.
@@ -801,29 +681,6 @@ This component still needs to be implemented.
 =back
 
 =head2 Error handling models
-
-There are two approaches to handling errors and warnings.  In the first
-approach, as produced by C<die>, C<warn> and the C<carp> family of
-commands, the program handles the problem immediately on the location
-where the problem appears.  In the second approach, an I<exception>
-is thrown on the spot where the problem is created, and then somewhere
-else in the program the condition is handled.
-
-The implementation of exceptions in Perl5 is done with a eval-die pair:
-on the spot where the problem occurs, C<die> is called.  But, because of
-the execution of that routine is placed within an C<eval>, the program
-as a whole will not die, just the execution of a part of the program
-will seize.  However, what if the condition which caused the routine to die
-is solvable on a higher level?  Or what if the user of the code doesn't
-bother that a part fails, because it has implemented alternatives for
-that situation?  Exception handling is quite clumsy in Perl5.
-
-The C<Log::Report> set of distributions let modules concentrate on the
-program flow, and let the main program decide on the report handling
-model.  The infrastructure to translate messages into multiple languages,
-whether to create exceptions or carp/die, to collect longer explanations
-with the messages, to log to mail or syslog, and so on, is decided in
-pluggable back-ends.
 
 =head3 The Reason for the report
 
@@ -966,56 +823,6 @@ L<Log::Report::Dispatcher/Processing the message>.  However, it should
 behave as you expect: the DEBUG mode shows more than the VERBOSE mode,
 and both show more than the NORMAL mode.
 
-example: extract run mode from Getopt::Long
-
-The C<GetOptions()> function will count the number of C<v> options
-on the command-line when a C<+> is after the option name.
-
- use Log::Report syntax => 'SHORT';
- use Getopt::Long qw(:config no_ignore_case bundling);
-
- my $mode;    # defaults to NORMAL
- GetOptions 'v+'        => \$mode
-          , 'verbose=i' => \$mode
-          , 'mode=s'    => \$mode
-     or exit 1;
-
- dispatcher 'PERL', 'default', mode => $mode;
-
-Now, C<-vv> will set C<$mode> to C<2>, as will C<--verbose 2> and
-C<--verbose=2> and C<--mode=ASSERT>.  Of course, you do not need to
-provide all these options to the user: make a choice.
-
-example: the mode of a dispatcher
-
- my $mode = dispatcher(find => 'myname')->mode;
-
-example: run-time change mode of a dispatcher
-
-To change the running mode of the dispatcher, you can do
-  dispatcher mode => DEBUG => 'myname';
-
-However, be warned that this does not change the types of messages
-accepted by the dispatcher!  So: probably you will not receive
-the trace, assert, and info messages after all.  So, probably you
-need to replace the dispatcher with a new one with the same name:
-  dispatcher FILE => 'myname', to => ..., mode => 'DEBUG';
-
-This may reopen connections (depends on the actual dispatcher), which
-might be not what you wish to happened.  In that case, you must take
-the following approach:
-
-  # at the start of your program
-  dispatcher FILE => 'myname', to => ...
-     , accept => 'ALL';    # overrule the default 'NOTICE-' !!
-
-  # now it works
-  dispatcher mode => DEBUG => 'myname';    # debugging on
-  ...
-  dispatcher mode => NORMAL => 'myname';   # debugging off
-
-Of course, this comes with a small overall performance penalty.
-
 =head3 Exceptions
 
 The simple view on live says: you 're dead when you die.  However,
@@ -1043,6 +850,29 @@ untranslated, with all unprocessed parameters still at hand.
  }
 
 See L<Log::Report::Dispatcher::Try|Log::Report::Dispatcher::Try> and L<Log::Report::Exception|Log::Report::Exception>.
+
+There are two approaches to handling errors and warnings.  In the first
+approach, as produced by C<die>, C<warn> and the C<carp> family of
+commands, the program handles the problem immediately on the location
+where the problem appears.  In the second approach, an I<exception>
+is thrown on the spot where the problem is created, and then somewhere
+else in the program the condition is handled.
+
+The implementation of exceptions in Perl5 is done with a eval-die pair:
+on the spot where the problem occurs, C<die> is called.  But, because of
+the execution of that routine is placed within an C<eval>, the program
+as a whole will not die, just the execution of a part of the program
+will seize.  However, what if the condition which caused the routine to die
+is solvable on a higher level?  Or what if the user of the code doesn't
+bother that a part fails, because it has implemented alternatives for
+that situation?  Exception handling is quite clumsy in Perl5.
+
+The C<Log::Report> set of distributions let modules concentrate on the
+program flow, and let the main program decide on the report handling
+model.  The infrastructure to translate messages into multiple languages,
+whether to create exceptions or carp/die, to collect longer explanations
+with the messages, to log to mail or syslog, and so on, is decided in
+pluggable back-ends.
 
 =head2 Comparison
 
@@ -1187,9 +1017,9 @@ into the translated text.
 
 =head1 DIAGNOSTICS
 
-Error: in SCALAR context, only one dispatcher name accepted
-
 =over 4
+
+=item Error: in SCALAR context, only one dispatcher name accepted
 
 The L<dispatcher()|Log::Report/"Report Production and Configuration"> method returns the L<Log::Report::Dispatcher|Log::Report::Dispatcher>
 objects which it has accessed.  When multiple names where given, it
@@ -1199,12 +1029,12 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

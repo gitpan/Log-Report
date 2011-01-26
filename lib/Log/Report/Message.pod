@@ -22,9 +22,9 @@ depends on the front-end, the log dispatcher.
 
 =head2 Constructors
 
-$obj-E<gt>B<clone>(OPTIONS, VARIABLES)
-
 =over 4
+
+=item $obj-E<gt>B<clone>(OPTIONS, VARIABLES)
 
 Returns a new object which copies info from original, and updates it
 with the specified OPTIONS and VARIABLES.  The advantage is that the
@@ -38,31 +38,27 @@ example: use of clone()
  print $s;     # found 5 files
  print $t;     # found 3 files
 
-=back
+=item Log::Report::Message-E<gt>B<new>(OPTIONS, VARIABLES)
 
-Log::Report::Message-E<gt>B<new>(OPTIONS, VARIABLES)
+ -Option   --Default
+  _append    undef
+  _category  undef
+  _class     []
+  _classes   []
+  _count     undef
+  _domain    from use
+  _expand    false
+  _msgid     undef
+  _plural    undef
+  _prepend   undef
 
-=over 4
+=over 2
 
- Option   --Default
- _append    undef
- _category  undef
- _class     []
- _classes   []
- _count     undef
- _domain    from use
- _expand    false
- _msgid     undef
- _plural    undef
- _prepend   undef
+=item _append => STRING
 
-. _append => STRING
+=item _category => INTEGER
 
-. _category => INTEGER
-
-. _class => STRING|ARRAY
-
-=over 4
+=item _class => STRING|ARRAY
 
 When messages are used for exception based programming, you add
 C<_class> parameters to the argument list.  Later, with for instance
@@ -73,121 +69,73 @@ One message can be part of multiple classes.  The STRING is used as
 comma- and/or blank seperated list of class tokens, the ARRAY lists all
 tokens seperately.
 
-=back
-
-. _classes => STRING|ARRAY
-
-=over 4
+=item _classes => STRING|ARRAY
 
 Alternative for C<_class>, which cannot be used at the same time.
 
-=back
-
-. _count => INTEGER
-
-=over 4
+=item _count => INTEGER
 
 When defined, then C<_plural> need to be defined as well.
 
-=back
-
-. _domain => STRING
-
-=over 4
+=item _domain => STRING
 
 The textdomain in which this msgid is defined.
 
-=back
-
-. _expand => BOOLEAN
-
-=over 4
+=item _expand => BOOLEAN
 
 Indicates whether variables are filled-in.
 
-=back
-
-. _msgid => MSGID
-
-=over 4
+=item _msgid => MSGID
 
 The message label, which refers to some translation information.  Usually
 a string which is close the English version of the error message.  This
 will also be used if there is no translation possible
 
-=back
-
-. _plural => MSGID
-
-=over 4
+=item _plural => MSGID
 
 Can be specified when a C<_count> is specified.  This plural form of
 the message is used to simplify translation, and as fallback when no
 translations are possible: therefore, this can best resemble an English
 message.
 
-=back
+=item _prepend => STRING
 
-. _prepend => STRING
+=back
 
 =back
 
 =head2 Accessors
 
-$obj-E<gt>B<append>
-
 =over 4
+
+=item $obj-E<gt>B<append>
 
 Returns the string or L<Log::Report::Message|Log::Report::Message> object which is appended
 after this one.  Usually C<undef>.
 
-=back
-
-$obj-E<gt>B<classes>
-
-=over 4
+=item $obj-E<gt>B<classes>
 
 Returns the LIST of classes which are defined for this message; message
 group indicators, as often found in exception-based programming.
 
-=back
-
-$obj-E<gt>B<count>
-
-=over 4
+=item $obj-E<gt>B<count>
 
 Returns the count, which is used to select the translation
 alternatives.
 
-=back
-
-$obj-E<gt>B<domain>
-
-=over 4
+=item $obj-E<gt>B<domain>
 
 Returns the domain of the first translatable string in the structure.
 
-=back
-
-$obj-E<gt>B<msgid>
-
-=over 4
+=item $obj-E<gt>B<msgid>
 
 Returns the msgid which will later be translated.
 
-=back
-
-$obj-E<gt>B<prepend>
-
-=over 4
+=item $obj-E<gt>B<prepend>
 
 Returns the string which is prepended to this one.  Usually C<undef>.
 
-=back
-
-$obj-E<gt>B<valueOf>(PARAMETER)
-
-=over 4
+=item $obj-E<gt>B<valueOf>(PARAMETER)
 
 Lookup the named PARAMETER for the message.  All pre-defined names
 have their own method, and should be used with preference.
@@ -212,9 +160,9 @@ then the values can be takes from the produced message as
 
 =head2 Processing
 
-$obj-E<gt>B<concat>(STRING|OBJECT, [PREPEND])
-
 =over 4
+
+=item $obj-E<gt>B<concat>(STRING|OBJECT, [PREPEND])
 
 This method implements the overloading of concatenation, which is needed
 to delay translations even longer.  When PREPEND is true, the STRING
@@ -226,28 +174,16 @@ example: of concatenation
  print __"Hello" . ' ' . __"World!";
  print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
 
-=back
-
-$obj-E<gt>B<inClass>(CLASS|REGEX)
-
-=over 4
+=item $obj-E<gt>B<inClass>(CLASS|REGEX)
 
 Returns true if the message is in the specified CLASS (string) or
 matches the REGEX.  The trueth value is the (first matching) class.
 
-=back
-
-$obj-E<gt>B<toString>([LOCALE])
-
-=over 4
+=item $obj-E<gt>B<toString>([LOCALE])
 
 Translate a message.  If not specified, the default locale is used.
 
-=back
-
-$obj-E<gt>B<untranslated>
-
-=over 4
+=item $obj-E<gt>B<untranslated>
 
 Return the concatenation of the prepend, msgid, and append strings.  Variable
 expansions within the msgid is not performed.
@@ -257,14 +193,6 @@ expansions within the msgid is not performed.
 =head1 DETAILS
 
 =head2 OPTIONS and VARIABLES
-
-The L<Log::Report|Log::Report> functions which define translation request can all
-have OPTIONS.  Some can have VARIABLES to be interpolated in the string as
-well.  To distinguish between the OPTIONS and VARIABLES (both a list
-of key-value pairs), the keys of the OPTIONS start with an underscore C<_>.
-As result of this, please avoid the use of keys which start with an
-underscore in variable names.  On the other hand, you are allowed to
-interpolate OPTION values in your strings.
 
 =head3 Interpolating
 
@@ -327,29 +255,6 @@ L<Log::Report::Exception::inClass()|Log::Report::Exception/"Processing">, or
 L<Log::Report::Dispatcher::Try::wasFatal()|Log::Report::Dispatcher::Try/"Status">.
 
 =back
-
-example: using the _count
-
-With Locale::TextDomain, you have to do
-
-  use Locale::TextDomain;
-  print __nx ( "One file has been deleted.\n"
-             , "{num} files have been deleted.\n"
-             , $num_files
-             , num => $num_files
-             );
-
-With C<Log::Report>, you can do
-
-  use Log::Report;
-  print __nx ( "One file has been deleted.\n"
-             , "{_count} files have been deleted.\n"
-             , $num_files
-             );
-
-Of course, you need to be aware that the name used to reference the
-counter is fixed to C<_count>.  The first example works as well, but
-is more verbose.
 
 =head3 Interpolation of VARIABLES
 
@@ -434,14 +339,45 @@ You can also write an incomplete translation:
 
 In either case, the translation will be looked-up only once.
 
+The L<Log::Report|Log::Report> functions which define translation request can all
+have OPTIONS.  Some can have VARIABLES to be interpolated in the string as
+well.  To distinguish between the OPTIONS and VARIABLES (both a list
+of key-value pairs), the keys of the OPTIONS start with an underscore C<_>.
+As result of this, please avoid the use of keys which start with an
+underscore in variable names.  On the other hand, you are allowed to
+interpolate OPTION values in your strings.
+
+=head1 OVERLOADING
+
+=over 4
+
+=item overload: B<as function>
+
+When the object is used to call as function, a new object is
+created with the data from the original one but updated with the
+new parameters.  Implemented in C<clone()>.
+
+=item overload: B<concatenation>
+
+An (accidental) use of concatenation (a dot where a comma should be
+used) would immediately stringify the object.  This is avoided by
+overloading that operation.
+
+=item overload: B<stringification>
+
+When the object is used in string context, it will get translated.
+Implemented as L<toString()|Log::Report::Message/"Processing">.
+
+=back
+
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

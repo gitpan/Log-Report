@@ -1,10 +1,10 @@
-# Copyrights 2007-2010 by Mark Overmeer.
+# Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.06.
+# Pod stripped from pm file by OODoc 1.07.
 package DieTests;
 use vars '$VERSION';
-$VERSION = '0.90';
+$VERSION = '0.91';
 
 use warnings;
 use strict;
@@ -152,6 +152,14 @@ DieTests::run_tests()#t/41die.t#XX
 main::simple_wrapper()#t/41die.t#XX
 __OUT
 
+
+if($^O eq 'Win32')
+{   # perl bug http://rt.perl.org/rt3/Ticket/Display.html?id=81586
+    pass 'Win32/confess bug #81586';
+}
+else
+{
+
 eval { $! = $errno; confess "ouch $!\n" };
 my $confess_text4 = $@;
 is(process($confess_text4),  <<__OUT, "confess");
@@ -164,5 +172,7 @@ main::simple_wrapper()#t/41die.t#XX
 __OUT
 
 }
+
+}  # run_tests()
 
 1;

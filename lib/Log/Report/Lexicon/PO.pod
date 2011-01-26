@@ -2,8 +2,6 @@
 
 Log::Report::Lexicon::PO - one translation definition
 
-=head1 SYNOPSIS
-
 =head1 DESCRIPTION
 
 This module is administering one translation object.  Sets of PO
@@ -13,71 +11,51 @@ objects are kept in a POT file, implemented in L<Log::Report::Lexicon::POT|Log::
 
 =head2 Constructors
 
-Log::Report::Lexicon::PO-E<gt>B<new>(OPTIONS)
-
 =over 4
 
- Option      --Default
- automatic     ""
- comment       []
- format        []
- fuzzy         false
- msgid         <required>
- msgid_plural  undef
- msgstr        "" or []
- references    []
+=item Log::Report::Lexicon::PO-E<gt>B<new>(OPTIONS)
 
-. automatic => PARAGRAPH
+ -Option      --Default
+  automatic     ""
+  comment       []
+  format        []
+  fuzzy         false
+  msgid         <required>
+  msgid_plural  undef
+  msgstr        "" or []
+  references    []
 
-=over 4
+=over 2
+
+=item automatic => PARAGRAPH
 
 Automaticly added comments.
 See L<addAutomatic()|Log::Report::Lexicon::PO/"Attributes">.
 
-=back
-
-. comment => PARAGRAPH
-
-=over 4
+=item comment => PARAGRAPH
 
 Translator added comments.
 See L<addComment()|Log::Report::Lexicon::PO/"Attributes">.
 
-=back
-
-. format => ARRAY-OF-PAIRS|HASH
-
-=over 4
+=item format => ARRAY-OF-PAIRS|HASH
 
 See L<format()|Log::Report::Lexicon::PO/"Attributes">.
 
-=back
-
-. fuzzy => BOOLEAN
-
-=over 4
+=item fuzzy => BOOLEAN
 
 The string is not yet translated, some smart guesses may have been made.
 See L<fuzzy()|Log::Report::Lexicon::PO/"Attributes">.
 
-=back
+=item msgid => STRING
 
-. msgid => STRING
+=item msgid_plural => STRING
 
-. msgid_plural => STRING
-
-. msgstr => STRING|ARRAY-OF-STRING
-
-=over 4
+=item msgstr => STRING|ARRAY-OF-STRING
 
 The translations for the msgid.  When msgid_plural is defined, then an
 ARRAY must be provided.
 
-=back
-
-. references => STRING|ARRAY-OF-LOCATIONS
-
-=over 4
+=item references => STRING|ARRAY-OF-LOCATIONS
 
 The STRING is a blank separated list of LOCATIONS.
 LOCATIONs are of the  form C<filename:linenumber>, for
@@ -90,65 +68,41 @@ See L<addReferences()|Log::Report::Lexicon::PO/"Attributes">
 
 =head2 Attributes
 
-$obj-E<gt>B<addAutomatic>(LIST|ARRAY|STRING)
-
 =over 4
+
+=item $obj-E<gt>B<addAutomatic>(LIST|ARRAY|STRING)
 
 Add multiple lines to the translator's comment block.  Returns an
 empty string if there are no comments.
 
-=back
-
-$obj-E<gt>B<addComment>(LIST|ARRAY|STRING)
-
-=over 4
+=item $obj-E<gt>B<addComment>(LIST|ARRAY|STRING)
 
 Add multiple lines to the translator's comment block.  Returns an
 empty string if there are no comments.
 
-=back
-
-$obj-E<gt>B<addFlags>(STRING)
-
-=over 4
+=item $obj-E<gt>B<addFlags>(STRING)
 
 Parse a "flags" line.
 
-=back
-
-$obj-E<gt>B<addReferences>(STRING|LIST|ARRAY)
-
-=over 4
+=item $obj-E<gt>B<addReferences>(STRING|LIST|ARRAY)
 
 The STRING is a blank separated list of LOCATIONS.  The LIST and
 ARRAY contain separate LOCATIONs.  A LOCATION is of the form
 C<filename:linenumber>.  Returns the internal HASH with references.
 
-=back
-
-$obj-E<gt>B<automatic>([LIST|ARRAY|STRING])
-
-=over 4
+=item $obj-E<gt>B<automatic>([LIST|ARRAY|STRING])
 
 Returns a STRING which contains the cleaned paragraph of automatically
 added comments.  If an argument is specified, it will replace the current
 comment.
 
-=back
-
-$obj-E<gt>B<comment>([LIST|ARRAY|STRING])
-
-=over 4
+=item $obj-E<gt>B<comment>([LIST|ARRAY|STRING])
 
 Returns a STRING which contains the cleaned paragraph of translator's
 comment.  If an argument is specified, it will replace the current
 comment.
 
-=back
-
-$obj-E<gt>B<format>(LANGUAGE|PAIRS|ARRAY-OF-PAIRS|HASH)
-
-=over 4
+=item $obj-E<gt>B<format>(LANGUAGE|PAIRS|ARRAY-OF-PAIRS|HASH)
 
 When one LANGUAGE is specified, it looks whether a C<LANGUAGE-format> or
 C<no-LANGUAGE-format> is present in the line of FLAGS.  This will return
@@ -168,62 +122,34 @@ example: use of format()
  $po->format(java => 0);       # results in 'no-java-format'
  $po->format(java => undef);   # results in ''
 
-=back
-
-$obj-E<gt>B<fuzzy>([BOOLEAN])
-
-=over 4
+=item $obj-E<gt>B<fuzzy>([BOOLEAN])
 
 Returns whether the translation needs human inspection.
 
-=back
-
-$obj-E<gt>B<isActive>
-
-=over 4
+=item $obj-E<gt>B<isActive>
 
 Returns whether the translation has any references, or is the header.
 
-=back
-
-$obj-E<gt>B<msgid>
-
-=over 4
+=item $obj-E<gt>B<msgid>
 
 Returns the actual msgid, which cannot be C<undef>.
 
-=back
-
-$obj-E<gt>B<msgstr>([INDEX, [STRING]])
-
-=over 4
+=item $obj-E<gt>B<msgstr>([INDEX, [STRING]])
 
 With a STRING, a new translation will be set.  Without STRING, a
 lookup will take place.  When no plural is defined, use INDEX 0
 
-=back
-
-$obj-E<gt>B<plural>([STRING])
-
-=over 4
+=item $obj-E<gt>B<plural>([STRING])
 
 Returns the actual msgid_plural, which can be C<undef>.
 
-=back
-
-$obj-E<gt>B<references>([STRING|LIST|ARRAY])
-
-=over 4
+=item $obj-E<gt>B<references>([STRING|LIST|ARRAY])
 
 Returns an unsorted list of LOCATIONS.  When options are specified,
 then those will be used to replace all currently defined references.
 Returns the unsorted LIST of references.
 
-=back
-
-$obj-E<gt>B<removeReferencesTo>(FILENAME)
-
-=over 4
+=item $obj-E<gt>B<removeReferencesTo>(FILENAME)
 
 Remove all the references to the indicate FILENAME from the list.  Returns
 the number of refs left.
@@ -232,27 +158,23 @@ the number of refs left.
 
 =head2 Parsing
 
-Log::Report::Lexicon::PO-E<gt>B<fromText>(STRING, [WHERE])
-
 =over 4
+
+=item Log::Report::Lexicon::PO-E<gt>B<fromText>(STRING, [WHERE])
 
 Parse the STRING into a new PO object.  The WHERE string should explain
 the location of the STRING, to be used in error messages.
 
-=back
-
-$obj-E<gt>B<toString>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<toString>(OPTIONS)
 
 Format the object into a multi-lined string.
 
- Option    --Default
- nr_plurals  undef
+ -Option    --Default
+  nr_plurals  undef
 
-. nr_plurals => INTEGER
+=over 2
 
-=over 4
+=item nr_plurals => INTEGER
 
 If the number of plurals is specified, then the plural translation
 list can be checked for the correct length.  Otherwise, no smart
@@ -260,11 +182,7 @@ behavior is attempted.
 
 =back
 
-=back
-
-$obj-E<gt>B<unused>
-
-=over 4
+=item $obj-E<gt>B<unused>
 
 The message-id has no references anymore and no translations.
 
@@ -272,12 +190,12 @@ The message-id has no references anymore and no translations.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

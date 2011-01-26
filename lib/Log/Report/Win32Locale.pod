@@ -17,80 +17,71 @@ The algorithms in this module are based on Win32::Locale and Win32::Codepage.
 
 =head1 FUNCTIONS
 
-B<charset_encoding>
-
 =over 4
+
+=item B<charset_encoding>
 
 Returns the encoding name (usable with module Encode) based on the current
 codepage.  For example, C<cp1252> for iso-8859-1 (latin-1) or C<cp932> for
 Shift-JIS Japanese.  Returns undef if the encoding cannot be identified.
 
-=back
-
-B<codepage_to_iso>(CODEPAGE)
-
-=over 4
+=item B<codepage_to_iso>(CODEPAGE)
 
 Translate windows CODEPAGE into ISO code.  The CODEPAGE is numeric
 or a hex string like '0x0304'.
 
-=back
-
-B<iso_locale>([CODEPAGE])
-
-=over 4
+=item B<iso_locale>([CODEPAGE])
 
 Returns the ISO string for the Microsoft codepage locale.  Might return
 C<undef>/false.  By default, the actual codepage is used.
 
-=back
-
-B<iso_to_codepage>(ISO)
-
-=over 4
+=item B<iso_to_codepage>(ISO)
 
 Returns the numeric value of the codepage.  The ISO may look like
 this: C<xx_YY>.  Then, first the C<xx_YY> is looked-up.  If that does
 not exist, C<xx> is tried.
 
-=back
-
-B<ms_codepage_id>
-
-=over 4
+=item B<ms_codepage_id>
 
 Returns the numeric language ID for the current codepage language.
 For example, the numeric value for C<0x0409> for C<en-US>, and C<0x0411>
 for C<ja>.  Returns false if the codepage cannot be identified.
 
-=back
-
-B<ms_install_codepage_id>
-
-=over 4
+=item B<ms_install_codepage_id>
 
 Returns the numeric language ID for the installed codepage language.
 This is like L<ms_codepage_id()|Log::Report::Win32Locale/"FUNCTIONS">, but refers to the codepage that was
 the default when Windows was first installed.
 
-=back
-
-B<ms_locale>
-
-=over 4
+=item B<ms_locale>
 
 Returns the locale setting from the control panel.
 
 =back
 
+=head1 SYNOPSYS
+
+  # Only usable on Windows
+  print codepage_to_iso(0x0413);   # nl-NL
+  print iso_to_codepage('nl_NL');  # 1043
+  printf "%x", iso_to_codepage('nl_NL');  # 413
+
+  my $iso = iso_locale(ms_codepage_id());
+  my $iso = iso_locale;  # same
+
+  print charset_encoding;          # cp1252
+  print ms_codepage_id;            # 1043
+  print ms_install_codepage_id;    # 1043
+  print ms_locale;                 # Dutch (Netherlands)
+
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

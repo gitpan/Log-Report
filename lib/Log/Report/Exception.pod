@@ -28,57 +28,49 @@ an (untranslated) report.
 
 =head2 Constructors
 
-Log::Report::Exception-E<gt>B<new>(OPTIONS)
-
 =over 4
 
- Option     --Default
- message      <required>
- reason       <required>
- report_opts  {}
+=item Log::Report::Exception-E<gt>B<new>(OPTIONS)
 
-. message => Log::Report::Message
+ -Option     --Default
+  message      <required>
+  reason       <required>
+  report_opts  {}
 
-. reason => REASON
+=over 2
 
-. report_opts => HASH
+=item message => Log::Report::Message
+
+=item reason => REASON
+
+=item report_opts => HASH
+
+=back
 
 =back
 
 =head2 Accessors
 
-$obj-E<gt>B<message>
-
 =over 4
 
-=back
+=item $obj-E<gt>B<message>
 
-$obj-E<gt>B<reason>
+=item $obj-E<gt>B<reason>
 
-=over 4
-
-=back
-
-$obj-E<gt>B<report_opts>
-
-=over 4
+=item $obj-E<gt>B<report_opts>
 
 =back
 
 =head2 Processing
 
-$obj-E<gt>B<inClass>(CLASS|REGEX)
-
 =over 4
+
+=item $obj-E<gt>B<inClass>(CLASS|REGEX)
 
 Check whether any of the classes listed in the message match CLASS
 (string) or the REGEX.  This uses L<Log::Report::Message::inClass()|Log::Report::Message/"Processing">.
 
-=back
-
-$obj-E<gt>B<throw>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<throw>(OPTIONS)
 
 Insert the message contained in the exception into the currently
 defined dispatchers.  The C<throw> name is commonly known
@@ -97,11 +89,7 @@ example: overrule defaults to report
 
  $@->wasFatal->throw(reason => 'WARNING', is_fatal => 0);
 
-=back
-
-$obj-E<gt>B<toString>
-
-=over 4
+=item $obj-E<gt>B<toString>
 
 Prints the reason and the message.  Differently from L<throw()|Log::Report::Exception/"Processing">, this
 only represents the textual content: it does not re-cast the exceptions to
@@ -114,14 +102,24 @@ example: printing exceptions
 
 =back
 
+=head1 OVERLOADING
+
+=over 4
+
+=item overload: B<stringification>
+
+Produces "reason: message".
+
+=back
+
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

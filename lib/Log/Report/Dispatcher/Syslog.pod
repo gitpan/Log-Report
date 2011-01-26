@@ -46,76 +46,59 @@ using L<new(to_prio)|Log::Report::Dispatcher::Syslog/"Constructors">.  See examp
 
 =head2 Constructors
 
-$obj-E<gt>B<close>
-
 =over 4
 
+=item $obj-E<gt>B<close>
 See L<Log::Report::Dispatcher/"Constructors">
 
-=back
-
-Log::Report::Dispatcher::Syslog-E<gt>B<new>(TYPE, NAME, OPTIONS)
-
-=over 4
+=item Log::Report::Dispatcher::Syslog-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
 With syslog, people tend not to include the REASON of the message
 in the logs, because that is already used to determine the destination
 of the message.
 
- Option       --Defined in     --Default
- accept         Log::Report::Dispatcher  depend on mode
- charset        Log::Report::Dispatcher  <undef>
- facility                        'user'
- flags                           'pid,nowait'
- format_reason  Log::Report::Dispatcher  'IGNORE'
- identity                        <basename $0>
- locale         Log::Report::Dispatcher  <system locale>
- logsocket                       undef
- mode           Log::Report::Dispatcher  'NORMAL'
- to_prio                         []
+ -Option       --Defined in     --Default
+  accept         Log::Report::Dispatcher  depend on mode
+  charset        Log::Report::Dispatcher  <undef>
+  facility                        'user'
+  flags                           'pid,nowait'
+  format_reason  Log::Report::Dispatcher  'IGNORE'
+  identity                        <basename $0>
+  locale         Log::Report::Dispatcher  <system locale>
+  logsocket                       undef
+  mode           Log::Report::Dispatcher  'NORMAL'
+  to_prio                         []
 
-. accept => REASONS
+=over 2
 
-. charset => CHARSET
+=item accept => REASONS
 
-. facility => STRING
+=item charset => CHARSET
 
-=over 4
+=item facility => STRING
 
 The possible values for this depend (a little) on the system.  POSIX
 only defines 'user' and 'local0' upto 'local7'.
 
-=back
-
-. flags => STRING
-
-=over 4
+=item flags => STRING
 
 Any combination of flags as defined by Sys::Syslog, for instance
 C<pid>, C<ndelay>, and C<nowait>.
 
-=back
+=item format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
-. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
+=item identity => STRING
 
-. identity => STRING
+=item locale => LOCALE
 
-. locale => LOCALE
-
-. logsocket => 'unix'|'inet'|'stream'
-
-=over 4
+=item logsocket => 'unix'|'inet'|'stream'
 
 If specified, the log socket type will be initialized to this before
 openlog is called.  If not specified, the system default is used.
 
-=back
+=item mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
 
-. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
-
-. to_prio => ARRAY-of-PAIRS
-
-=over 4
+=item to_prio => ARRAY-of-PAIRS
 
 See L<reasonToPrio()|Log::Report::Dispatcher::Syslog/"Logging">.
 
@@ -125,113 +108,65 @@ See L<reasonToPrio()|Log::Report::Dispatcher::Syslog/"Logging">.
 
 =head2 Accessors
 
-$obj-E<gt>B<isDisabled>
-
 =over 4
 
+=item $obj-E<gt>B<isDisabled>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<mode>
-
-=over 4
-
+=item $obj-E<gt>B<mode>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<name>
-
-=over 4
-
+=item $obj-E<gt>B<name>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<needs>
-
-=over 4
-
+=item $obj-E<gt>B<needs>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<type>
-
-=over 4
-
+=item $obj-E<gt>B<type>
 See L<Log::Report::Dispatcher/"Accessors">
 
 =back
 
 =head2 Logging
 
-$obj-E<gt>B<collectLocation>
-
-Log::Report::Dispatcher::Syslog-E<gt>B<collectLocation>
-
 =over 4
 
+=item $obj-E<gt>B<collectLocation>
+
+=item Log::Report::Dispatcher::Syslog-E<gt>B<collectLocation>
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
+=item $obj-E<gt>B<collectStack>([MAXDEPTH])
 
-$obj-E<gt>B<collectStack>([MAXDEPTH])
-
-Log::Report::Dispatcher::Syslog-E<gt>B<collectStack>([MAXDEPTH])
-
-=over 4
-
+=item Log::Report::Dispatcher::Syslog-E<gt>B<collectStack>([MAXDEPTH])
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
-
-$obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
-
-$obj-E<gt>B<reasonToPrio>(REASON)
-
-=over 4
+=item $obj-E<gt>B<reasonToPrio>(REASON)
 
 Returns a level which is understood by syslog(3), based on a translation
 table.  This can be changed with L<new(to_prio)|Log::Report::Dispatcher::Syslog/"Constructors">.
 
-=back
+=item $obj-E<gt>B<stackTraceLine>(OPTIONS)
 
-$obj-E<gt>B<stackTraceLine>(OPTIONS)
+=item Log::Report::Dispatcher::Syslog-E<gt>B<stackTraceLine>(OPTIONS)
+See L<Log::Report::Dispatcher/"Logging">
 
-Log::Report::Dispatcher::Syslog-E<gt>B<stackTraceLine>(OPTIONS)
-
-=over 4
-
+=item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
 See L<Log::Report::Dispatcher/"Logging">
 
 =back
-
-$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
-See L<Log::Report::Dispatcher/"Logging">
-
-=back
-
-=head1 DETAILS
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

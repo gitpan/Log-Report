@@ -57,52 +57,43 @@ using L<new(to_level)|Log::Report::Dispatcher::Log4perl/"Constructors">.  See ex
 
 =head2 Constructors
 
-$obj-E<gt>B<close>
-
 =over 4
 
+=item $obj-E<gt>B<close>
 See L<Log::Report::Dispatcher/"Constructors">
 
-=back
-
-Log::Report::Dispatcher::Log4perl-E<gt>B<new>(TYPE, NAME, OPTIONS)
-
-=over 4
+=item Log::Report::Dispatcher::Log4perl-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
 The Log::Log4perl infrastructure has all information in a configuration
 file.  In that file, you should find a category with the NAME.
 
- Option       --Defined in     --Default
- accept         Log::Report::Dispatcher  depend on mode
- charset        Log::Report::Dispatcher  <undef>
- config                          <required>
- format_reason  Log::Report::Dispatcher  'LOWERCASE'
- locale         Log::Report::Dispatcher  <system locale>
- mode           Log::Report::Dispatcher  'NORMAL'
- to_level                        []
+ -Option       --Defined in     --Default
+  accept         Log::Report::Dispatcher  depend on mode
+  charset        Log::Report::Dispatcher  <undef>
+  config                          <required>
+  format_reason  Log::Report::Dispatcher  'LOWERCASE'
+  locale         Log::Report::Dispatcher  <system locale>
+  mode           Log::Report::Dispatcher  'NORMAL'
+  to_level                        []
 
-. accept => REASONS
+=over 2
 
-. charset => CHARSET
+=item accept => REASONS
 
-. config => FILENAME|SCALAR
+=item charset => CHARSET
 
-=over 4
+=item config => FILENAME|SCALAR
 
 When a SCALAR reference is passed in, that must refer to a string which
 contains the configuration text.  Otherwise, specify an existing FILENAME.
 
-=back
+=item format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
-. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
+=item locale => LOCALE
 
-. locale => LOCALE
+=item mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
 
-. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
-
-. to_level => ARRAY-of-PAIRS
-
-=over 4
+=item to_level => ARRAY-of-PAIRS
 
 See L<reasonToLevel()|Log::Report::Dispatcher::Log4perl/"Logging">.
 
@@ -112,121 +103,69 @@ See L<reasonToLevel()|Log::Report::Dispatcher::Log4perl/"Logging">.
 
 =head2 Accessors
 
-$obj-E<gt>B<appender>
-
 =over 4
+
+=item $obj-E<gt>B<appender>
 
 Returns the Log::Log4perl::Logger object which is used for logging.
 
-=back
-
-$obj-E<gt>B<isDisabled>
-
-=over 4
-
+=item $obj-E<gt>B<isDisabled>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<mode>
-
-=over 4
-
+=item $obj-E<gt>B<mode>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<name>
-
-=over 4
-
+=item $obj-E<gt>B<name>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<needs>
-
-=over 4
-
+=item $obj-E<gt>B<needs>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<type>
-
-=over 4
-
+=item $obj-E<gt>B<type>
 See L<Log::Report::Dispatcher/"Accessors">
 
 =back
 
 =head2 Logging
 
-$obj-E<gt>B<collectLocation>
-
-Log::Report::Dispatcher::Log4perl-E<gt>B<collectLocation>
-
 =over 4
 
+=item $obj-E<gt>B<collectLocation>
+
+=item Log::Report::Dispatcher::Log4perl-E<gt>B<collectLocation>
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
+=item $obj-E<gt>B<collectStack>([MAXDEPTH])
 
-$obj-E<gt>B<collectStack>([MAXDEPTH])
-
-Log::Report::Dispatcher::Log4perl-E<gt>B<collectStack>([MAXDEPTH])
-
-=over 4
-
+=item Log::Report::Dispatcher::Log4perl-E<gt>B<collectStack>([MAXDEPTH])
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
-
-$obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
 See L<Log::Report::Dispatcher/"Logging">
 
-=back
-
-$obj-E<gt>B<reasonToLevel>(REASON)
-
-=over 4
+=item $obj-E<gt>B<reasonToLevel>(REASON)
 
 Returns a level which is understood by Log::Dispatch, based on
 a translation table.  This can be changed with L<new(to_level)|Log::Report::Dispatcher::Log4perl/"Constructors">.
 
-=back
+=item $obj-E<gt>B<stackTraceLine>(OPTIONS)
 
-$obj-E<gt>B<stackTraceLine>(OPTIONS)
+=item Log::Report::Dispatcher::Log4perl-E<gt>B<stackTraceLine>(OPTIONS)
+See L<Log::Report::Dispatcher/"Logging">
 
-Log::Report::Dispatcher::Log4perl-E<gt>B<stackTraceLine>(OPTIONS)
-
-=over 4
-
+=item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
 See L<Log::Report::Dispatcher/"Logging">
 
 =back
-
-$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
-See L<Log::Report::Dispatcher/"Logging">
-
-=back
-
-=head1 DETAILS
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -5,6 +5,7 @@ Log::Report::Dispatcher - manage dispatching
 =head1 INHERITANCE
 
  Log::Report::Dispatcher is extended by
+   Log::Report::Dispatcher::Callback
    Log::Report::Dispatcher::File
    Log::Report::Dispatcher::Log4perl
    Log::Report::Dispatcher::LogDispatch
@@ -41,19 +42,15 @@ See the L</DETAILS> section, below.
 
 =head2 Constructors
 
-$obj-E<gt>B<close>
-
 =over 4
+
+=item $obj-E<gt>B<close>
 
 Terminate the dispatcher activities.  The dispatcher gets disabled,
 to avoid the case that it is accidentally used.  Returns C<undef> (false)
 if the dispatcher was already closed.
 
-=back
-
-Log::Report::Dispatcher-E<gt>B<new>(TYPE, NAME, OPTIONS)
-
-=over 4
+=item Log::Report::Dispatcher-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
 Create a dispatcher.  The TYPE of back-end to start is required, and listed
 in the L</DESCRIPTION> part of this manual-page. For various external
@@ -67,16 +64,16 @@ All OPTIONS which are not consumed by this base constructor are passed
 to the wrapped back-end.  Some of them will check whether all OPTIONS
 are understood, other ignore unknown OPTIONS.
 
- Option       --Default
- accept         depend on mode
- charset        <undef>
- format_reason  'LOWERCASE'
- locale         <system locale>
- mode           'NORMAL'
+ -Option       --Default
+  accept         depend on mode
+  charset        <undef>
+  format_reason  'LOWERCASE'
+  locale         <system locale>
+  mode           'NORMAL'
 
-. accept => REASONS
+=over 2
 
-=over 4
+=item accept => REASONS
 
 See L<Log::Report::Util::expand_reasons()|Log::Report::Util/"FUNCTIONS"> for possible values.  If
 the initial mode for this dispatcher does not need verbose or debug
@@ -86,40 +83,24 @@ When the mode equals C<NORMAL> (the default) then C<accept>'s default
 is C<NOTICE->.  In case of C<VERBOSE> it will be C<INFO->, C<ASSERT>
 results in C<ASSERT->, and C<DEBUG> in C<ALL>.
 
-=back
-
-. charset => CHARSET
-
-=over 4
+=item charset => CHARSET
 
 Convert the messages in the specified character-set (codeset).  By
 default, no conversion will take place, because the right choice cannot
 be determined automatically.
 
-=back
-
-. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
-
-=over 4
+=item format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
 How to show the reason text which is printed before the message. When
 a CODE is specified, it will be called with a translated text and the
 returned text is used.
 
-=back
-
-. locale => LOCALE
-
-=over 4
+=item locale => LOCALE
 
 Overrules the global setting.  Can be overruled by
 L<Log::Report::report(locale)|Log::Report/"Report Production and Configuration">.
 
-=back
-
-. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
-
-=over 4
+=item mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
 
 Possible values are C<NORMAL> (or C<0> or C<undef>), which will not show
 C<INFO> or debug messages, C<VERBOSE> (C<1>; shows C<INFO> not debug),
@@ -136,41 +117,25 @@ for smooth Getopt::Long integration.
 
 =head2 Accessors
 
-$obj-E<gt>B<isDisabled>
-
 =over 4
 
-=back
+=item $obj-E<gt>B<isDisabled>
 
-$obj-E<gt>B<mode>
-
-=over 4
+=item $obj-E<gt>B<mode>
 
 Returns the mode in use for the dispatcher as number.  See L<new(mode)|Log::Report::Dispatcher/"Constructors">
 and L<Log::Report/Run modes>.
 
-=back
-
-$obj-E<gt>B<name>
-
-=over 4
+=item $obj-E<gt>B<name>
 
 Returns the unique name of this dispatcher.
 
-=back
-
-$obj-E<gt>B<needs>
-
-=over 4
+=item $obj-E<gt>B<needs>
 
 Returns the list with all REASONS which are needed to fulfill this
 dispatcher's needs.  When disabled, the list is empty, but not forgotten.
 
-=back
-
-$obj-E<gt>B<type>
-
-=over 4
+=item $obj-E<gt>B<type>
 
 The dispatcher TYPE, which is usually the same as the class of this
 object, but not in case of wrappers like for Log::Dispatch.
@@ -179,83 +144,67 @@ object, but not in case of wrappers like for Log::Dispatch.
 
 =head2 Logging
 
-$obj-E<gt>B<collectLocation>
-
-Log::Report::Dispatcher-E<gt>B<collectLocation>
-
 =over 4
+
+=item $obj-E<gt>B<collectLocation>
+
+=item Log::Report::Dispatcher-E<gt>B<collectLocation>
 
 Collect the information to be displayed as line where the error occurred.
 Probably, this needs improvement, where carp and die show different lines.
 
-=back
+=item $obj-E<gt>B<collectStack>([MAXDEPTH])
 
-$obj-E<gt>B<collectStack>([MAXDEPTH])
-
-Log::Report::Dispatcher-E<gt>B<collectStack>([MAXDEPTH])
-
-=over 4
+=item Log::Report::Dispatcher-E<gt>B<collectStack>([MAXDEPTH])
 
 Returns an ARRAY of ARRAYs with text, filename, line-number.
 
-=back
-
-$obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
 
 This method is called by L<Log::Report::report()|Log::Report/"Report Production and Configuration"> and should not be called
 directly.  Internally, it will call L<translate()|Log::Report::Dispatcher/"Logging">, which does most of
 the work.
 
-=back
+=item $obj-E<gt>B<stackTraceLine>(OPTIONS)
 
-$obj-E<gt>B<stackTraceLine>(OPTIONS)
+=item Log::Report::Dispatcher-E<gt>B<stackTraceLine>(OPTIONS)
 
-Log::Report::Dispatcher-E<gt>B<stackTraceLine>(OPTIONS)
+ -Option    --Default
+  abstract    1
+  call        <required>
+  filename    <required>
+  linenr      <required>
+  max_line    undef
+  max_params  8
+  package     <required>
+  params      <required>
 
-=over 4
+=over 2
 
- Option    --Default
- abstract    1
- call        <required>
- filename    <required>
- linenr      <required>
- max_line    undef
- max_params  8
- package     <required>
- params      <required>
-
-. abstract => INTEGER
-
-=over 4
+=item abstract => INTEGER
 
 The higher the abstraction value, the less details are given
 about the caller.  The minimum abstraction is specified, and
 then increased internally to make the line fit within the C<max_line>
 margin.
 
-=back
+=item call => STRING
 
-. call => STRING
+=item filename => STRING
 
-. filename => STRING
+=item linenr => INTEGER
 
-. linenr => INTEGER
+=item max_line => INTEGER
 
-. max_line => INTEGER
+=item max_params => INTEGER
 
-. max_params => INTEGER
+=item package => CLASS
 
-. package => CLASS
-
-. params => ARRAY
+=item params => ARRAY
 
 =back
 
-$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
+=item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
 
 See L</Processing the message>, which describes the actions taken by
 this method.  A string is returned, which ends on a new-line, and
@@ -386,36 +335,14 @@ object.  When the call to L<Log::Report::report()|Log::Report/"Report Production
 comma-separated components, these will already have been joined together
 using concatenation (see L<Log::Report::Message::concat()|Log::Report::Message/"Processing">.
 
-example: a filter on syslog
-
- dispatcher filter => \&myfilter, 'syslog';
-
- # ignore all translatable and non-translatable messages containing
- # the word "skip"
- sub myfilter($$$$)
- {   my ($disp, $opts, $reason, $message) = @_;
-     return () if $message->untranslated =~ m/\bskip\b/;
-     ($reason, $message);
- }
-
-example: take all mistakes and warnings serious
-
- dispatch filter => \&take_warns_serious;
- sub take_warns_serious($$$$)
- {   my ($disp, $opts, $reason, $message) = @_;
-       $reason eq 'MISTAKE' ? (ERROR   => $message)
-     : $reason eq 'WARNING' ? (FAULT   => $message)
-     :                        ($reason => $message);
- }
-
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

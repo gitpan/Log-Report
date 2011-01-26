@@ -45,41 +45,37 @@ This basic file logger accepts an file-handle or filename as destination.
 
 =head2 Constructors
 
-$obj-E<gt>B<close>
-
 =over 4
+
+=item $obj-E<gt>B<close>
 
 Only when initiated with a FILENAME, the file will be closed.  In any
 other case, nothing will be done.
 
-=back
+=item Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
-Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
+ -Option       --Defined in     --Default
+  accept         Log::Report::Dispatcher  depend on mode
+  charset        Log::Report::Dispatcher  LOCALE
+  format_reason  Log::Report::Dispatcher  'LOWERCASE'
+  locale         Log::Report::Dispatcher  <system locale>
+  mode           Log::Report::Dispatcher  'NORMAL'
+  replace                         false
+  to                              <required>
 
-=over 4
+=over 2
 
- Option       --Defined in     --Default
- accept         Log::Report::Dispatcher  depend on mode
- charset        Log::Report::Dispatcher  LOCALE
- format_reason  Log::Report::Dispatcher  'LOWERCASE'
- locale         Log::Report::Dispatcher  <system locale>
- mode           Log::Report::Dispatcher  'NORMAL'
- replace                         false
- to                              <required>
+=item accept => REASONS
 
-. accept => REASONS
+=item charset => CHARSET
 
-. charset => CHARSET
+=item format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
-. format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
+=item locale => LOCALE
 
-. locale => LOCALE
+=item mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
 
-. mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
-
-. replace => BOOLEAN
-
-=over 4
+=item replace => BOOLEAN
 
 Only used in combination with a FILENAME: throw away the old file
 if it exists.  Probably you wish to append to existing information.
@@ -88,11 +84,7 @@ Use the LOCALE setting by default, which is LC_CTYPE or LC_ALL or LANG
 (in that order).  If these contain a character-set which Perl understands,
 then that is used, otherwise silently ignored.
 
-=back
-
-. to => FILENAME|FILEHANDLE|OBJECT
-
-=over 4
+=item to => FILENAME|FILEHANDLE|OBJECT
 
 You can either specify a FILENAME, which is opened in append mode with
 autoflush on. Or pass any kind of FILE-HANDLE or some OBJECT which
@@ -108,113 +100,65 @@ of a FILENAME.
 
 =head2 Accessors
 
-$obj-E<gt>B<filename>
-
 =over 4
+
+=item $obj-E<gt>B<filename>
 
 Returns the name of the opened file, or C<undef> in case this dispatcher
 was started from a file-handle or file-object.
 
-=back
-
-$obj-E<gt>B<isDisabled>
-
-=over 4
-
+=item $obj-E<gt>B<isDisabled>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<mode>
-
-=over 4
-
+=item $obj-E<gt>B<mode>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<name>
-
-=over 4
-
+=item $obj-E<gt>B<name>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<needs>
-
-=over 4
-
+=item $obj-E<gt>B<needs>
 See L<Log::Report::Dispatcher/"Accessors">
 
-=back
-
-$obj-E<gt>B<type>
-
-=over 4
-
+=item $obj-E<gt>B<type>
 See L<Log::Report::Dispatcher/"Accessors">
 
 =back
 
 =head2 Logging
 
-$obj-E<gt>B<collectLocation>
-
-Log::Report::Dispatcher::File-E<gt>B<collectLocation>
-
 =over 4
 
+=item $obj-E<gt>B<collectLocation>
+
+=item Log::Report::Dispatcher::File-E<gt>B<collectLocation>
+See L<Log::Report::Dispatcher/"Logging">
+
+=item $obj-E<gt>B<collectStack>([MAXDEPTH])
+
+=item Log::Report::Dispatcher::File-E<gt>B<collectStack>([MAXDEPTH])
+See L<Log::Report::Dispatcher/"Logging">
+
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+See L<Log::Report::Dispatcher/"Logging">
+
+=item $obj-E<gt>B<stackTraceLine>(OPTIONS)
+
+=item Log::Report::Dispatcher::File-E<gt>B<stackTraceLine>(OPTIONS)
+See L<Log::Report::Dispatcher/"Logging">
+
+=item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
 See L<Log::Report::Dispatcher/"Logging">
 
 =back
-
-$obj-E<gt>B<collectStack>([MAXDEPTH])
-
-Log::Report::Dispatcher::File-E<gt>B<collectStack>([MAXDEPTH])
-
-=over 4
-
-See L<Log::Report::Dispatcher/"Logging">
-
-=back
-
-$obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
-See L<Log::Report::Dispatcher/"Logging">
-
-=back
-
-$obj-E<gt>B<stackTraceLine>(OPTIONS)
-
-Log::Report::Dispatcher::File-E<gt>B<stackTraceLine>(OPTIONS)
-
-=over 4
-
-See L<Log::Report::Dispatcher/"Logging">
-
-=back
-
-$obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
-
-=over 4
-
-See L<Log::Report::Dispatcher/"Logging">
-
-=back
-
-=head1 DETAILS
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

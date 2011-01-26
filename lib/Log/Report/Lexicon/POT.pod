@@ -41,110 +41,78 @@ L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO>.
 
 =head2 Constructors
 
-Log::Report::Lexicon::POT-E<gt>B<new>(OPTIONS)
-
 =over 4
+
+=item Log::Report::Lexicon::POT-E<gt>B<new>(OPTIONS)
 
 Create a new POT file.  The initial header is generated for you, but
 it can be changed using the L<header()|Log::Report::Lexicon::POT/"Managing PO's"> method.
 
- Option    --Default
- charset     <required>
- date        now
- filename    undef
- index       {}
- nr_plurals  2
- plural_alg  n!=1
- textdomain  <required>
- version     undef
+ -Option    --Default
+  charset     <required>
+  date        now
+  filename    undef
+  index       {}
+  nr_plurals  2
+  plural_alg  n!=1
+  textdomain  <required>
+  version     undef
 
-. charset => STRING
+=over 2
 
-=over 4
+=item charset => STRING
 
 The character-set which is used for the output.
 
-=back
-
-. date => STRING
-
-=over 4
+=item date => STRING
 
 Overrule the date which is included in the generated header.
 
-=back
-
-. filename => STRING
-
-=over 4
+=item filename => STRING
 
 Specify an output filename.  The name can also be specified when
 L<write()|Log::Report::Lexicon::POT/"Constructors"> is called.
 
-=back
-
-. index => HASH
-
-=over 4
+=item index => HASH
 
 A set of translations (L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO> objects),
 with msgid as key.
 
-=back
-
-. nr_plurals => INTEGER
-
-=over 4
+=item nr_plurals => INTEGER
 
 The number of translations each of the translation with plural form
 need to have.
 
-=back
-
-. plural_alg => EXPRESSION
-
-=over 4
+=item plural_alg => EXPRESSION
 
 The algorithm to be used to calculate which translated msgstr to use.
 
-=back
-
-. textdomain => STRING
-
-=over 4
+=item textdomain => STRING
 
 The package name, used in the directory structure to store the
 PO files.
 
-=back
-
-. version => STRING
+=item version => STRING
 
 =back
 
-Log::Report::Lexicon::POT-E<gt>B<read>(FILENAME, OPTIONS)
-
-=over 4
+=item Log::Report::Lexicon::POT-E<gt>B<read>(FILENAME, OPTIONS)
 
 Read the POT information from FILENAME.
 
- Option --Default
- charset  <required>
+ -Option --Default
+  charset  <required>
 
-. charset => STRING
+=over 2
 
-=over 4
+=item charset => STRING
 
 The character-set which is used for the file.  You must specify
 this explicitly, while it cannot be trustfully detected automatically.
 
 =back
 
-=back
-
-$obj-E<gt>B<write>([FILENAME|FILEHANDLE], OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<write>([FILENAME|FILEHANDLE], OPTIONS)
 
 When you pass an open FILEHANDLE, you are yourself responsible that
 the correct character-encoding (binmode) is set.  When the write
@@ -155,27 +123,19 @@ then you may omit the first parameter.
 
 =head2 Attributes
 
-$obj-E<gt>B<charset>
-
 =over 4
+
+=item $obj-E<gt>B<charset>
 
 The character-set to be used for reading and writing.  You do not need
 to be aware of Perl's internal encoding for the characters.
 
-=back
-
-$obj-E<gt>B<filename>
-
-=over 4
+=item $obj-E<gt>B<filename>
 
 Returns the FILENAME, as derived from L<read()|Log::Report::Lexicon::POT/"Constructors"> or specified during
 initiation with L<new(filename)|Log::Report::Lexicon::POT/"Constructors">.
 
-=back
-
-$obj-E<gt>B<index>
-
-=over 4
+=item $obj-E<gt>B<index>
 
 Returns a HASH of all defined PO objects, organized by msgid.  Please try
 to avoid using this: use L<msgid()|Log::Report::Lexicon::POT/"Managing PO's"> for lookup and L<add()|Log::Report::Lexicon::POT/"Managing PO's"> for adding
@@ -185,18 +145,14 @@ translations.
 
 =head2 Managing PO's
 
-$obj-E<gt>B<add>(PO)
-
 =over 4
+
+=item $obj-E<gt>B<add>(PO)
 
 Add the information from a PO into this POT.  If the msgid of the PO
 is already known, that is an error.
 
-=back
-
-$obj-E<gt>B<header>([FIELD, [CONTENT]])
-
-=over 4
+=item $obj-E<gt>B<header>([FIELD, [CONTENT]])
 
 The translation of a blank MSGID is used to store a MIME header, which
 contains some meta-data.  When only a FIELD is specified, that content is
@@ -205,72 +161,40 @@ the knowledge will be stored.  In latter case, the header structure
 may get created.  When the CONTENT is set to C<undef>, the field will
 be removed.
 
-=back
-
-$obj-E<gt>B<msgid>(STRING)
-
-=over 4
+=item $obj-E<gt>B<msgid>(STRING)
 
 Lookup the L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO> with the STRING.  If you
 want to add a new translation, use L<add()|Log::Report::Lexicon::POT/"Managing PO's">.  Returns C<undef>
 when not defined.
 
-=back
-
-$obj-E<gt>B<msgstr>(MSGID, [COUNT])
-
-=over 4
+=item $obj-E<gt>B<msgstr>(MSGID, [COUNT])
 
 Returns the translated string for MSGID.  When not specified, COUNT is 1.
 
-=back
-
-$obj-E<gt>B<nrPlurals>
-
-=over 4
+=item $obj-E<gt>B<nrPlurals>
 
 Returns the number of plurals, when not known then '2'.
 
-=back
-
-$obj-E<gt>B<pluralIndex>(COUNT)
-
-=over 4
+=item $obj-E<gt>B<pluralIndex>(COUNT)
 
 Returns the msgstr index used to translate a value of COUNT.
 
-=back
-
-$obj-E<gt>B<removeReferencesTo>(FILENAME)
-
-=over 4
+=item $obj-E<gt>B<removeReferencesTo>(FILENAME)
 
 Remove all the references to the indicate FILENAME from all defined
 translations.  Returns the number of refs left.
 
-=back
-
-$obj-E<gt>B<stats>
-
-=over 4
+=item $obj-E<gt>B<stats>
 
 Returns a HASH with some statistics about this POT table.
 
-=back
-
-$obj-E<gt>B<translations>([ACTIVE])
-
-=over 4
+=item $obj-E<gt>B<translations>([ACTIVE])
 
 Returns a list with all defined L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO> objects. When
 the string C<ACTIVE> is given as parameter, only objects which have
 references are returned.
 
-=back
-
-$obj-E<gt>B<updated>([DATE])
-
-=over 4
+=item $obj-E<gt>B<updated>([DATE])
 
 Replace the "PO-Revision-Date" with the specified DATE, or the current
 moment.
@@ -279,42 +203,30 @@ moment.
 
 =head1 DIAGNOSTICS
 
-Error: charset parameter is required
-
 =over 4
 
-=back
+=item Error: charset parameter is required
 
-Error: no filename or file-handle specified for PO
-
-=over 4
+=item Error: no filename or file-handle specified for PO
 
 When a PO file is written, then a filename or file-handle must be
 specified explicitly, or set beforehand using the L<filename()|Log::Report::Lexicon::POT/"Attributes">
 method, or known because the write follows a L<read()|Log::Report::Lexicon::POT/"Constructors"> of the file.
 
-=back
+=item Error: only acceptable parameter is 'ACTIVE'
 
-Error: only acceptable parameter is 'ACTIVE'
-
-=over 4
-
-=back
-
-Error: textdomain parameter is required
-
-=over 4
+=item Error: textdomain parameter is required
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.90,
-built on December 22, 2010. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.91,
+built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
