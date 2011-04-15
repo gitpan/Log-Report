@@ -1,10 +1,10 @@
 # Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.07.
+# Pod stripped from pm file by OODoc 2.00.
 package DieTests;
 use vars '$VERSION';
-$VERSION = '0.91';
+$VERSION = '0.92';
 
 use warnings;
 use strict;
@@ -20,7 +20,8 @@ my $errno  = $!+0;
 my $errstr = "$!";
 
 sub process($)
-{   my ($err, $opt, $reason, $message) = die_decode shift;
+{
+    my ($err, $opt, $reason, $message) = die_decode shift;
     $err =~ s/\d+\.?$/XX/;
     my $errno = $opt->{errno}    || 'no errno';
     my $loc   = $opt->{location};
@@ -153,7 +154,7 @@ main::simple_wrapper()#t/41die.t#XX
 __OUT
 
 
-if($^O eq 'Win32')
+if($^O eq 'MSWin32')
 {   # perl bug http://rt.perl.org/rt3/Ticket/Display.html?id=81586
     pass 'Win32/confess bug #81586';
 }

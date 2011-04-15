@@ -111,10 +111,14 @@ L<Log::Report::Dispatcher::Try|Log::Report::Dispatcher::Try>.
 
 =over 4
 
-=item B<dispatcher>((TYPE, OPTIONS)|(COMMAND => NAME, [NAMEs]))
+=item B<dispatcher>((TYPE, NAME, OPTIONS)|(COMMAND => NAME, [NAMEs]))
+
+The C<dispatcher> function controls access to dispatchers: the back-ends
+which do the actual logging. Dispatchers are global entities, address by
+a symbolic free to chose NAME.
 
 The C<Log::Report> suite has its own dispatcher TYPES, but also connects
-to external dispatching frame-works.  Each need some (minor) conversions,
+to external dispatching frame-works. Each need some (minor) conversions,
 especially with respect to translation of REASONS of the reports
 into log-levels as the back-end understands.
 
@@ -236,6 +240,7 @@ example: for use of L<report()|Log::Report/"Report Production and Configuration"
  report INFO  => '500: ' . __'Internal Server Error';
 
  report {to => 'syslog'}, NOTICE => "started process $$";
+ notice "started process $$", _to => 'syslog'; #same
 
  # with syntax SHORT
  trace "start processing now";
@@ -1029,8 +1034,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.91,
-built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.92,
+built on April 15, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

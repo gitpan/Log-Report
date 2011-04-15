@@ -1,14 +1,14 @@
 # Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.07.
+# Pod stripped from pm file by OODoc 2.00.
 
 use warnings;
 use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.91';
+$VERSION = '0.92';
 
 use base 'Exporter';
 
@@ -105,6 +105,11 @@ sub report($@)
     {   # untranslated message into object
         @_%2 and error __x"odd length parameter list with '$message'";
         $message = Log::Report::Message->new(_prepend => $message, @_);
+    }
+
+    if(my $to = $message->to)
+    {   $disp    = [ grep $_->name eq $to, @$disp ];
+        @$disp or return;
     }
 
     my @last_call;     # call Perl dispatcher always last

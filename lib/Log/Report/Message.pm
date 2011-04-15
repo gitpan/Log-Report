@@ -1,13 +1,13 @@
 # Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.07.
+# Pod stripped from pm file by OODoc 2.00.
 use warnings;
 use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.91';
+$VERSION = '0.92';
 
 
 use Log::Report 'log-report';
@@ -40,6 +40,12 @@ sub count()   {shift->{_count}}
 sub classes()
 {   my $class = $_[0]->{_class} || $_[0]->{_classes} || [];
     ref $class ? @$class : split(/[\s,]+/, $class);
+}
+
+
+sub to(;$)
+{   my $self = shift;
+    @_ ? $self->{_to} = shift : $self->{_to};
 }
 
 

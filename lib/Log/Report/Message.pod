@@ -51,6 +51,7 @@ example: use of clone()
   _msgid     undef
   _plural    undef
   _prepend   undef
+  _to        <undef>
 
 =over 2
 
@@ -67,7 +68,7 @@ category of the message.
 
 One message can be part of multiple classes.  The STRING is used as
 comma- and/or blank seperated list of class tokens, the ARRAY lists all
-tokens seperately.
+tokens seperately. See L<classes()|Log::Report::Message/"Accessors">.
 
 =item _classes => STRING|ARRAY
 
@@ -99,6 +100,11 @@ translations are possible: therefore, this can best resemble an English
 message.
 
 =item _prepend => STRING
+
+=item _to => NAME
+
+Specify the NAME of a dispatcher as destination explicitly. Short
+for  C<< report {to => NAME}, ... >>  See L<to()|Log::Report::Message/"Accessors">
 
 =back
 
@@ -134,6 +140,12 @@ Returns the msgid which will later be translated.
 =item $obj-E<gt>B<prepend>
 
 Returns the string which is prepended to this one.  Usually C<undef>.
+
+=item $obj-E<gt>B<to>([NAME])
+
+Returns the NAME of a dispatcher if explicitly specified with
+the '_to' key. Can also be used to set it.  Usually, this will
+return undef, because usually all dispatchers get all messages.
 
 =item $obj-E<gt>B<valueOf>(PARAMETER)
 
@@ -372,8 +384,8 @@ Implemented as L<toString()|Log::Report::Message/"Processing">.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.91,
-built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.92,
+built on April 15, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

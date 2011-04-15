@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Log-Report
-version:            0.91
+version:            0.92
 abstract:           report a problem, pluggable handlers and language support
 author:
     - Mark Overmeer

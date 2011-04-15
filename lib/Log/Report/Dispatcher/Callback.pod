@@ -34,6 +34,7 @@ for simple things this will do.
 =over 4
 
 =item $obj-E<gt>B<close>
+
 See L<Log::Report::Dispatcher/"Constructors">
 
 =item Log::Report::Dispatcher::Callback-E<gt>B<new>(TYPE, NAME, OPTIONS)
@@ -79,18 +80,23 @@ L<Log::Report::Message|Log::Report::Message>.
 Returns the code reference which will handle each logged message.
 
 =item $obj-E<gt>B<isDisabled>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =item $obj-E<gt>B<mode>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =item $obj-E<gt>B<name>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =item $obj-E<gt>B<needs>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =item $obj-E<gt>B<type>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =back
@@ -102,30 +108,35 @@ See L<Log::Report::Dispatcher/"Accessors">
 =item $obj-E<gt>B<collectLocation>
 
 =item Log::Report::Dispatcher::Callback-E<gt>B<collectLocation>
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =item $obj-E<gt>B<collectStack>([MAXDEPTH])
 
 =item Log::Report::Dispatcher::Callback-E<gt>B<collectStack>([MAXDEPTH])
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =item $obj-E<gt>B<stackTraceLine>(OPTIONS)
 
 =item Log::Report::Dispatcher::Callback-E<gt>B<stackTraceLine>(OPTIONS)
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.91,
-built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.92,
+built on April 15, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

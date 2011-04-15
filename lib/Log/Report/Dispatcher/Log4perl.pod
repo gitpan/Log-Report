@@ -60,6 +60,7 @@ using L<new(to_level)|Log::Report::Dispatcher::Log4perl/"Constructors">.  See ex
 =over 4
 
 =item $obj-E<gt>B<close>
+
 See L<Log::Report::Dispatcher/"Constructors">
 
 =item Log::Report::Dispatcher::Log4perl-E<gt>B<new>(TYPE, NAME, OPTIONS)
@@ -110,18 +111,23 @@ See L<reasonToLevel()|Log::Report::Dispatcher::Log4perl/"Logging">.
 Returns the Log::Log4perl::Logger object which is used for logging.
 
 =item $obj-E<gt>B<isDisabled>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =item $obj-E<gt>B<mode>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =item $obj-E<gt>B<name>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =item $obj-E<gt>B<needs>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =item $obj-E<gt>B<type>
+
 See L<Log::Report::Dispatcher/"Accessors">
 
 =back
@@ -133,14 +139,17 @@ See L<Log::Report::Dispatcher/"Accessors">
 =item $obj-E<gt>B<collectLocation>
 
 =item Log::Report::Dispatcher::Log4perl-E<gt>B<collectLocation>
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =item $obj-E<gt>B<collectStack>([MAXDEPTH])
 
 =item Log::Report::Dispatcher::Log4perl-E<gt>B<collectStack>([MAXDEPTH])
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =item $obj-E<gt>B<reasonToLevel>(REASON)
@@ -151,17 +160,19 @@ a translation table.  This can be changed with L<new(to_level)|Log::Report::Disp
 =item $obj-E<gt>B<stackTraceLine>(OPTIONS)
 
 =item Log::Report::Dispatcher::Log4perl-E<gt>B<stackTraceLine>(OPTIONS)
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
+
 See L<Log::Report::Dispatcher/"Logging">
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.91,
-built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.92,
+built on April 15, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

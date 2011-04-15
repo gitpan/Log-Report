@@ -47,6 +47,7 @@ also only available on certain systems.
 =over 4
 
 =item Log::Report::Translator::Gettext-E<gt>B<new>(OPTIONS)
+
 See L<Log::Report::Translator/"Constructors">
 
 =back
@@ -56,9 +57,11 @@ See L<Log::Report::Translator/"Constructors">
 =over 4
 
 =item $obj-E<gt>B<charset>
+
 See L<Log::Report::Translator/"Accessors">
 
 =item $obj-E<gt>B<lexicons>
+
 See L<Log::Report::Translator/"Accessors">
 
 =back
@@ -68,17 +71,19 @@ See L<Log::Report::Translator/"Accessors">
 =over 4
 
 =item $obj-E<gt>B<load>(DOMAIN, LOCALE)
+
 See L<Log::Report::Translator/"Translating">
 
 =item $obj-E<gt>B<translate>(MESSAGE)
+
 See L<Log::Report::Translator/"Translating">
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.91,
-built on January 26, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.92,
+built on April 15, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
