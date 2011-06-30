@@ -53,9 +53,22 @@ an (untranslated) report.
 
 =over 4
 
-=item $obj-E<gt>B<message>
+=item $obj-E<gt>B<message>([MESSAGE])
 
-=item $obj-E<gt>B<reason>
+Change the MESSAGE of the exception, must be a L<Log::Report::Message|Log::Report::Message>
+object.
+
+When you use a C<Log::Report::Message> object, you will get a new one
+returned. Therefore, if you want to modify the message in an exception,
+you have to re-assign the result of the modification.
+
+example: 
+
+ $e->message->concat('!!')); # will not work!
+ $e->message($e->message->concat('!!'));
+ $e->message(__x"some message {msg}", msg => $xyz);
+
+=item $obj-E<gt>B<reason>([REASON])
 
 =item $obj-E<gt>B<report_opts>
 
@@ -69,6 +82,15 @@ an (untranslated) report.
 
 Check whether any of the classes listed in the message match CLASS
 (string) or the REGEX.  This uses L<Log::Report::Message::inClass()|Log::Report::Message/"Processing">.
+
+=item $obj-E<gt>B<print>([FILEHANDLE])
+
+The default filehandle is STDOUT.
+
+example: 
+
+ print $exception;  # via overloading
+ $exception->print; # OO style
 
 =item $obj-E<gt>B<throw>(OPTIONS)
 
@@ -114,8 +136,8 @@ Produces "reason: message".
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.92,
-built on April 15, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.93,
+built on June 30, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

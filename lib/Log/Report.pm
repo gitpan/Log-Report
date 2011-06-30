@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.92';
+$VERSION = '0.93';
 
 use base 'Exporter';
 
@@ -74,7 +74,7 @@ sub report($@)
     $is_reason{$reason}
         or error __x"token '{token}' not recognized as reason", token=>$reason;
 
-    $opts->{errno} ||= $!+0  # want copy!
+    $opts->{errno} ||= $!+0 || $? || 1
         if $use_errno{$reason} && !defined $opts->{errno};
 
     if(my $to = delete $opts->{to})
@@ -256,9 +256,9 @@ sub try(&@)
     if(   $err
        && !$disp->wasFatal
        && !UNIVERSAL::isa($err, 'Log::Report::Exception'))
-    {   require Log::Report::Die;
-        ($err, my($opts, $reason, $msg)) = Log::Report::Die::die_decode($err);
-        $disp->log($opts, $reason, $msg);
+    {   eval "require Log::Report::Die";
+        ($err, my($opts, $reason, $text)) = Log::Report::Die::die_decode($err);
+        $disp->log($opts, $reason, __$text);
     }
 
     $disp->died($err);

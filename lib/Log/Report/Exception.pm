@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.92';
+$VERSION = '0.93';
 
 
 use Log::Report 'log-report';
@@ -25,8 +25,22 @@ sub new($@)
 
 
 sub report_opts() {shift->{report_opts}}
-sub reason()      {shift->{reason}}
-sub message()     {shift->{message}}
+
+
+sub reason(;$)
+{   my $self = shift;
+    @_ ? $self->{reason} = uc(shift) : $self->{reason};
+}
+
+
+sub message(;$)
+{   my $self = shift;
+    @_ or return $self->{message};
+    my $msg = shift;
+    UNIVERSAL::isa($msg, 'Log::Report::Message')
+        or panic __x"message() of exception expects Log::Report::Message";
+    $self->{message} = $msg;
+}
 
 
 sub inClass($) { $_[0]->message->inClass($_[1]) }
@@ -52,7 +66,13 @@ sub PROPAGATE($$) {shift}
 sub toString()
 {   my $self = shift;
     my $msg  = $self->message;
-    lc($self->reason) . ': ' . (ref $msg ? $msg->toString : $msg) . "\n";
+    lc($self->{reason}) . ': ' . (ref $msg ? $msg->toString : $msg) . "\n";
+}
+
+
+sub print(;$)
+{   my $self = shift;
+    (shift || *STDERR)->print($self->toString);
 }
 
 1;
