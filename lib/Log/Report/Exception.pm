@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.93';
+$VERSION = '0.94';
 
 
 use Log::Report 'log-report';
@@ -33,6 +33,9 @@ sub reason(;$)
 }
 
 
+sub isFatal() { Log::Report->isFatal(shift->{reason}) }
+
+
 sub message(;$)
 {   my $self = shift;
     @_ or return $self->{message};
@@ -46,12 +49,18 @@ sub message(;$)
 sub inClass($) { $_[0]->message->inClass($_[1]) }
 
 
-# if we would used "report" here, we get a naming conflict with
-# function Log::Report::report.
 sub throw(@)
 {   my $self    = shift;
     my $opts    = @_ ? { %{$self->{report_opts}}, @_ } : $self->{report_opts};
-    my $reason  = delete $opts->{reason} || $self->reason;
+
+    my $reason;
+    if($reason = delete $opts->{reason})
+    {   $opts->{is_fatal} = Log::Report->isFatal($reason)
+            unless exists $opts->{is_fatal};
+    }
+    else
+    {   $reason = $self->{reason};
+    }
 
     $opts->{stack} = Log::Report::Dispatcher->collectStack
         if $opts->{stack} && @{$opts->{stack}};

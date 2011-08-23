@@ -53,6 +53,16 @@ an (untranslated) report.
 
 =over 4
 
+=item $obj-E<gt>B<isFatal>
+
+Returns whether this exception has a severity which makes it fatal
+when thrown.  See L<Log::Report::isFatal()|Log::Report/"Reasons">.
+
+example: 
+
+  if($ex->isFatal) { $ex->throw(reason => 'ALERT') }
+  else { $ex->throw }
+
 =item $obj-E<gt>B<message>([MESSAGE])
 
 Change the MESSAGE of the exception, must be a L<Log::Report::Message|Log::Report::Message>
@@ -109,7 +119,7 @@ example: overrule defaults to report
 
  $exception->throw(to => 'syslog');
 
- $@->wasFatal->throw(reason => 'WARNING', is_fatal => 0);
+ $@->wasFatal->throw(reason => 'WARNING');
 
 =item $obj-E<gt>B<toString>
 
@@ -136,8 +146,8 @@ Produces "reason: message".
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.93,
-built on June 30, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.94,
+built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
