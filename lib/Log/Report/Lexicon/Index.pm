@@ -1,11 +1,11 @@
-# Copyrights 2007-2011 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.94';
+$VERSION = '0.95';
 
 
 use warnings;
@@ -127,11 +127,7 @@ sub list($;$)
     my $domain = lc shift;
     my $filter = shift;
     my $index  = $self->index;
-
-    my @list   =
-        map { $index->{$_} }
-            grep { m! \b\Q$domain\E\b !x }
-                keys %$index;
+    my @list   = map $index->{$_}, grep m!\b\Q$domain\E\b!, keys %$index;
 
     defined $filter
         or return @list;
@@ -139,7 +135,7 @@ sub list($;$)
     $filter    = qr/\.\Q$filter\E$/i
         if defined $filter && ref $filter ne 'Regexp';
 
-    grep { $_ =~ $filter } @list;
+    grep $_ =~ $filter, @list;
 }
 
 

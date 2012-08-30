@@ -2,14 +2,21 @@
 
 Log::Report::Extract::PerlPPI - Collect translatable strings from Perl using PPI
 
+=head1 INHERITANCE
+
+ Log::Report::Extract::PerlPPI
+   is a Log::Report::Extract
+
 =head1 SYNOPSIS
 
  my $ppi = Log::Report::Extract::PerlPPI->new
   ( lexicon => '/usr/share/locale'
   );
  $ppi->process('lib/My/Pkg.pm');  # many times
- $ppi->showStats;   # to dispatchers which accept TRACE or INFO
- $ppi->write;       # also cleans processing memory.
+ $ppi->showStats;
+ $ppi->write;
+
+ # See script  xgettext-perl
 
 =head1 DESCRIPTION
 
@@ -27,22 +34,7 @@ exist yet, one C<textdomain/xx.po> file will be created.
 
 =item Log::Report::Extract::PerlPPI-E<gt>B<new>(OPTIONS)
 
- -Option --Default
-  charset  'utf-8'
-  lexicon  <required>
-
-=over 2
-
-=item charset => STRING
-
-The character-set used in the PO files.
-
-=item lexicon => DIRECTORY
-
-The place where the lexicon is kept.  When no lexicon is defined yet,
-this will be the directory where an C<domain/xx.po> file will be created.
-
-=back
+See L<Log::Report::Extract/"Constructors">
 
 =back
 
@@ -50,18 +42,21 @@ this will be the directory where an C<domain/xx.po> file will be created.
 
 =over 4
 
-=item $obj-E<gt>B<charset>
+=item $obj-E<gt>B<charset>()
 
-Returns the character-set used inside the POT files.
+See L<Log::Report::Extract/"Accessors">
 
-=item $obj-E<gt>B<domains>
+=item $obj-E<gt>B<domains>()
 
-Returns a sorted list of all known domain names.
+See L<Log::Report::Extract/"Accessors">
 
-=item $obj-E<gt>B<index>
+=item $obj-E<gt>B<index>()
 
-Returns the L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index> object, which is listing
-the files in the lexicon directory tree.
+See L<Log::Report::Extract/"Accessors">
+
+=item $obj-E<gt>B<pots>(DOMAIN)
+
+See L<Log::Report::Extract/"Accessors">
 
 =back
 
@@ -86,25 +81,26 @@ all files where processed.
 
 =item $obj-E<gt>B<showStats>([DOMAINs])
 
-Show a status about the DOMAIN (by default all domains).  At least mode
-verbose is required to see this.
+See L<Log::Report::Extract/"Processors">
+
+=item $obj-E<gt>B<store>(DOMAIN, FILENAME, LINENR, MSG, [MSG_PLURAL])
+
+See L<Log::Report::Extract/"Processors">
 
 =item $obj-E<gt>B<write>([DOMAIN])
 
-Update the information of the files related to DOMAIN, by default all
-processed DOMAINS.  All information known about the DOMAIN is removed
-from the cache.
+See L<Log::Report::Extract/"Processors">
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

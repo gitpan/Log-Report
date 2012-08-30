@@ -47,7 +47,7 @@ This basic file logger accepts an file-handle or filename as destination.
 
 =over 4
 
-=item $obj-E<gt>B<close>
+=item $obj-E<gt>B<close>()
 
 Only when initiated with a FILENAME, the file will be closed.  In any
 other case, nothing will be done.
@@ -102,28 +102,28 @@ of a FILENAME.
 
 =over 4
 
-=item $obj-E<gt>B<filename>
+=item $obj-E<gt>B<filename>()
 
 Returns the name of the opened file, or C<undef> in case this dispatcher
 was started from a file-handle or file-object.
 
-=item $obj-E<gt>B<isDisabled>
+=item $obj-E<gt>B<isDisabled>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<mode>
+=item $obj-E<gt>B<mode>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<name>
+=item $obj-E<gt>B<name>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<needs>
+=item $obj-E<gt>B<needs>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<type>
+=item $obj-E<gt>B<type>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
@@ -133,9 +133,9 @@ See L<Log::Report::Dispatcher/"Accessors">
 
 =over 4
 
-=item $obj-E<gt>B<collectLocation>
+=item $obj-E<gt>B<collectLocation>()
 
-=item Log::Report::Dispatcher::File-E<gt>B<collectLocation>
+=item Log::Report::Dispatcher::File-E<gt>B<collectLocation>()
 
 See L<Log::Report::Dispatcher/"Logging">
 
@@ -163,12 +163,12 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

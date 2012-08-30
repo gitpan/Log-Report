@@ -61,7 +61,7 @@ an exit of the program if there is none.
 
 =over 4
 
-=item $obj-E<gt>B<close>
+=item $obj-E<gt>B<close>()
 
 Only when initiated with a FILENAME, the file will be closed.  In any
 other case, nothing will be done.
@@ -108,28 +108,28 @@ The exit string ($@) of the eval'ed block.
 The message which was reported by C<eval>, which is used internally
 to catch problems in the try block.
 
-=item $obj-E<gt>B<exceptions>
+=item $obj-E<gt>B<exceptions>()
 
 Returns all collected C<Log::Report::Exceptions>.  The last of
 them may be a fatal one.  The other are non-fatal.
 
-=item $obj-E<gt>B<isDisabled>
+=item $obj-E<gt>B<isDisabled>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<mode>
+=item $obj-E<gt>B<mode>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<name>
+=item $obj-E<gt>B<name>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<needs>
+=item $obj-E<gt>B<needs>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<type>
+=item $obj-E<gt>B<type>()
 
 See L<Log::Report::Dispatcher/"Accessors">
 
@@ -139,9 +139,9 @@ See L<Log::Report::Dispatcher/"Accessors">
 
 =over 4
 
-=item $obj-E<gt>B<collectLocation>
+=item $obj-E<gt>B<collectLocation>()
 
-=item Log::Report::Dispatcher::Try-E<gt>B<collectLocation>
+=item Log::Report::Dispatcher::Try-E<gt>B<collectLocation>()
 
 See L<Log::Report::Dispatcher/"Logging">
 
@@ -167,7 +167,7 @@ dispatchers, which were disabled during the try block. The OPTIONS
 will end-up as HASH-of-OPTIONS to L<Log::Report::report()|Log::Report/"Report Production and Configuration">; see
 L<Log::Report::Exception::throw()|Log::Report::Exception/"Processing"> which does the job.
 
-=item $obj-E<gt>B<reportFatal>
+=item $obj-E<gt>B<reportFatal>()
 
 Re-cast only the fatal message to the defined dispatchers.  If the
 block was left without problems, then nothing will be done.  The OPTIONS
@@ -190,11 +190,11 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =over 4
 
-=item $obj-E<gt>B<failed>
+=item $obj-E<gt>B<failed>()
 
 Returns true if the block was left with an fatal message.
 
-=item $obj-E<gt>B<showStatus>
+=item $obj-E<gt>B<showStatus>()
 
 If this object is kept in C<$@>, and someone uses this as string, we
 want to show the fatal error message.
@@ -203,7 +203,7 @@ The message is not very informative for the good cause: we do not want
 people to simply print the C<$@>, but wish for a re-cast of the message
 using L<reportAll()|Log::Report::Dispatcher::Try/"Logging"> or L<reportFatal()|Log::Report::Dispatcher::Try/"Logging">.
 
-=item $obj-E<gt>B<success>
+=item $obj-E<gt>B<success>()
 
 Returns true if the block exited normally.
 
@@ -231,13 +231,13 @@ See L<Log::Report::Message::inClass()|Log::Report::Message/"Processing">
 
 =over 4
 
-=item overload: B<boolean>
+=item overload: B<boolean>()
 
 Returns true if the previous try block did produce a terminal
 error.  This "try" object is assigned to C<$@>, and the usual
 perl syntax is C<if($@) {...error-handler...}>.
 
-=item overload: B<stringify>
+=item overload: B<stringify>()
 
 When C<$@> is used the traditional way, it is checked to have
 a string content.  In this case, stringify into the fatal error
@@ -247,12 +247,12 @@ or nothing.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

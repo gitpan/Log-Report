@@ -56,11 +56,11 @@ in a compact way, much more compact than L<Log::Report::Lexicon::PO|Log::Report:
 
 =over 4
 
-=item $obj-E<gt>B<charset>
+=item $obj-E<gt>B<charset>()
 
 See L<Log::Report::Translator/"Accessors">
 
-=item $obj-E<gt>B<lexicons>
+=item $obj-E<gt>B<lexicons>()
 
 See L<Log::Report::Translator/"Accessors">
 
@@ -82,12 +82,12 @@ See L<Log::Report::Translator/"Translating">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

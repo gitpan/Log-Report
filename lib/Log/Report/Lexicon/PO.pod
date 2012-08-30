@@ -29,7 +29,7 @@ objects are kept in a POT file, implemented in L<Log::Report::Lexicon::POT|Log::
 
 =item automatic => PARAGRAPH
 
-Automaticly added comments.
+Automatically added comments.
 See L<addAutomatic()|Log::Report::Lexicon::PO/"Attributes">.
 
 =item comment => PARAGRAPH
@@ -126,11 +126,11 @@ example: use of format()
 
 Returns whether the translation needs human inspection.
 
-=item $obj-E<gt>B<isActive>
+=item $obj-E<gt>B<isActive>()
 
 Returns whether the translation has any references, or is the header.
 
-=item $obj-E<gt>B<msgid>
+=item $obj-E<gt>B<msgid>()
 
 Returns the actual msgid, which cannot be C<undef>.
 
@@ -182,7 +182,7 @@ behavior is attempted.
 
 =back
 
-=item $obj-E<gt>B<unused>
+=item $obj-E<gt>B<unused>()
 
 The message-id has no references anymore and no translations.
 
@@ -190,12 +190,12 @@ The message-id has no references anymore and no translations.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

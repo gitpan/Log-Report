@@ -1,4 +1,4 @@
-# Copyrights 2007-2011 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -8,14 +8,14 @@ use strict;
 
 package Log::Report::Util;
 use vars '$VERSION';
-$VERSION = '0.94';
+$VERSION = '0.95';
 
 use base 'Exporter';
 
 our @EXPORT = qw/@reasons %reason_code
   parse_locale expand_reasons escape_chars unescape_chars/;
 
-use Log::Report 'log-report', syntax => 'SHORT';
+use Log::Report 'log-report';
 
 # ordered!
 our @reasons = N__w('TRACE ASSERT INFO NOTICE WARNING

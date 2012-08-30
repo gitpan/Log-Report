@@ -1,4 +1,4 @@
-# Copyrights 2007-2011 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -8,14 +8,11 @@ use strict;
 
 package Log::Report::Extract::PerlPPI;
 use vars '$VERSION';
-$VERSION = '0.94';
+$VERSION = '0.95';
 
+use base 'Log::Report::Extract';
 
-use Log::Report 'log-report', syntax => 'SHORT';
-
-use Log::Report::Lexicon::Index ();
-use Log::Report::Lexicon::POT   ();
-
+use Log::Report 'log-report';
 use PPI;
 
 # See Log::Report translation markup functions
@@ -31,35 +28,10 @@ my %msgids =
  );
 
 
-sub new(@)
-{   my $class = shift;
-    (bless {}, $class)->init( {@_} );
-}
-
-sub init($)
-{   my ($self, $args) = @_;
-    my $lexi = $args->{lexicon}
-        or error __"PerlPPI requires explicit lexicon directory";
-
-    -d $lexi or mkdir $lexi
-        or fault __x"cannot create lexicon directory {dir}", dir => $lexi;
-
-    $self->{index}   = Log::Report::Lexicon::Index->new($lexi);
-    $self->{charset} = $args->{charset} || 'utf-8';
-    $self;
-}
-
-
-sub index()   {shift->{index}}
-sub charset() {shift->{charset}}
-sub domains() {sort keys %{shift->{domains}}}
-
-
 sub process($@)
 {   my ($self, $fn, %opts) = @_;
 
     my $charset = $opts{charset} || 'iso-8859-1';
-    info __x"processing file {fn} in {charset}", fn=> $fn, charset => $charset;
 
     $charset eq 'iso-8859-1'
         or error __x"PPI only supports iso-8859-1 (latin-1) on the moment";
@@ -67,28 +39,40 @@ sub process($@)
     my $doc = PPI::Document->new($fn, readonly => 1)
         or fault __x"cannot read from file {filename}", filename => $fn;
 
-    my ($pkg, $include, $domain) = ('main', 0, undef);
+    my @childs = $doc->schildren;
+    if(@childs==1 && ref $childs[0] eq 'PPI::Statement')
+    {   info __x"no Perl in file {filename}", filename => $fn;
+        return 0;
+    }
+
+    info __x"processing file {fn} in {charset}", fn=> $fn, charset => $charset;
+    my ($pkg, $include, $domain, $msgs_found) = ('main', 0, undef, 0);
 
   NODE:
     foreach my $node ($doc->schildren)
     {   if($node->isa('PPI::Statement::Package'))
         {   $pkg     = $node->namespace;
 
-            # special hack for module Log::Report itself
+            # special hack needed for module Log::Report itself
             if($pkg eq 'Log::Report')
             {   ($include, $domain) = (1, 'log-report');
                 $self->_reset($domain, $fn);
             }
             else { ($include, $domain) = (0, undef) }
-
             next NODE;
         }
 
         if($node->isa('PPI::Statement::Include'))
-        {   next NODE if $node->type ne 'use' || $node->module ne 'Log::Report';
+        {   $node->type eq 'use' && $node->module eq 'Log::Report'
+                or next NODE;
+
             $include++;
             my $dom = ($node->schildren)[2];
-            $domain = $dom->isa('PPI::Token::Quote') ? $dom->string : undef;
+            $domain
+               = $dom->isa('PPI::Token::Quote')            ? $dom->string
+               : $dom->isa('PPI::Token::QuoteLike::Words') ? ($dom->literal)[0]
+               : undef;
+
             $self->_reset($domain, $fn);
         }
 
@@ -97,7 +81,7 @@ sub process($@)
                  $_[1]->isa('PPI::Token::Word') or return 0;
 
                  my $node = $_[1];
-                 my $def  = $msgids{$node->content}
+                 my $def  = $msgids{$node->content}  # get __() description
                      or return 0;
 
                  my @msgids = $self->_get($node, @$def)
@@ -106,26 +90,30 @@ sub process($@)
                  my $line = $node->location->[0];
                  unless($domain)
                  {   mistake __x
-                         "no textdomain for translatable at {fn} line {line}"
+                         "no text-domain for translatable at {fn} line {line}"
                         , fn => $fn, line => $line;
                      return 0;
                  }
 
-                 if($def->[4]) # split
-                 {   $self->_store($domain, $fn, $line, $_)
-                        for map {split} @msgids;
+                 if($def->[4])    # must split?  Bulk conversion strings
+                 {   my @words = map {split} @msgids;
+                     $self->store($domain, $fn, $line, $_) for @words;
+                     $msgs_found += @words;
                  }
                  else
-                 {   $self->_store($domain, $fn, $line, @msgids);
+                 {   $self->store($domain, $fn, $line, @msgids);
+                     $msgs_found += 1;
                  }
 
                  0;  # don't collect
                }
          );
     }
+
+    $msgs_found;
 }
 
-sub _get($$$$$)
+sub _get($@)
 {   my ($self, $node, $msgids, $count, $opts, $vars, $split) = @_;
     my $list_only = ($msgids > 1) || $count || $opts || $vars;
     my $expand    = $opts || $vars;
@@ -178,133 +166,6 @@ sub _get($$$$$)
     }
 
     @msgids;
-}
-
-
-sub showStats(;$)
-{   dispatcher needs => 'INFO'
-        or return;
-
-    my $self = shift;
-    my @domains = @_ ? @_ : $self->domains;
-
-    foreach my $domain (@domains)
-    {   my $pots = $self->{domains}{$domain} or next;
-        my ($msgids, $fuzzy, $inactive) = (0, 0, 0);
-
-        foreach my $pot (@$pots)
-        {   my $stats = $pot->stats;
-            next unless $stats->{fuzzy} || $stats->{inactive};
-
-            $msgids   = $stats->{msgids};
-            next if $msgids == $stats->{fuzzy};   # ignore the template
-
-            notice __x
-                "{domain}: {fuzzy%3d} fuzzy, {inact%3d} inactive in {filename}"
-              , domain => $domain, fuzzy => $stats->{fuzzy}
-              , inact => $stats->{inactive}, filename => $pot->filename;
-
-            $fuzzy    += $stats->{fuzzy};
-            $inactive += $stats->{inactive};
-        }
-
-        if($fuzzy || $inactive)
-        {   info __xn
-"{domain}: one file with {ids} msgids, {f} fuzzy and {i} inactive translations"
-, "{domain}: {_count} files each {ids} msgids, {f} fuzzy and {i} inactive translations in total"
-              , scalar(@$pots), domain => $domain
-              , f => $fuzzy, ids => $msgids, i => $inactive
-        }
-        else
-        {   info __xn
-                "{domain}: one file with {ids} msgids"
-              , "{domain}: {_count} files with each {ids} msgids"
-              , scalar(@$pots), domain => $domain, ids => $msgids;
-        }
-    }
-}
-
-
-sub write(;$)
-{   my ($self, $domain) = @_;
-    unless(defined $domain)  # write all
-    {   $self->write($_) for keys %{$self->{domains}};
-        return;
-    }
-
-    my $pots = delete $self->{domains}{$domain}
-        or return;  # nothing found
-
-    for my $pot (@$pots)
-    {   $pot->updated;
-        $pot->write;
-    }
-
-    $self;
-}
-
-sub DESTROY() {shift->write}
-
-sub _reset($$)
-{   my ($self, $domain, $fn) = @_;
-
-    my $pots = $self->{domains}{$domain}
-           ||= $self->_read_pots($domain);
-
-    $_->removeReferencesTo($fn) for @$pots;
-}
-
-sub _read_pots($)
-{   my ($self, $domain) = @_;
-
-    my $index   = $self->index;
-    my $charset = $self->charset;
-
-    my @pots = map {Log::Report::Lexicon::POT->read($_, charset=> $charset)}
-        $index->list($domain);
-
-    trace __xn "found one pot file for domain {domain}"
-             , "found {_count} pot files for domain {domain}"
-             , @pots, domain => $domain;
-
-    @pots && return \@pots;
-
-    # new textdomain
-    my $fn = $index->addFile("$domain.$charset.po");
-    info __x"starting new textdomain {domain}, template in {filename}"
-       , domain => $domain, filename => $fn;
-
-    my $pot = Log::Report::Lexicon::POT->new
-     ( textdomain => $domain
-     , filename   => $fn
-     , charset    => $charset
-     , version    => 0.01
-     );
-
-    [ $pot ];
-}
-
-sub _store($$$$;$)
-{   my ($self, $domain, $fn, $linenr, $msgid, $plural) = @_;
-
-    foreach my $pot ( @{$self->{domains}{$domain}} )
-    {   if(my $po = $pot->msgid($msgid))
-        {   $po->addReferences( ["$fn:$linenr"]);
-            $po->plural($plural) if $plural;
-            next;
-        }
-
-        my $format = $msgid =~ m/\{/ ? 'perl-brace' : 'perl';
-        my $po = Log::Report::Lexicon::PO->new
-          ( msgid        => $msgid
-          , msgid_plural => $plural
-          , fuzzy        => 1
-          , format       => $format
-          , references   => [ "$fn:$linenr" ]
-          );
-
-        $pot->add($po);
-    }
 }
 
 1;

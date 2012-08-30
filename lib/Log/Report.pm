@@ -1,4 +1,4 @@
-# Copyrights 2007-2011 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.94';
+$VERSION = '0.95';
 
 use base 'Exporter';
 
@@ -103,7 +103,7 @@ sub report($@)
     }
     else
     {   # untranslated message into object
-        @_%2 and error __x"odd length parameter list with '$message'";
+        @_%2 and error __x"odd length parameter list with '{msg}'", msg => $message;
         $message = Log::Report::Message->new(_prepend => $message, @_);
     }
 
@@ -388,7 +388,9 @@ sub import(@)
 
     my @export = (@functions, @make_msg);
 
-    if($syntax eq 'SHORT') { push @export, @reason_functions }
+    if($syntax eq 'SHORT')
+    {   push @export, @reason_functions
+    }
     elsif($syntax ne 'REPORT' && $syntax ne 'LONG')
     {   error __x"syntax flag must be either SHORT or REPORT, not `{syntax}'"
           , syntax => $syntax;

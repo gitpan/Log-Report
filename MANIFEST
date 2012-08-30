@@ -25,8 +25,12 @@ lib/Log/Report/Dispatcher/Try.pm
 lib/Log/Report/Dispatcher/Try.pod
 lib/Log/Report/Exception.pm
 lib/Log/Report/Exception.pod
+lib/Log/Report/Extract.pm
+lib/Log/Report/Extract.pod
 lib/Log/Report/Extract/PerlPPI.pm
 lib/Log/Report/Extract/PerlPPI.pod
+lib/Log/Report/Extract/Template.pm
+lib/Log/Report/Extract/Template.pod
 lib/Log/Report/Lexicon/Index.pm
 lib/Log/Report/Lexicon/Index.pod
 lib/Log/Report/Lexicon/PO.pm
@@ -61,6 +65,7 @@ t/30index.t
 t/31stack.t
 t/40ppi.t
 t/41die.t
+t/42templ.t
 t/50file.t
 t/51syslog.t
 t/52logdisp.t
@@ -69,4 +74,6 @@ t/54try.t
 t/99pod.t
 t/DieTests.pm
 t/hello-world-slovak.po
-META.yml                                 Module meta-data (added by MakeMaker)
+xt/99pod.t
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)

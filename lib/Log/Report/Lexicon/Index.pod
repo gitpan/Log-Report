@@ -31,7 +31,7 @@ exist, then the object will still be created.
 
 =over 4
 
-=item $obj-E<gt>B<directory>
+=item $obj-E<gt>B<directory>()
 
 Returns the directory name.
 
@@ -55,7 +55,7 @@ in chapter L</DETAILS>, below.
 Returned is a filename, or C<undef> if nothing is defined for the
 LOCALE (there is no default on this level).
 
-=item $obj-E<gt>B<index>
+=item $obj-E<gt>B<index>()
 
 For internal use only.
 Force the creation of the index (if not already done).  Returns a hash
@@ -71,7 +71,7 @@ belong to a certain DOMAIN are listed.
 The EXTENSION filter can be used to reduce the filenames further, for
 instance to select only C<po> or only C<mo> files, and ignore readme's.
 Use an string, without dot and interpreted case-insensitive, or a
-regular expresion.
+regular expression.
 
 example: 
 
@@ -82,6 +82,12 @@ example:
 =back
 
 =head1 DETAILS
+
+It's always complicated to find the lexicon files, because the perl
+package can be installed on any weird operating system.  Therefore,
+you may need to specify the lexicon directory or alternative directories
+explicitly.  However, you may also choose to install the lexicon files
+in between the perl modules.
 
 =head2 merge lexicon files with perl modules
 
@@ -163,20 +169,14 @@ In order of attempts:
 Filenames may get mutilated by the platform (which we will try to hide
 from you [please help improve this]), and are treated case-INsensitive!
 
-It's always complicated to find the lexicon files, because the perl
-package can be installed on any weird operating system.  Therefore,
-you may need to specify the lexicon directory or alternative directories
-explicitly.  However, you may also choose to install the lexicon files
-in between the perl modules.
-
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

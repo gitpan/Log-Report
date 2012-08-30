@@ -44,7 +44,7 @@ See the L</DETAILS> section, below.
 
 =over 4
 
-=item $obj-E<gt>B<close>
+=item $obj-E<gt>B<close>()
 
 Terminate the dispatcher activities.  The dispatcher gets disabled,
 to avoid the case that it is accidentally used.  Returns C<undef> (false)
@@ -119,23 +119,23 @@ for smooth Getopt::Long integration.
 
 =over 4
 
-=item $obj-E<gt>B<isDisabled>
+=item $obj-E<gt>B<isDisabled>()
 
-=item $obj-E<gt>B<mode>
+=item $obj-E<gt>B<mode>()
 
 Returns the mode in use for the dispatcher as number.  See L<new(mode)|Log::Report::Dispatcher/"Constructors">
 and L<Log::Report/Run modes>.
 
-=item $obj-E<gt>B<name>
+=item $obj-E<gt>B<name>()
 
 Returns the unique name of this dispatcher.
 
-=item $obj-E<gt>B<needs>
+=item $obj-E<gt>B<needs>()
 
 Returns the list with all REASONS which are needed to fulfill this
 dispatcher's needs.  When disabled, the list is empty, but not forgotten.
 
-=item $obj-E<gt>B<type>
+=item $obj-E<gt>B<type>()
 
 The dispatcher TYPE, which is usually the same as the class of this
 object, but not in case of wrappers like for Log::Dispatch.
@@ -146,9 +146,9 @@ object, but not in case of wrappers like for Log::Dispatch.
 
 =over 4
 
-=item $obj-E<gt>B<collectLocation>
+=item $obj-E<gt>B<collectLocation>()
 
-=item Log::Report::Dispatcher-E<gt>B<collectLocation>
+=item Log::Report::Dispatcher-E<gt>B<collectLocation>()
 
 Collect the information to be displayed as line where the error occurred.
 Probably, this needs improvement, where carp and die show different lines.
@@ -337,12 +337,12 @@ using concatenation (see L<Log::Report::Message::concat()|Log::Report::Message/"
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

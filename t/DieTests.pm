@@ -1,16 +1,16 @@
-# Copyrights 2007-2011 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
 package DieTests;
 use vars '$VERSION';
-$VERSION = '0.94';
+$VERSION = '0.95';
 
 use warnings;
 use strict;
 
 use Log::Report::Die qw/die_decode/;
-use Log::Report      qw/try/;
+use Log::Report      qw/log-report/;
 use Carp;
 
 use Test::More tests => 27;

@@ -70,8 +70,8 @@ L<Log::Report::Dispatcher::Try::wasFatal(class)|Log::Report::Dispatcher::Try/"St
 category of the message.
 
 One message can be part of multiple classes.  The STRING is used as
-comma- and/or blank seperated list of class tokens, the ARRAY lists all
-tokens seperately. See L<classes()|Log::Report::Message/"Accessors">.
+comma- and/or blank separated list of class tokens, the ARRAY lists all
+tokens separately. See L<classes()|Log::Report::Message/"Accessors">.
 
 =item _classes => STRING|ARRAY
 
@@ -117,30 +117,30 @@ for  C<< report {to => NAME}, ... >>  See L<to()|Log::Report::Message/"Accessors
 
 =over 4
 
-=item $obj-E<gt>B<append>
+=item $obj-E<gt>B<append>()
 
 Returns the string or L<Log::Report::Message|Log::Report::Message> object which is appended
 after this one.  Usually C<undef>.
 
-=item $obj-E<gt>B<classes>
+=item $obj-E<gt>B<classes>()
 
 Returns the LIST of classes which are defined for this message; message
 group indicators, as often found in exception-based programming.
 
-=item $obj-E<gt>B<count>
+=item $obj-E<gt>B<count>()
 
 Returns the count, which is used to select the translation
 alternatives.
 
-=item $obj-E<gt>B<domain>
+=item $obj-E<gt>B<domain>()
 
 Returns the domain of the first translatable string in the structure.
 
-=item $obj-E<gt>B<msgid>
+=item $obj-E<gt>B<msgid>()
 
 Returns the msgid which will later be translated.
 
-=item $obj-E<gt>B<prepend>
+=item $obj-E<gt>B<prepend>()
 
 Returns the string which is prepended to this one.  Usually C<undef>.
 
@@ -198,7 +198,7 @@ matches the REGEX.  The trueth value is the (first matching) class.
 
 Translate a message.  If not specified, the default locale is used.
 
-=item $obj-E<gt>B<untranslated>
+=item $obj-E<gt>B<untranslated>()
 
 Return the concatenation of the prepend, msgid, and append strings.  Variable
 expansions within the msgid is not performed.
@@ -208,6 +208,14 @@ expansions within the msgid is not performed.
 =head1 DETAILS
 
 =head2 OPTIONS and VARIABLES
+
+The L<Log::Report|Log::Report> functions which define translation request can all
+have OPTIONS.  Some can have VARIABLES to be interpolated in the string as
+well.  To distinguish between the OPTIONS and VARIABLES (both a list
+of key-value pairs), the keys of the OPTIONS start with an underscore C<_>.
+As result of this, please avoid the use of keys which start with an
+underscore in variable names.  On the other hand, you are allowed to
+interpolate OPTION values in your strings.
 
 =head3 Interpolating
 
@@ -354,31 +362,23 @@ You can also write an incomplete translation:
 
 In either case, the translation will be looked-up only once.
 
-The L<Log::Report|Log::Report> functions which define translation request can all
-have OPTIONS.  Some can have VARIABLES to be interpolated in the string as
-well.  To distinguish between the OPTIONS and VARIABLES (both a list
-of key-value pairs), the keys of the OPTIONS start with an underscore C<_>.
-As result of this, please avoid the use of keys which start with an
-underscore in variable names.  On the other hand, you are allowed to
-interpolate OPTION values in your strings.
-
 =head1 OVERLOADING
 
 =over 4
 
-=item overload: B<as function>
+=item overload: B<as function>()
 
 When the object is used to call as function, a new object is
 created with the data from the original one but updated with the
 new parameters.  Implemented in C<clone()>.
 
-=item overload: B<concatenation>
+=item overload: B<concatenation>()
 
 An (accidental) use of concatenation (a dot where a comma should be
 used) would immediately stringify the object.  This is avoided by
 overloading that operation.
 
-=item overload: B<stringification>
+=item overload: B<stringification>()
 
 When the object is used in string context, it will get translated.
 Implemented as L<toString()|Log::Report::Message/"Processing">.
@@ -387,12 +387,12 @@ Implemented as L<toString()|Log::Report::Message/"Processing">.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

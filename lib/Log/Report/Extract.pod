@@ -1,0 +1,124 @@
+=head1 NAME
+
+Log::Report::Extract - Collect translatable strings
+
+=head1 INHERITANCE
+
+ Log::Report::Extract is extended by
+   Log::Report::Extract::PerlPPI
+   Log::Report::Extract::Template
+
+=head1 SYNOPSIS
+
+ # See the extensions
+
+=head1 DESCRIPTION
+
+This module helps maintaining the POT files, updating the list of
+message-ids which are kept in them.  After initiation, the L<process()|Log::Report::Extract/"Processors">
+method needs to be called with all files which changed since last
+processing and the existing PO files will get updated accordingly.  If no
+translations exist yet, one C<textdomain/xx.po> file will be created.
+
+=head1 METHODS
+
+=head2 Constructors
+
+=over 4
+
+=item Log::Report::Extract-E<gt>B<new>(OPTIONS)
+
+ -Option --Default
+  charset  'utf-8'
+  lexicon  <required>
+
+=over 2
+
+=item charset => STRING
+
+The character-set used in the PO files.
+
+=item lexicon => DIRECTORY
+
+The place where the lexicon is kept.  When no lexicon is defined yet,
+this will be the directory where an C<domain/xx.po> file will be created.
+
+=back
+
+=back
+
+=head2 Accessors
+
+=over 4
+
+=item $obj-E<gt>B<charset>()
+
+Returns the character-set used inside the POT files.
+
+=item $obj-E<gt>B<domains>()
+
+Returns a sorted list of all known domain names.
+
+=item $obj-E<gt>B<index>()
+
+Returns the L<Log::Report::Lexicon::Index|Log::Report::Lexicon::Index> object, which is listing
+the files in the lexicon directory tree.
+
+=item $obj-E<gt>B<pots>(DOMAIN)
+
+Returns the list of L<Log::Report::Lexicon::POT|Log::Report::Lexicon::POT> objects which contain
+the tables for DOMAIN.
+
+=back
+
+=head2 Processors
+
+=over 4
+
+=item $obj-E<gt>B<process>(FILENAME, OPTIONS)
+
+Update the domains mentioned in the FILENAME.  All text-domains defined
+in the file will get updated automatically, but should not written before
+all files are processed.
+
+Returned is the number of messages found in this particular file.
+
+=item $obj-E<gt>B<showStats>([DOMAINs])
+
+Show a status about the DOMAIN (by default all domains).  At least mode
+verbose is required to see this.
+
+The statistics are sent to (Log::Report) dispatchers which accept
+notice and info.  This could be syslog.  When you have no explicit
+dispatchers in your program, the level of detail get controled by
+the 'mode':
+
+   use Log::Report mode => 'DEBUG';  # or 'VERBOSE'
+
+=item $obj-E<gt>B<store>(DOMAIN, FILENAME, LINENR, MSG, [MSG_PLURAL])
+
+Register the existence of a (MSG, MSG_PLURAL) in all POTs of
+the DOMAIN.
+
+=item $obj-E<gt>B<write>([DOMAIN])
+
+Update the information of the files related to DOMAIN, by default all
+processed DOMAINS.
+
+All information known about the written DOMAIN is removed from the cache.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
+
+=head1 LICENSE
+
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

@@ -53,7 +53,7 @@ an (untranslated) report.
 
 =over 4
 
-=item $obj-E<gt>B<isFatal>
+=item $obj-E<gt>B<isFatal>()
 
 Returns whether this exception has a severity which makes it fatal
 when thrown.  See L<Log::Report::isFatal()|Log::Report/"Reasons">.
@@ -80,7 +80,7 @@ example:
 
 =item $obj-E<gt>B<reason>([REASON])
 
-=item $obj-E<gt>B<report_opts>
+=item $obj-E<gt>B<report_opts>()
 
 =back
 
@@ -121,7 +121,7 @@ example: overrule defaults to report
 
  $@->wasFatal->throw(reason => 'WARNING');
 
-=item $obj-E<gt>B<toString>
+=item $obj-E<gt>B<toString>()
 
 Prints the reason and the message.  Differently from L<throw()|Log::Report::Exception/"Processing">, this
 only represents the textual content: it does not re-cast the exceptions to
@@ -138,7 +138,7 @@ example: printing exceptions
 
 =over 4
 
-=item overload: B<stringification>
+=item overload: B<stringification>()
 
 Produces "reason: message".
 
@@ -146,12 +146,12 @@ Produces "reason: message".
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.94,
-built on August 23, 2011. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.95,
+built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
