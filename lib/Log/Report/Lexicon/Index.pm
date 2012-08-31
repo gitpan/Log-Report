@@ -5,7 +5,7 @@
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.95';
+$VERSION = '0.96';
 
 
 use warnings;
@@ -137,6 +137,8 @@ sub list($;$)
 
     grep $_ =~ $filter, @list;
 }
+
+#-------------------------------------
 
 
 1;

@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Extract::Template;
 use vars '$VERSION';
-$VERSION = '0.95';
+$VERSION = '0.96';
 
 use base 'Log::Report::Extract';
 
@@ -54,7 +54,7 @@ sub process($@)
     # Split the whole file on the pattern in four fragments per match:
     #       (text, leading, needed trailing, text, leading, ...)
     # f.i.  ('', '[% loc("', 'some-msgid', '", params) %]', ' more text')
-    my @frags  = split $pattern, $text;
+    my @frags      = split $pattern, $text;
 
     my $linenr     = 1;
     my $msgs_found = 0;
@@ -63,7 +63,8 @@ sub process($@)
     {   $linenr += ($frags[0] =~ tr/\n//)   # text
                 +  ($frags[1] =~ tr/\n//);  # leading
         (my $msgid = $frags[2]) =~ s/^(['"]*)(.*?)\1/$2/;
-        $self->store($domain, $fn, $linenr, $msgid);
+        my $plural = $msgid =~ s/\|(.*)// ? $1 : undef;
+        $self->store($domain, $fn, $linenr, $msgid, $plural);
         $msgs_found++;
         $linenr += ($frags[2] =~ tr/\n//)
                 +  ($frags[3] =~ tr/\n//);
@@ -87,7 +88,7 @@ sub _pattern($)
          my ($open, $close) = $level==1 ? ('[\[%]%', '%[\]%]') : ('\[%', '%\]');
 
          return qr/( $open \s* \Q$function\E \s* \( \s* ) # leading
-                   ( "[^"\s]*" | '[^']*' )                # msgid
+                   ( "[^"\n]*" | '[^'\n]*' )              # msgid
                    ( .*?                                  # params
                      $close )                             # ending
                   /xs;

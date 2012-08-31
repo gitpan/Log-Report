@@ -91,13 +91,18 @@ translation files may be located.
 
 =over 4
 
+=item $obj-E<gt>B<TemplateToolkit>(DOMAIN, LANGUAGE, MSGID, PARAMS)
+
+See L<Log::Report::Extract::Template|Log::Report::Extract::Template> on the details how to integrate
+Log::Report translations with Template::Toolkit (version 1 and 2)
+
 =item $obj-E<gt>B<load>(DOMAIN, LOCALE)
 
 Load the translation information in the text DOMAIN for the indicated LOCALE.
 Multiple calls to L<load()|Log::Report::Translator/"Translating"> should not cost significant performance: the
 data must be cached.
 
-=item $obj-E<gt>B<translate>(MESSAGE)
+=item $obj-E<gt>B<translate>(MESSAGE, [LANGUAGE])
 
 Returns the translation of the MESSAGE, a C<Log::Report::Message> object,
 based on the current locale.
@@ -109,8 +114,8 @@ message object, for performance reasons.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.95,
-built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.96,
+built on August 31, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

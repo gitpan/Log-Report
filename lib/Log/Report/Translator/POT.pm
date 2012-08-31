@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Translator::POT;
 use vars '$VERSION';
-$VERSION = '0.95';
+$VERSION = '0.96';
 
 use base 'Log::Report::Translator';
 
@@ -26,12 +26,12 @@ my %indices;
 }
 
 
-sub translate($)
-{   my ($self, $msg) = @_;
+sub translate($;$)
+{   my ($self, $msg, $lang) = @_;
 
     my $domain = $msg->{_domain};
-    my $locale = setlocale(LC_MESSAGES)
-        or return $self->SUPER::translate($msg);
+    my $locale = $lang || setlocale(LC_MESSAGES)
+        or return $self->SUPER::translate($msg, $lang);
 
     my $pot
       = exists $self->{pots}{$locale}
@@ -39,10 +39,10 @@ sub translate($)
       : $self->load($domain, $locale);
 
     defined $pot
-        or return $self->SUPER::translate($msg);
+        or return $self->SUPER::translate($msg, $lang);
 
        $pot->msgstr($msg->{_msgid}, $msg->{_count})
-    || $self->SUPER::translate($msg);   # default translation is 'none'
+    || $self->SUPER::translate($msg, $lang);   # default translation is 'none'
 }
 
 sub load($$)

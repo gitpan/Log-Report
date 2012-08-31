@@ -262,9 +262,9 @@ simplify your coding.  The useful names are:
 
 The MSGID as provided with L<Log::Report::__()|Log::Report/"Language Translations"> and L<Log::Report::__x()|Log::Report/"Language Translations">
 
-=item _msgid, _plural, _count
+=item _plural, _count
 
-The single MSGID and PLURAL MSGIDs, respectively the COUNT as used with
+The PLURAL MSGIDs, respectively the COUNT as used with
 L<Log::Report::__n()|Log::Report/"Language Translations"> and L<Log::Report::__nx()|Log::Report/"Language Translations">
 
 =item _textdomain
@@ -296,25 +296,25 @@ For interpolating, the following rules apply:
 
 =over 4
 
-=item .
+=item *
 
 Simple scalar values are interpolated "as is"
 
-=item .
+=item *
 
 References to SCALARs will collect the value on the moment that the
 output is made.  The C<Log::Report::Message> object which is created with
 the C<__xn> can be seen as a closure.  The translation can be reused.
 See example below.
 
-=item .
+=item *
 
 Code references can be used to create the data "under fly".  The
 C<Log::Report::Message> object which is being handled is passed as
 only argument.  This is a hash in which all OPTIONS and VARIABLES
 can be found.
 
-=item .
+=item *
 
 When the value is an ARRAY, all members will be interpolated with C<$">
 between the elements.
@@ -387,8 +387,8 @@ Implemented as L<toString()|Log::Report::Message/"Processing">.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.95,
-built on August 30, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.96,
+built on August 31, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

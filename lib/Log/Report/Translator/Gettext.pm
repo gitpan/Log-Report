@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Translator::Gettext;
 use vars '$VERSION';
-$VERSION = '0.95';
+$VERSION = '0.96';
 
 use base 'Log::Report::Translator';
 
@@ -16,9 +16,10 @@ use Locale::gettext;
 use Log::Report 'log-report';
 
 
-sub translate($)
-{   my ($msg) = @_;
+sub translate($;$)
+{   my ($msg, $lang) = @_;
 
+#XXX MO: how to use $lang when specified?
     my $domain = $msg->{_textdomain};
     load_domain $domain;
 
