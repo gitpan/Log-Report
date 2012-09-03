@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Win32Locale;
 use vars '$VERSION';
-$VERSION = '0.96';
+$VERSION = '0.97';
 
 use base 'Exporter';
 

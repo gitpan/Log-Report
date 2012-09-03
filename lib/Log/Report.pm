@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.96';
+$VERSION = '0.97';
 
 use base 'Exporter';
 
@@ -289,10 +289,10 @@ sub _default_domain(@)
 }
 
 sub __($)
-{  Log::Report::Message->new
-    ( _msgid  => shift
-    , _domain => _default_domain(caller)
-    );
+{   Log::Report::Message->new
+      ( _msgid  => shift
+      , _domain => _default_domain(caller)
+      );
 } 
 
 

@@ -38,6 +38,11 @@ example: use of clone()
  print $s;     # found 5 files
  print $t;     # found 3 files
 
+=item Log::Report::Message-E<gt>B<fromTemplateToolkit>(DOMAIN, MSGID, PARAMS)
+
+See L<Log::Report::Extract::Template|Log::Report::Extract::Template> on the details how to integrate
+Log::Report translations with Template::Toolkit (version 1 and 2)
+
 =item Log::Report::Message-E<gt>B<new>(OPTIONS, VARIABLES)
 
 B<Do not use this method directly>, but use L<Log::Report::__()|Log::Report/"Language Translations"> and
@@ -77,9 +82,11 @@ tokens separately. See L<classes()|Log::Report::Message/"Accessors">.
 
 Alternative for C<_class>, which cannot be used at the same time.
 
-=item _count => INTEGER
+=item _count => INTEGER|ARRAY|HASH
 
-When defined, then C<_plural> need to be defined as well.
+When defined, then C<_plural> need to be defined as well.  When an
+ARRAY is provided, the lenght of the ARRAY is taken.  When a HASH
+is given, the number of keys in the HASH is used.
 
 =item _domain => STRING
 
@@ -387,8 +394,8 @@ Implemented as L<toString()|Log::Report::Message/"Processing">.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.96,
-built on August 31, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.97,
+built on September 03, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

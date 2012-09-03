@@ -38,15 +38,15 @@ in a compact way, much more compact than L<Log::Report::Lexicon::PO|Log::Report:
 
 =item Log::Report::Translator::POT-E<gt>B<new>(OPTIONS)
 
- -Option --Defined in     --Default
-  charset  Log::Report::Translator  <from locale>
-  lexicon  Log::Report::Translator  <see text>
+ -Option  --Defined in     --Default
+  charset   Log::Report::Translator  <from locale>
+  lexicons  Log::Report::Translator  <see text>
 
 =over 2
 
 =item charset => STRING
 
-=item lexicon => DIRECTORY|ARRAY-of-DIRECTORYs
+=item lexicons => DIRECTORY|ARRAY-of-DIRECTORYs
 
 =back
 
@@ -70,10 +70,6 @@ See L<Log::Report::Translator/"Accessors">
 
 =over 4
 
-=item $obj-E<gt>B<TemplateToolkit>(DOMAIN, LANGUAGE, MSGID, PARAMS)
-
-See L<Log::Report::Translator/"Translating">
-
 =item $obj-E<gt>B<load>(DOMAIN, LOCALE)
 
 See L<Log::Report::Translator/"Translating">
@@ -86,8 +82,8 @@ See L<Log::Report::Translator/"Translating">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.96,
-built on August 31, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.97,
+built on September 03, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

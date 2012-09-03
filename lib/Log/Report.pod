@@ -467,7 +467,16 @@ example: how to use __n()
  print __n "one", "more", $a;
  print __n("one", "more", $a), "\n";
  print +(__n "one", "more", $a), "\n";
+
+ # new-lines are ignore at lookup, but printed.
  print __n "one\n", "more\n", $a;
+
+ # count is in scalar context
+ # the value is also available as _count
+ print __n "found one\n", "found {_count}\n", @r;
+
+ # ARRAYs and HASHes are counted
+ print __n "one", "more", \@r;
 
 =item B<__nx>(MSGID, PLURAL_MSGID, COUNT, OPTIONS, VARIABLES)
 
@@ -1042,8 +1051,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.96,
-built on August 31, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.97,
+built on September 03, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

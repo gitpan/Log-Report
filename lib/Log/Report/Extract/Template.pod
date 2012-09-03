@@ -173,6 +173,7 @@ For instance
 will scan for
 
    [% loc("msgid", key => value, ...) %]
+   [% loc('msgid', key => value, ...) %]
    [% loc("msgid|plural", count, key => value, ...) %]
 
 For TT1, the brackets can either be '[%...%]' or '%%...%%'.  The function
@@ -183,6 +184,7 @@ The code needed
    ... during initiation of the webserver
    my $lexicons   = 'some-directory-for-translation-tables';
    my $translator = Log::Report::Translator::POT->new(lexicons => $lexicons);
+   Log::Report->translator($textdomain => $translator);
 
    ... your template driver
    sub handler {
@@ -200,7 +202,8 @@ The code needed
    sub translate {
        my $textdomain = ...;   # specified with xgettext-perl
        my $lang       = ...;   # how do you figure that out?
-       $translator->TemplateToolkit($textdomain, $lang, @_);
+       my $msg = Log::Report::Message->fromTemplateToolkit($textdomain, @_);
+       $msg->toString($lang);
    }
 
    ... to generate the pod tables, run in the shell something like
@@ -209,8 +212,8 @@ The code needed
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.96,
-built on August 31, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.97,
+built on September 03, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

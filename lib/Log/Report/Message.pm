@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.96';
+$VERSION = '0.97';
 
 
 use Log::Report 'log-report';
@@ -21,12 +21,41 @@ use overload
   , '.'   => 'concat';
 
 
-sub new($@) { my $class = shift; bless {@_}, $class }
+sub new($@)
+{   my $class = shift;
+    my $self  = bless {@_}, $class;
+    if(ref $self->{_count})
+    {   my $c = $self->{_count};
+        $self->{_count} = ref $c eq 'ARRAY' ? @$c : keys %$c;
+    }
+    $self;
+}
 
 
 sub clone(@)
 {   my $self = shift;
     (ref $self)->new(%$self, @_);
+}
+
+
+sub fromTemplateToolkit($$;@)
+{   my ($class, $domain, $msgid) = splice @_, 0, 3;
+    my $plural = $msgid =~ s/\|(.*)// ? $1 : undef;
+    my $args   = @_ && ref $_[-1] eq 'HASH' ? pop : {};
+
+    my $count;
+    if(defined $plural)
+    {   @_==1 or $msgid .= " (ERROR: missing count for plural)";
+        $count = shift || 0;
+        $count = @$count if ref $count eq 'ARRAY';
+    }
+    else
+    {   @_==0 or $msgid .= " (ERROR: only named parameters expected)";
+    }
+
+    $class->new
+      ( _msgid => $msgid, _plural => $plural, _count => $count
+      , %$args, _expand => 1, _domain => $domain);
 }
 
 
@@ -69,7 +98,8 @@ sub toString(;$)
                 . (defined $self->{_append}  ? $self->{_append}  : '');
 
     # create a translation
-    my $text = Log::Report->translator($self->{_domain})->translate($self);
+    my $text = Log::Report->translator($self->{_domain})
+                          ->translate($self, $locale);
     defined $text or return ();
 
     my $loc  = defined $locale ? setlocale(LC_ALL, $locale) : undef;
