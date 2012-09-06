@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.97';
+$VERSION = '0.98';
 
 
 use Log::Report 'log-report';
@@ -22,13 +22,21 @@ use overload
 
 
 sub new($@)
-{   my $class = shift;
-    my $self  = bless {@_}, $class;
-    if(ref $self->{_count})
-    {   my $c = $self->{_count};
-        $self->{_count} = ref $c eq 'ARRAY' ? @$c : keys %$c;
+{   my ($class, %s) = @_;
+    if(ref $s{_count})
+    {   my $c = $s{_count};
+        $s{_count} = ref $c eq 'ARRAY' ? @$c : keys %$c;
     }
-    $self;
+    $s{_join} = $" unless exists $s{_join};
+    if($s{_msgid})
+    {   $s{_append}  = defined $s{_append}  ? $1.$s{_append}  : $1
+            if $s{_msgid} =~ s/(\s+)$//;
+        $s{_prepend} .= $1 if $s{_msgid} =~ s/^(\s+)//;
+    }
+    if($s{_plural})
+    {   s/\s+$//, s/^\s+// for $s{_plural};
+    }
+    bless \%s, $class;
 }
 
 
@@ -135,8 +143,8 @@ sub _expand($$)
     {   my @values = map {defined $_ ? $_ : 'undef'} @$value;
         @values or return '(none)';
         return $format
-             ? join($", map {sprintf $format, $_} @values)
-             : join($", @values);
+             ? join($self->{_join}, map {sprintf $format, $_} @values)
+             : join($self->{_join}, @values);
     }
 
       $format

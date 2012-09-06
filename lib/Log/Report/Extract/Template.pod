@@ -10,10 +10,10 @@ Log::Report::Extract::Template - Collect translatable strings from templates
 =head1 SYNOPSIS
 
  my $extr = Log::Report::Extract::Template->new
-  ( lexicon => '/usr/share/locale'
-  , domain  => 'my-web-site'
-  , pattern => 'TT2-loc'
-  );
+   ( lexicon => '/usr/share/locale'
+   , domain  => 'my-web-site'
+   , pattern => 'TT2-loc'
+   );
  $extr->process('website/page.html');  # many times
  $extr->showStats;
  $extr->write;
@@ -56,7 +56,7 @@ must be explicit about the collection we are making now.
 
 =item lexicon => DIRECTORY
 
-=item pattern => PREDEFINED|REGEX
+=item pattern => PREDEFINED|CODE
 
 See the DETAILS section below for a detailed explenation.
 
@@ -110,7 +110,7 @@ all files where processed.
 
 The character encoding used in this template file.
 
-=item pattern => PREDEFINED|REGEX
+=item pattern => PREDEFINED|CODE
 
 Read the DETAILS section about this.
 
@@ -137,29 +137,6 @@ See L<Log::Report::Extract/"Processors">
 Various template systems use different conventions for denoting strings
 to be translated.
 
-=head3 Your own regular expression
-
-If you do not have a format which is predefined, then you can pass-in
-your own regular expression.  Be sure it captures three components:
-the beginning of the markup, the msgid to be included in the translation
-table, and the ending of the markup.
-
-Example:
-
-   pattern => qr/(<")(.*?)(">)/
-
-This would match
-
-   <"Hello, World">
-
-The markup compenents must contain all allowed white-spacing, to be able
-to produce the correct line-numbers.  Enclosing single and double quotes
-aroung the msgid will get removed, if still present after the match.
-
-This example is simplifying too much: your syntax should support parameters
-and messages which can be in singular or plural form.  The next section
-shows a sufficiently powerful syntax.
-
 =head3 Predefined for Template::Toolkit
 
 There is not a single convertion for translations in Template::Toolkit,
@@ -175,6 +152,9 @@ will scan for
    [% loc("msgid", key => value, ...) %]
    [% loc('msgid', key => value, ...) %]
    [% loc("msgid|plural", count, key => value, ...) %]
+   [% INCLUDE
+        title = loc('something')
+    %]
 
 For TT1, the brackets can either be '[%...%]' or '%%...%%'.  The function
 name is treated case-sensitive.  Some people prefer 'l()'.
@@ -210,10 +190,22 @@ The code needed
    xgettext-perl -p $lexicons --template TT2-loc \
       --domain $textdomain  templates/
 
+If you want to implement your own extractor --to avoid C<xgettext-perl>--
+you need to run something like this:
+
+  my $extr = Log::Report::Extract::Template->new
+    ( lexicon => $output
+    , charset => 'utf-8'
+    , domain  => $domain
+    , pattern => 'TT2-loc'
+    );
+  $extr->process($_) for @filenames;
+  $extr->write;
+
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.97,
-built on September 03, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.98,
+built on September 06, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

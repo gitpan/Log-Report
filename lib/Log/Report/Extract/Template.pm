@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Extract::Template;
 use vars '$VERSION';
-$VERSION = '0.97';
+$VERSION = '0.98';
 
 use base 'Log::Report::Extract';
 
@@ -21,7 +21,7 @@ sub init($)
     $self->{LRET_domain}  = $args->{domain}
         or error "template extract requires explicit domain";
 
-    $self->{LRET_pattern} = $self->_pattern($args->{pattern});
+    $self->{LRET_pattern} = $args->{pattern};
     $self;
 }
 
@@ -36,6 +36,9 @@ sub process($@)
     my $charset = $opts{charset} || 'utf-8';
     info __x"processing file {fn} in {charset}", fn=> $fn, charset => $charset;
 
+    my $pattern = $opts{pattern} || $self->pattern
+        or error __"need pattern to scan for, either via new() or process()";
+
     # Slurp the whole file
     local *IN;
     open IN, "<:encoding($charset)", $fn
@@ -48,53 +51,54 @@ sub process($@)
     my $domain  = $self->domain;
     $self->_reset($domain, $fn);
 
-    my $pattern = $self->_pattern($opts{pattern}) || $self->pattern
-        or error __"need pattern to scan for, either via new() or process()";
+    if(ref $pattern eq 'CODE')
+    {   return $pattern->($fn, \$text);
+    }
+    elsif($pattern =~ m/^TT([12])-(\w+)$/)
+    {   return $self->scanTemplateToolkit($1, $2, $fn, \$text);
+    }
+    else
+    {   error __x"unknown pattern {pattern}", pattern => $pattern;
+    }
+    ();
+}
+
+sub scanTemplateToolkit($$$$)
+{   my ($self, $version, $function, $fn, $textref) = @_;
 
     # Split the whole file on the pattern in four fragments per match:
     #       (text, leading, needed trailing, text, leading, ...)
     # f.i.  ('', '[% loc("', 'some-msgid', '", params) %]', ' more text')
-    my @frags      = split $pattern, $text;
+    my @frags
+      = $version==1 ? split(/[\[%]%(.*?)%[%\]]/s, $$textref)
+      :               split(/\[%(.*?)%\]/s, $$textref);
+
+    my $getcall    = qr/(\b$function\s*\(\s*)(["'])([^\r\n]+?)\2/s;
+    my $domain     = $self->domain;
 
     my $linenr     = 1;
     my $msgs_found = 0;
 
-    while(@frags > 4)
-    {   $linenr += ($frags[0] =~ tr/\n//)   # text
-                +  ($frags[1] =~ tr/\n//);  # leading
-        (my $msgid = $frags[2]) =~ s/^(['"]*)(.*?)\1/$2/;
-        my $plural = $msgid =~ s/\|(.*)// ? $1 : undef;
-        $self->store($domain, $fn, $linenr, $msgid, $plural);
-        $msgs_found++;
-        $linenr += ($frags[2] =~ tr/\n//)
-                +  ($frags[3] =~ tr/\n//);
-        splice @frags, 0, 4;
+    while(@frags > 2)
+    {   $linenr += (shift @frags) =~ tr/\n//;   # text
+        my @markup = split $getcall, shift @frags;
+
+        while(@markup > 4)    # quads with text, call, quote, msgid
+        {   $linenr   += ($markup[0] =~ tr/\n//)
+                      +  ($markup[1] =~ tr/\n//);
+            my $msgid  = $markup[3];
+            my $plural = $msgid =~ s/\|(.*)// ? $1 : undef;
+            $self->store($domain, $fn, $linenr, $msgid, $plural);
+            $msgs_found++;
+            splice @markup, 0, 4;
+        }
+        $linenr += $markup[-1] =~ tr/\n//; # rest of container
     }
+#   $linenr += $frags[-1] =~ tr/\n//;      # last not needed
 
     $msgs_found;
 }
 
 #----------------------------------------------------
-
-sub _pattern($)
-{   my ($self, $pattern) = @_;
-
-    return $pattern
-        if !defined $pattern || ref $pattern eq 'Regexp';
-
-    if($pattern =~ m/^TT([12])-(\w+)$/)
-    {    # Recognized is Template::Toolkit 2
-         my ($level, $function) = ($1, $2);
-         my ($open, $close) = $level==1 ? ('[\[%]%', '%[\]%]') : ('\[%', '%\]');
-
-         return qr/( $open \s* \Q$function\E \s* \( \s* ) # leading
-                   ( "[^"\n]*" | '[^'\n]*' )              # msgid
-                   ( .*?                                  # params
-                     $close )                             # ending
-                  /xs;
-    }
-
-    error __x"scan pattern `{pattern}' not recognized", pattern => $pattern;
-}
 
 1;

@@ -22,4 +22,4 @@ requires:
   Scalar::Util: 0
   Sys::Syslog: 0.27
   Test::More: 0.86
-version: 0.97
+version: 0.98

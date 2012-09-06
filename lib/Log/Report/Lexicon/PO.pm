@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Lexicon::PO;
 use vars '$VERSION';
-$VERSION = '0.97';
+$VERSION = '0.98';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -246,8 +246,8 @@ sub fromText($$)
         }
     }
 
-    warning __x"no msgid in block {where}", where => $where
-        unless defined $self->{msgid};
+    defined $self->{msgid}
+        or warning __x"no msgid in block {where}", where => $where;
 
     $self;
 }
