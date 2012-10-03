@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Extract::Template;
 use vars '$VERSION';
-$VERSION = '0.98';
+$VERSION = '0.99';
 
 use base 'Log::Report::Extract';
 

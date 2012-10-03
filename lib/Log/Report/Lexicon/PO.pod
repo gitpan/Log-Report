@@ -190,8 +190,8 @@ The message-id has no references anymore and no translations.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.98,
-built on September 06, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.99,
+built on October 03, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

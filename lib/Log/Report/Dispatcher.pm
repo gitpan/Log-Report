@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.98';
+$VERSION = '0.99';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -324,11 +324,11 @@ sub stackTraceParam($$$)
     defined $param
         or return 'undef';
 
+    $param = overload::StrVal($param)
+        if ref $param;
+
     return $param   # int or float
         if $param =~ /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
-
-    return overload::StrVal($param)
-        if ref $param;
 
     '"' . escape_chars($param) . '"';
 }

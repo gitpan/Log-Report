@@ -5,7 +5,7 @@
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.98';
+$VERSION = '0.99';
 
 
 use warnings;
@@ -50,14 +50,14 @@ sub index()
     $self->{index} = {};
     File::Find::find
     ( +{ wanted   => sub
-           { -f or return 1;
+           { -f && m/\.po$/i && !m[/\.] or return 1;
              (my $key = $_) =~ s/$strip_dir//;
              $self->addFile($key, $_);
              1;
            }
-         , follow      => 1
-         , no_chdir    => 1
-         , follow_skip => 2
+       , follow      => 1
+       , no_chdir    => 1
+       , follow_skip => 2
        } , $dir
     );
 

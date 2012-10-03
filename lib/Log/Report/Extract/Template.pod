@@ -166,11 +166,11 @@ The code needed
    my $translator = Log::Report::Translator::POT->new(lexicons => $lexicons);
    Log::Report->translator($textdomain => $translator);
 
-   ... your template driver
+   ... your standard template driver
    sub handler {
       ...
       my $fill_in     = { ...all kinds of values... };
-      $fill_in->{loc} = \&translate;    # this is extra
+      $fill_in->{loc} = \&translate;           # <--- this is extra
 
       my $output      = '';
       my $templater   = Template->new(...);
@@ -186,9 +186,10 @@ The code needed
        $msg->toString($lang);
    }
 
-   ... to generate the pod tables, run in the shell something like
+To generate the pod tables, run in the shell something like
+
    xgettext-perl -p $lexicons --template TT2-loc \
-      --domain $textdomain  templates/
+      --domain $textdomain  $templates_dir
 
 If you want to implement your own extractor --to avoid C<xgettext-perl>--
 you need to run something like this:
@@ -204,8 +205,8 @@ you need to run something like this:
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.98,
-built on September 06, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.99,
+built on October 03, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

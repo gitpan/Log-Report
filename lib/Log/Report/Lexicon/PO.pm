@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Lexicon::PO;
 use vars '$VERSION';
-$VERSION = '0.98';
+$VERSION = '0.99';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -195,7 +195,7 @@ sub fromText($$)
 
     my $last;
     foreach (@lines)
-    {   chomp;
+    {   s/\r?\n$//;
         if( s/^\#(.)\s?// )
         {      if($1 =~ /\s/) { $self->addComment($_)    }
             elsif($1 eq '.' ) { $self->addAutomatic($_)  }
