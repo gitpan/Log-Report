@@ -39,9 +39,9 @@ See L<Log::Report::Dispatcher/"Constructors">
 
 =item Log::Report::Dispatcher::Callback-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
- -Option       --Defined in     --Default
+ -Option       --Defined in             --Default
   accept         Log::Report::Dispatcher  depend on mode
-  callback                        <required>
+  callback                                <required>
   charset        Log::Report::Dispatcher  <undef>
   format_reason  Log::Report::Dispatcher  'LOWERCASE'
   locale         Log::Report::Dispatcher  <system locale>
@@ -135,8 +135,8 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.99,
-built on October 03, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.991,
+built on November 26, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
