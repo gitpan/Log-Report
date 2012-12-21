@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Extract;
 use vars '$VERSION';
-$VERSION = '0.991';
+$VERSION = '0.992';
 
 
 use Log::Report 'log-report';

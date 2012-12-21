@@ -2,31 +2,23 @@
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
+package Log::Report::Lexicon::POT;
+use vars '$VERSION';
+$VERSION = '0.992';
+
+use base 'Log::Report::Lexicon::Table';
 
 use warnings;
 use strict;
 
-package Log::Report::Lexicon::POT;
-use vars '$VERSION';
-$VERSION = '0.991';
-
-
-use Log::Report 'log-report', syntax => 'SHORT';
-
-use Log::Report::Lexicon::PO;
-use Log::Report::Lexicon::POTcompact qw/_plural_algorithm _nr_plurals/;
+use Log::Report 'log-report';
+use Log::Report::Lexicon::PO  ();
 
 use POSIX       qw/strftime/;
-use IO::File;
 use List::Util  qw/sum/;
 
 use constant    MSGID_HEADER => '';
 
-
-sub new(@)
-{   my $class = shift;
-    (bless {}, $class)->init( {@_} );
-}
 
 sub init($)
 {   my ($self, $args) = @_;
@@ -40,18 +32,22 @@ sub init($)
     my $domain     = $args->{textdomain}
        or error __"textdomain parameter is required";
 
-    my $nplurals   = $self->{nplurals} = $args->{nr_plurals} || 2;
-    my $algo       = $args->{plural_alg} || 'n!=1';
-    $self->{alg}   = _plural_algorithm $algo;
+    my $forms      = $args->{plural_forms};
+    unless($forms)
+    {   my $nrplurals = $args->{nr_plurals} || 2;
+        my $algo      = $args->{plural_alg} || 'n!=1';
+        $forms        = "nplurals=$nrplurals; plural=($algo);";
+    }
 
     $self->{index} = $args->{index} || {};
     $self->_createHeader
      ( project => $domain . (defined $version ? " $version" : '')
-     , forms   => "nplurals=$nplurals; plural=($algo);"
+     , forms   => $forms
      , charset => $args->{charset}
      , date    => $args->{date}
      );
 
+    $self->setupPluralAlgorithm;
     $self;
 }
 
@@ -88,6 +84,7 @@ sub read($@)
         or failure __x"failed reading from file {fn}", fn => $fn;
 
     $self->{filename} = $fn;
+    $self->setupPluralAlgorithm;
     $self;
 }
 
@@ -128,11 +125,13 @@ sub write($@)
     $self;
 }
 
+#-----------------------
 
 sub charset()  {shift->{charset}}
 sub index()    {shift->{index}}
 sub filename() {shift->{filename}}
 
+#-----------------------
 
 sub msgid($) { $_[0]->{index}{$_[1]} }
 
@@ -142,7 +141,7 @@ sub msgstr($;$)
     my $po   = $self->msgid(shift)
         or return undef;
 
-    $po->msgstr(defined $_[0] ? $self->pluralIndex($_[0]) : 0);
+    $po->msgstr($self->pluralIndex(defined $_[0] ? $_[0] : 1));
 }
 
 
@@ -165,20 +164,6 @@ sub translations(;$)
         if $_[0] ne 'ACTIVE';
 
     grep { $_->isActive } $self->translations;
-}
-
-
-sub pluralIndex($)
-{   my ($self, $count) = @_;
-    my $alg = $self->{alg}
-          ||= _plural_algorithm($self->header('Plural-Forms'));
-    $alg->($count);
-}
-
-
-sub nrPlurals()
-{   my $self = shift;
-    $self->{nplurals} ||= _nr_plurals($self->header('Plural-Forms'));
 }
 
 

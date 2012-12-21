@@ -2,6 +2,11 @@
 
 Log::Report::Lexicon::POT - manage PO files
 
+=head1 INHERITANCE
+
+ Log::Report::Lexicon::POT
+   is a Log::Report::Lexicon::Table
+
 =head1 SYNOPSIS
 
  # this is usually not for end-users, See ::Extract::PerlPPI
@@ -34,7 +39,7 @@ more efficient L<Log::Report::Lexicon::POTcompact|Log::Report::Lexicon::POTcompa
 
 The code is loosely based on Locale::PO, by Alan Schwartz.  The coding
 style is a bit off the rest of C<Log::Report>, and there was a need to
-sincere simplification.  Each PO object will be represented by a
+sincere simplification.  Each PO record will be represented by a
 L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO>.
 
 =head1 METHODS
@@ -48,15 +53,16 @@ L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO>.
 Create a new POT file.  The initial header is generated for you, but
 it can be changed using the L<header()|Log::Report::Lexicon::POT/"Managing PO's"> method.
 
- -Option    --Default
-  charset     <required>
-  date        now
-  filename    undef
-  index       {}
-  nr_plurals  2
-  plural_alg  n!=1
-  textdomain  <required>
-  version     undef
+ -Option      --Default
+  charset       <required>
+  date          now
+  filename      undef
+  index         {}
+  nr_plurals    2
+  plural_alg    n!=1
+  plural_forms  <constructed from nr_plurals and plural_alg>
+  textdomain    <required>
+  version       undef
 
 =over 2
 
@@ -86,6 +92,11 @@ need to have.
 =item plural_alg => EXPRESSION
 
 The algorithm to be used to calculate which translated msgstr to use.
+
+=item plural_forms => RULE
+
+[0.992] When this option is used, it overrules C<nr_plurals> and
+C<plural_alg>.  The RULE should be a full "Plural-Forms" field.
 
 =item textdomain => STRING
 
@@ -147,6 +158,43 @@ translations.
 
 =over 4
 
+=item $obj-E<gt>B<removeReferencesTo>(FILENAME)
+
+Remove all the references to the indicate FILENAME from all defined
+translations.  Returns the number of refs left.
+
+=item $obj-E<gt>B<stats>()
+
+Returns a HASH with some statistics about this POT table.
+
+=item $obj-E<gt>B<updated>([DATE])
+
+Replace the "PO-Revision-Date" with the specified DATE, or the current
+moment.
+
+=back
+
+=head3 Translation
+
+=over 4
+
+=item $obj-E<gt>B<msgid>(STRING)
+
+Lookup the L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO> with the STRING.  If you
+want to add a new translation, use L<add()|Log::Report::Lexicon::POT/"Managing PO's">.  Returns C<undef>
+when not defined.
+
+=item $obj-E<gt>B<msgstr>(MSGID, [COUNT])
+
+Returns the translated string for MSGID.  When COUNT is not specified, the
+translation string related to "1" is returned.
+
+=back
+
+=head3 Administration
+
+=over 4
+
 =item $obj-E<gt>B<add>(PO)
 
 Add the information from a PO into this POT.  If the msgid of the PO
@@ -161,43 +209,23 @@ the knowledge will be stored.  In latter case, the header structure
 may get created.  When the CONTENT is set to C<undef>, the field will
 be removed.
 
-=item $obj-E<gt>B<msgid>(STRING)
-
-Lookup the L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO> with the STRING.  If you
-want to add a new translation, use L<add()|Log::Report::Lexicon::POT/"Managing PO's">.  Returns C<undef>
-when not defined.
-
-=item $obj-E<gt>B<msgstr>(MSGID, [COUNT])
-
-Returns the translated string for MSGID.  When not specified, COUNT is 1.
-
 =item $obj-E<gt>B<nrPlurals>()
 
-Returns the number of plurals, when not known then '2'.
+See L<Log::Report::Lexicon::Table/"Administration">
 
 =item $obj-E<gt>B<pluralIndex>(COUNT)
 
-Returns the msgstr index used to translate a value of COUNT.
+See L<Log::Report::Lexicon::Table/"Administration">
 
-=item $obj-E<gt>B<removeReferencesTo>(FILENAME)
+=item $obj-E<gt>B<setupPluralAlgorithm>()
 
-Remove all the references to the indicate FILENAME from all defined
-translations.  Returns the number of refs left.
-
-=item $obj-E<gt>B<stats>()
-
-Returns a HASH with some statistics about this POT table.
+See L<Log::Report::Lexicon::Table/"Administration">
 
 =item $obj-E<gt>B<translations>([ACTIVE])
 
 Returns a list with all defined L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO> objects. When
 the string C<ACTIVE> is given as parameter, only objects which have
 references are returned.
-
-=item $obj-E<gt>B<updated>([DATE])
-
-Replace the "PO-Revision-Date" with the specified DATE, or the current
-moment.
 
 =back
 
@@ -221,8 +249,8 @@ method, or known because the write follows a L<read()|Log::Report::Lexicon::POT/
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.991,
-built on November 26, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.992,
+built on December 21, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

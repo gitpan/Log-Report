@@ -39,6 +39,8 @@ lib/Log/Report/Lexicon/POT.pm
 lib/Log/Report/Lexicon/POT.pod
 lib/Log/Report/Lexicon/POTcompact.pm
 lib/Log/Report/Lexicon/POTcompact.pod
+lib/Log/Report/Lexicon/Table.pm
+lib/Log/Report/Lexicon/Table.pod
 lib/Log/Report/Message.pm
 lib/Log/Report/Message.pod
 lib/Log/Report/Translator.pm

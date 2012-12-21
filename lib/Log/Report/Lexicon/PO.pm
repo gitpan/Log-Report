@@ -2,19 +2,20 @@
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
+package Log::Report::Lexicon::PO;
+use vars '$VERSION';
+$VERSION = '0.992';
+
 
 use warnings;
 use strict;
 
-package Log::Report::Lexicon::PO;
-use vars '$VERSION';
-$VERSION = '0.991';
-
-
 use Log::Report 'log-report', syntax => 'SHORT';
 
-# mixins
-use Log::Report::Lexicon::POTcompact qw/_escape _unescape/;
+# steal from cheaper module, we have no ::Util for this (yet)
+use Log::Report::Lexicon::POTcompact ();
+*_escape   = \&Log::Report::Lexicon::POTcompact::_escape;
+*_unescape = \&Log::Report::Lexicon::POTcompact::_unescape;
 
 
 sub new(@)
@@ -27,12 +28,9 @@ sub init($)
     defined($self->{msgid} = delete $args->{msgid})
        or error "no msgid defined for PO";
 
-    $self->{plural} = delete $args->{msgid_plural};
-    my $str         = delete $args->{msgstr};
-    $self->{msgstr}
-      = !defined $str       ? []
-      : ref $str eq 'ARRAY' ? $str
-      :                       [$str];
+    $self->{msgctxt}  = delete $args->{msgctxt};
+    $self->{plural}   = delete $args->{msgid_plural};
+    $self->{msgstr}   = delete $args->{msgstr};
 
     $self->addComment(delete $args->{comment});
     $self->addAutomatic(delete $args->{automatic});
@@ -45,23 +43,39 @@ sub init($)
     $self;
 }
 
+# only for internal usage
+sub _fast_new($) { bless $_[1], $_[0] }
+
+#--------------------
 
 sub msgid() {shift->{msgid}}
+sub msgctxt() {shift->{msgctxt}}
 
 
 sub plural(;$)
 {   my $self = shift;
-    @_ ? ($self->{plural} = shift) : $self->{plural};
+    @_ or return $self->{plural};
+        
+    if(my $m = $self->{msgstr})
+    {   # prepare msgstr list for multiple translations.
+        $self->{msgstr} = [ $m ] if defined $m && !ref $m;
+    }
+
+    $self->{plural} = shift;
 }
 
 
 sub msgstr($;$)
 {   my $self = shift;
-    return $self->{msgstr}[shift || 0]
-       if @_ < 2;
+    my $m    = $self->{msgstr};
 
-    my ($nr, $string) = @_;
-    $self->{msgstr}[$nr] = $string;
+    unless($self->{plural})
+    {   $self->{msgstr} = $_[1] if @_==2;
+        return $m;
+    }
+
+    my $index    = shift || 0;
+    @_ ? $m->[$index] = shift : $m->[$index];
 }
 
 
@@ -193,7 +207,7 @@ sub fromText($$)
     # however, we just say: no references found.
     s/^\#\~\s+// for @lines;
 
-    my $last;
+    my $last;  # used for line continuations
     foreach (@lines)
     {   s/\r?\n$//;
         if( s/^\#(.)\s?// )
@@ -220,8 +234,12 @@ sub fromText($$)
                 $last = \($self->{plural});
             }
             elsif($cmd eq 'msgstr')
-            {   $self->{msgstr} = [$string];
-                $last = \($self->{msgstr}[0]);
+            {   $self->{msgstr} = $string;
+                $last = \($self->{msgstr});
+            }
+            elsif($cmd eq 'msgctxt')
+            {   $self->{msgctxt} = $string;
+                $last = \($self->{msgctxt});
             }
             else
             {   warning __x"do not understand command '{cmd}' at {where}"
@@ -256,47 +274,51 @@ sub fromText($$)
 sub toString(@)
 {   my ($self, %args) = @_;
     my $nplurals = $args{nr_plurals};
-    my @text;
+    my @record;
 
     my $comment = $self->comment;
     if(defined $comment && length $comment)
     {   $comment =~ s/^/#  /gm;
-        push @text, $comment;
+        push @record, $comment;
     }
 
     my $auto = $self->automatic;
     if(defined $auto && length $auto)
     {   $auto =~ s/^/#. /gm;
-        push @text, $auto;
+        push @record, $auto;
     }
 
-    my @refs   = sort $self->references;
-    my $msgid  = $self->{msgid} || '';
-    my $active = $msgid eq '' || @refs ? '' : '#~ ';
+    my @refs    = sort $self->references;
+    my $msgid   = $self->{msgid} || '';
+    my $active  = $msgid eq ''   || @refs ? '' : '#~ ';
 
     while(@refs)
     {   my $line = '#:';
         $line .= ' '.shift @refs
             while @refs && length($line) + length($refs[0]) < 80;
-        push @text, "$line\n";
+        push @record, "$line\n";
     }
 
-    my @flags = $self->{fuzzy} ? 'fuzzy' : ();
+    my @flags   = $self->{fuzzy} ? 'fuzzy' : ();
 
     push @flags, ($self->{format}{$_} ? '' : 'no-') . $_ . '-format'
         for sort keys  %{$self->{format}};
 
-    push @text, "#, ". join(", ", @flags) . "\n"
+    push @record, "#, ". join(", ", @flags) . "\n"
         if @flags;
 
-    push @text, "${active}msgid "._escape($msgid, "\n$active")."\n"; 
+    my $msgctxt = $self->{msgctxt};
+    if(defined $msgctxt && length $msgctxt)
+    {   push @record, "${active}msgctxt "._escape($msgctxt, "\n$active")."\n"; 
+    }
+    push @record, "${active}msgid "._escape($msgid, "\n$active")."\n"; 
 
-    my @msgstr = @{$self->{msgstr} || []};
-    my $plural = $self->{plural};
+    my $msgstr  = $self->{msgstr} || [];
+    my @msgstr  = ref $msgstr ? @$msgstr : $msgstr;
+    my $plural  = $self->{plural};
     if(defined $plural)
-    {   push @text, "${active}msgid_plural "
-                  . _escape($plural, "\n$active")
-                  . "\n";
+    {   push @record
+         , "${active}msgid_plural " . _escape($plural, "\n$active") . "\n";
 
         push @msgstr, ''
             while defined $nplurals && @msgstr < $nplurals;
@@ -308,20 +330,19 @@ sub toString(@)
 
         $nplurals ||= 2;
         for(my $nr = 0; $nr < $nplurals; $nr++)
-        {   push @text, "${active}msgstr[$nr] "
-                        . _escape($msgstr[$nr], "\n$active") . "\n";
+        {   push @record, "${active}msgstr[$nr] "
+               . _escape($msgstr[$nr], "\n$active") . "\n";
         }
     }
     else
     {   warning __x"no plurals for '{msgid}'", msgid => $msgid
             if @msgstr > 1;
 
-        push @text, "${active}msgstr "
-                  . _escape($msgstr[0], "\n$active")
-                  . "\n";
+        push @record
+          , "${active}msgstr " . _escape($msgstr[0], "\n$active") . "\n";
     }
 
-    join '', @text;
+    join '', @record;
 }
 
 

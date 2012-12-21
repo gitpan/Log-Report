@@ -26,9 +26,10 @@ Log::Report::Translator::POT - translation based on POT files
 
 =head1 DESCRIPTION
 
-Translate a message by directly accessing POT files.  The files will
-load lazily (unless forced).  To module attempts to administer the PO's
-in a compact way, much more compact than L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO> does.
+Translate a message by directly accessing POT files.  The files will load
+lazily (unless forced).  This module accesses the PO's in a compact way,
+using L<Log::Report::Lexicon::POTcompact|Log::Report::Lexicon::POTcompact>, which is much more efficient
+than L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO>.
 
 =head1 METHODS
 
@@ -82,8 +83,8 @@ See L<Log::Report::Translator/"Translating">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.991,
-built on November 26, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.992,
+built on December 21, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

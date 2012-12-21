@@ -5,7 +5,7 @@ Log::Report::Lexicon::PO - one translation definition
 =head1 DESCRIPTION
 
 This module is administering one translation object.  Sets of PO
-objects are kept in a POT file, implemented in L<Log::Report::Lexicon::POT|Log::Report::Lexicon::POT>.
+records are kept in a POT file, implemented in L<Log::Report::Lexicon::POT|Log::Report::Lexicon::POT>.
 
 =head1 METHODS
 
@@ -20,6 +20,7 @@ objects are kept in a POT file, implemented in L<Log::Report::Lexicon::POT|Log::
   comment       []
   format        []
   fuzzy         false
+  msgctxt       undef
   msgid         <required>
   msgid_plural  undef
   msgstr        "" or []
@@ -45,6 +46,10 @@ See L<format()|Log::Report::Lexicon::PO/"Attributes">.
 
 The string is not yet translated, some smart guesses may have been made.
 See L<fuzzy()|Log::Report::Lexicon::PO/"Attributes">.
+
+=item msgctxt => STRING
+
+Context string: text around the msgid itself.
 
 =item msgid => STRING
 
@@ -130,6 +135,10 @@ Returns whether the translation needs human inspection.
 
 Returns whether the translation has any references, or is the header.
 
+=item $obj-E<gt>B<msgctxt>()
+
+Returns the message context, if provided.
+
 =item $obj-E<gt>B<msgid>()
 
 Returns the actual msgid, which cannot be C<undef>.
@@ -137,7 +146,8 @@ Returns the actual msgid, which cannot be C<undef>.
 =item $obj-E<gt>B<msgstr>([INDEX, [STRING]])
 
 With a STRING, a new translation will be set.  Without STRING, a
-lookup will take place.  When no plural is defined, use INDEX 0
+lookup will take place.  When no plural is defined, the INDEX is
+ignored.
 
 =item $obj-E<gt>B<plural>([STRING])
 
@@ -190,8 +200,8 @@ The message-id has no references anymore and no translations.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.991,
-built on November 26, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.992,
+built on December 21, 2012. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
