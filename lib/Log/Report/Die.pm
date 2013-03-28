@@ -1,13 +1,13 @@
-# Copyrights 2007-2012 by [Mark Overmeer].
+# Copyrights 2007-2013 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 2.00.
+# Pod stripped from pm file by OODoc 2.01.
 use warnings;
 use strict;
 
 package Log::Report::Die;
 use vars '$VERSION';
-$VERSION = '0.992';
+$VERSION = '0.993';
 
 use base 'Exporter';
 
@@ -57,4 +57,4 @@ sub die_decode($)
     ($dietxt, \%opt, $reason, $msg);
 }
 
-1;
+"to die or not to die, that's the question";

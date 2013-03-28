@@ -1,11 +1,11 @@
-# Copyrights 2007-2012 by [Mark Overmeer].
+# Copyrights 2007-2013 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 2.00.
+# Pod stripped from pm file by OODoc 2.01.
 
 package Log::Report::Lexicon::Index;
 use vars '$VERSION';
-$VERSION = '0.992';
+$VERSION = '0.993';
 
 
 use warnings;
@@ -15,6 +15,14 @@ use File::Find  ();
 
 use Log::Report 'log-report', syntax => 'SHORT';
 use Log::Report::Util  qw/parse_locale/;
+
+# The next two need extension when other lexicon formats are added
+sub _understand_file_format($) { $_[0] =~ qr/\.[mp]o$/i }
+
+sub _find($$)
+{   my ($index, $name) = (shift, lc shift);
+    $index->{"$name.mo"} || $index->{"$name.po"};  # prefer mo
+}
 
 # On windows, other locale names are used.  They will get translated
 # into the Linux (ISO) convensions.
@@ -50,7 +58,7 @@ sub index()
     $self->{index} = {};
     File::Find::find
     ( +{ wanted   => sub
-           { -f && m/\.po$/i && !m[/\.] or return 1;
+           { -f && !m[/\.] && _understand_file_format($_) or return 1;
              (my $key = $_) =~ s/$strip_dir//;
              $self->addFile($key, $_);
              1;
@@ -72,10 +80,6 @@ sub addFile($;$)
     $self->{index}{lc $base} = $abs;
 }
 
-
-# location to work-around platform dependent mutulations.
-# may be extended with mo files as well.
-sub _find($$) { $_[0]->{lc($_[1]). '.po'} }
 
 sub find($$)
 {   my $self   = shift;

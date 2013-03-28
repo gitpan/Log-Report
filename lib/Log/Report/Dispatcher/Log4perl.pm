@@ -1,13 +1,13 @@
-# Copyrights 2007-2012 by [Mark Overmeer].
+# Copyrights 2007-2013 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 2.00.
+# Pod stripped from pm file by OODoc 2.01.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Log4perl;
 use vars '$VERSION';
-$VERSION = '0.992';
+$VERSION = '0.993';
 
 use base 'Log::Report::Dispatcher';
 
@@ -82,6 +82,9 @@ sub log($$$$)
 {   my $self  = shift;
     my $text  = $self->SUPER::translate(@_) or return;
     my $level = $self->reasonToLevel($_[1]);
+
+    local $Log::Log4perl::caller_depth
+              = $Log::Log4perl::caller_depth + 3;
 
     $self->appender->log($level, $text);
     $self;

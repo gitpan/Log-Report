@@ -1,13 +1,13 @@
-# Copyrights 2007-2012 by [Mark Overmeer].
+# Copyrights 2007-2013 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 2.00.
+# Pod stripped from pm file by OODoc 2.01.
 use warnings;
 use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.992';
+$VERSION = '0.993';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -17,6 +17,7 @@ use Log::Report::Util qw/parse_locale expand_reasons %reason_code
 use POSIX      qw/strerror/;
 use List::Util qw/sum/;
 use Encode     qw/find_encoding FB_DEFAULT/;
+use Devel::GlobalDestruction qw/in_global_destruction/;
 
 eval { POSIX->import('locale_h') };
 if($@)
@@ -90,10 +91,7 @@ sub close()
     $self;
 }
 
-# horrible errors on some Perl versions if called during destruction
-my $in_global_destruction = 0;
-END { $in_global_destruction++ }
-sub DESTROY { $in_global_destruction or shift->close }
+sub DESTROY { in_global_destruction or shift->close }
 
 #----------------------------
 

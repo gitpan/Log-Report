@@ -1,13 +1,13 @@
-# Copyrights 2007-2012 by [Mark Overmeer].
+# Copyrights 2007-2013 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 2.00.
+# Pod stripped from pm file by OODoc 2.01.
 use warnings;
 use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.992';
+$VERSION = '0.993';
 
 
 use Log::Report 'log-report';
@@ -23,15 +23,21 @@ use overload
 
 sub new($@)
 {   my ($class, %s) = @_;
+
     if(ref $s{_count})
-    {   my $c = $s{_count};
-        $s{_count} = ref $c eq 'ARRAY' ? @$c : keys %$c;
+    {   my $c        = $s{_count};
+        $s{_count}   = ref $c eq 'ARRAY' ? @$c : keys %$c;
     }
-    $s{_join} = $" unless exists $s{_join};
+
+    defined $s{_join}
+        or $s{_join} = $";
+
     if($s{_msgid})
-    {   $s{_append}  = defined $s{_append}  ? $1.$s{_append}  : $1
+    {   $s{_append}  = defined $s{_append} ? $1.$s{_append} : $1
             if $s{_msgid} =~ s/(\s+)$//;
-        $s{_prepend} .= $1 if $s{_msgid} =~ s/^(\s+)//;
+
+        $s{_prepend}.= $1
+            if $s{_msgid} =~ s/^(\s+)//;
     }
     if($s{_plural})
     {   s/\s+$//, s/^\s+// for $s{_plural};
@@ -143,7 +149,7 @@ sub _expand($$)
     {   my @values = map {defined $_ ? $_ : 'undef'} @$value;
         @values or return '(none)';
         return $format
-             ? join($self->{_join}, map {sprintf $format, $_} @values)
+             ? join($self->{_join}, map sprintf($format, $_), @values)
              : join($self->{_join}, @values);
     }
 

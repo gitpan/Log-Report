@@ -1,6 +1,6 @@
 =head1 NAME
 
-Log::Report::Dispatcher - manage dispatching
+Log::Report::Dispatcher - manage message dispatching, display or logging
 
 =head1 INHERITANCE
 
@@ -28,15 +28,14 @@ Log::Report::Dispatcher - manage dispatching
  dispatcher Log::Report::Dispatch::File => 'stderr'
    , to => \*STDERR, accept => 'NOTICE-';
 
- # Within a "try" block, there is only one dispatcher
- dispatcher TRY => 'try';
-
 =head1 DESCRIPTION
 
-This base-class handles the creation of dispatchers, plus the
-common filtering rules.  
+In L<Log::Report|Log::Report>, dispatchers are used to handle (exception) messages
+which are created somewhere else.  Those message were produced (thrown)
+by L<Log::Report::error()|Log::Report/"Abbreviations for report()"> and friends.
 
-See the L</DETAILS> section, below.
+This base-class handles the creation of dispatchers, plus the common
+filtering rules.  See the L</DETAILS> section, below.
 
 =head1 METHODS
 
@@ -238,6 +237,11 @@ class or be opened before the dispatcher is created.
 Send messages into the system's syslog infrastructure, using
 Sys::Syslog.
 
+=item L<Log::Report::Dispatcher::Callback|Log::Report::Dispatcher::Callback> (abbreviation 'CALLBACK')
+
+Calls any CODE reference on receipt of each selected message, for
+instance to send important message as email or SMS.
+
 =item C<Log::Dispatch::*>
 
 All of the Log::Dispatch::Output extensions can be used directly.
@@ -251,8 +255,8 @@ infrastructure uses a configuration file.
 
 =item L<Log::Report::Dispatcher::Try|Log::Report::Dispatcher::Try> (abbreviation 'TRY')
 
-Used by L<Log::Report::try()|Log::Report/"Report Production and Configuration">, it will translate reports into
-exceptions.
+Used by function L<Log::Report::try()|Log::Report/"Report Production and Configuration">.  It collects the exceptions
+and can produce them on request.
 
 =back
 
@@ -303,7 +307,7 @@ Exactly what will be added depends on the actual mode of the dispatcher
 
  T - usually translated
  E - exception (execution interrupted)
- ! - will include $! text
+ ! - will include $! text at display
  L - include filename and linenumber
  S - show/print when accepted
  C - stack trace (like Carp::confess())
@@ -337,12 +341,12 @@ using concatenation (see L<Log::Report::Message::concat()|Log::Report::Message/"
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.992,
-built on December 21, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.993,
+built on March 28, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1,34 +1,30 @@
 =head1 NAME
 
-Log::Report::Lexicon::POTcompact - use translations from a POT file
+Log::Report::Lexicon::MOTcompact - use translations from an MO file
 
 =head1 INHERITANCE
 
- Log::Report::Lexicon::POTcompact
+ Log::Report::Lexicon::MOTcompact
    is a Log::Report::Lexicon::Table
 
 =head1 SYNOPSIS
 
- # using a PO table efficiently
- my $pot = Log::Report::Lexicon::POTcompact
-             ->read('po/nl.po', charset => 'utf-8')
+ # using a MO table efficiently
+ my $mot = Log::Report::Lexicon::MOTcompact
+             ->read('mo/nl.mo', charset => 'utf-8')
     or die;
 
  my $header = $pot->msgid('');
- print $pot->msgstr('msgid', 3);
+ print $mot->msgstr($msgid, 3);
 
 =head1 DESCRIPTION
 
-This module is translating, based on PO files. PO files are used to store
-translations in humanly readable format for most of existing translation
-frameworks, like GNU gettext and Perl's Maketext.
+This module is translating, based on MO files (binary versions of
+the PO files, the "Machine Object" format)
 
 Internally, this module tries to be as efficient as possible: high
 speed and low memory foot-print.  You will not be able to sub-class
 this class cleanly.
-
-If you like to change the content of PO files, then use
-L<Log::Report::Lexicon::POT|Log::Report::Lexicon::POT>.
 
 =head1 METHODS
 
@@ -36,18 +32,18 @@ L<Log::Report::Lexicon::POT|Log::Report::Lexicon::POT>.
 
 =over 4
 
-=item Log::Report::Lexicon::POTcompact-E<gt>B<new>(OPTIONS)
+=item Log::Report::Lexicon::MOTcompact-E<gt>B<new>(OPTIONS)
 
 See L<Log::Report::Lexicon::Table/"Constructors">
 
-=item Log::Report::Lexicon::POTcompact-E<gt>B<read>(FILENAME, OPTIONS)
+=item Log::Report::Lexicon::MOTcompact-E<gt>B<read>(FILENAME, OPTIONS)
 
-Read the POT table information from FILENAME, as compact as possible.
-Comments, plural-form, and such are lost on purpose: they are not
-needed for translations.
+Read the MOT table information from FILENAME.  The msgctxt (context)
+is ignored.
 
- -Option --Default
-  charset  <required>
+ -Option  --Default
+  charset   <required>
+  take_all  <true>
 
 =over 2
 
@@ -55,6 +51,13 @@ needed for translations.
 
 The character-set which is used for the file.  You must specify
 this explicitly, while it cannot be trustfully detected automatically.
+
+=item take_all => BOOLEAN
+
+This will cause the whole translation table to be read at once.  If
+false, a file-handle will be kept open and translations read on demand.
+That may (but very well may not) save a memory foot-print, especially
+when the strings are large.
 
 =back
 
@@ -71,7 +74,7 @@ Returns the name of the source file for this data.
 =item $obj-E<gt>B<index>()
 
 Returns a HASH of all defined PO objects, organized by msgid.  Please try
-to avoid using this: use L<msgid()|Log::Report::Lexicon::POTcompact/"Managing PO's"> for lookup.
+to avoid using this: use L<msgid()|Log::Report::Lexicon::MOTcompact/"Managing PO's"> for lookup.
 
 =back
 
@@ -84,13 +87,13 @@ to avoid using this: use L<msgid()|Log::Report::Lexicon::POTcompact/"Managing PO
 =item $obj-E<gt>B<msgid>(STRING)
 
 Lookup the translations with the STRING.  Returns a SCALAR, when only
-one translation is known, and an ARRAY wherein there are multiple.
+one translation is known, and an ARRAY when we have plural forms.
 Returns C<undef> when the translation is not defined.
 
 =item $obj-E<gt>B<msgstr>(MSGID, [COUNT])
 
 Returns the translated string for MSGID.  When not specified, COUNT is 1
-(the single form).
+(the singular form).
 
 =back
 

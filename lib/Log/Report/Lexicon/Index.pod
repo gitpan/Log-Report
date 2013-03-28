@@ -23,8 +23,18 @@ created.
 =item Log::Report::Lexicon::Index-E<gt>B<new>(DIRECTORY, OPTIONS)
 
 Create an index for a certain directory.  If the directory does not
-exist, then the object will still be created.  All files the DIRECTORY
-tree which end with ".po" or ".PO" will be indexed.
+exist or is empty, then the object will still be created.
+
+All files the DIRECTORY tree which are recognized as an translation table
+format which is understood will be listed.  Momentarily, those are:
+
+=over
+
+=item . files with extension "po", see L<Log::Report::Lexicon::POTcompact|Log::Report::Lexicon::POTcompact>
+
+=item . [0.993] files with extension "mo", see L<Log::Report::Lexicon::MOTcompact|Log::Report::Lexicon::MOTcompact>
+
+=back
 
 [0.99] Files which are in directories which start with a dot (hidden
 directories) and files which start with a dot (hidden files) are skipped.
@@ -175,12 +185,12 @@ from you [please help improve this]), and are treated case-INsensitive!
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.992,
-built on December 21, 2012. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.993,
+built on March 28, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
