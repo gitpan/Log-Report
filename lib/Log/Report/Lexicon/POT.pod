@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 Log::Report::Lexicon::POT - manage PO files
@@ -42,10 +44,16 @@ style is a bit off the rest of C<Log::Report>, and there was a need to
 sincere simplification.  Each PO record will be represented by a
 L<Log::Report::Lexicon::PO|Log::Report::Lexicon::PO>.
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Constructors">.
+ 
 =over 4
 
 =item Log::Report::Lexicon::POT-E<gt>B<new>(OPTIONS)
@@ -134,6 +142,8 @@ then you may omit the first parameter.
 
 =head2 Attributes
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Attributes">.
+ 
 =over 4
 
 =item $obj-E<gt>B<charset>()
@@ -156,6 +166,8 @@ translations.
 
 =head2 Managing PO's
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Managing PO's">.
+ 
 =over 4
 
 =item $obj-E<gt>B<removeReferencesTo>(FILENAME)
@@ -176,6 +188,8 @@ moment.
 
 =head3 Translation
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Translation">.
+ 
 =over 4
 
 =item $obj-E<gt>B<msgid>(STRING)
@@ -193,6 +207,8 @@ translation string related to "1" is returned.
 
 =head3 Administration
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Administration">.
+ 
 =over 4
 
 =item $obj-E<gt>B<add>(PO)
@@ -249,8 +265,8 @@ method, or known because the write follows a L<read()|Log::Report::Lexicon::POT/
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.993,
-built on March 28, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.994,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

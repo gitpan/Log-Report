@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 Log::Report::Lexicon::MOTcompact - use translations from an MO file
@@ -26,10 +28,16 @@ Internally, this module tries to be as efficient as possible: high
 speed and low memory foot-print.  You will not be able to sub-class
 this class cleanly.
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Constructors">.
+ 
 =over 4
 
 =item Log::Report::Lexicon::MOTcompact-E<gt>B<new>(OPTIONS)
@@ -65,6 +73,8 @@ when the strings are large.
 
 =head2 Attributes
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Attributes">.
+ 
 =over 4
 
 =item $obj-E<gt>B<filename>()
@@ -80,8 +90,12 @@ to avoid using this: use L<msgid()|Log::Report::Lexicon::MOTcompact/"Managing PO
 
 =head2 Managing PO's
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Managing PO's">.
+ 
 =head3 Translation
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Translation">.
+ 
 =over 4
 
 =item $obj-E<gt>B<msgid>(STRING)
@@ -99,6 +113,8 @@ Returns the translated string for MSGID.  When not specified, COUNT is 1
 
 =head3 Administration
 
+See L<documentation in the base class|Log::Report::Lexicon::Table/"Administration">.
+ 
 =over 4
 
 =item $obj-E<gt>B<add>(PO)
@@ -137,8 +153,8 @@ See L<Log::Report::Lexicon::Table/"Administration">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.993,
-built on March 28, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.994,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

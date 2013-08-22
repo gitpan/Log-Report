@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 Log::Report::Extract::Template - collect translatable strings from template files
@@ -33,10 +35,16 @@ files will get updated accordingly.
 If no translations exist yet, one C<$textdomain.po> file will be
 created as point to start.  Copy that file into C<$textdomain/$lang.po>
 
+See L<documentation in the base class|Log::Report::Extract/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in the base class|Log::Report::Extract/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in the base class|Log::Report::Extract/"Constructors">.
+ 
 =over 4
 
 =item Log::Report::Extract::Template-E<gt>B<new>(OPTIONS)
@@ -68,6 +76,8 @@ See the DETAILS section below for a detailed explenation.
 
 =head2 Accessors
 
+See L<documentation in the base class|Log::Report::Extract/"Accessors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<charset>()
@@ -94,6 +104,8 @@ See L<Log::Report::Extract/"Accessors">
 
 =head2 Processors
 
+See L<documentation in the base class|Log::Report::Extract/"Processors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<process>(FILENAME, OPTIONS)
@@ -211,8 +223,8 @@ you need to run something like this:
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.993,
-built on March 28, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.994,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.993';
+$VERSION = '0.994';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -112,10 +112,9 @@ sub defaultMode($) {$default_mode = $_[1]}
 sub _set_mode($)
 {   my $self = shift;
     my $mode = $self->{mode} = $modes{$_[0]};
-    defined $mode
-        or error __x"unknown run mode '{mode}'", mode => $_[0];
+    defined $mode or panic "unknown run mode $_[0]";
 
-    $self->{needs}  = [ expand_reasons $default_accept[$mode] ];
+    $self->{needs} = [ expand_reasons $default_accept[$mode] ];
 
     info __x"switching to run mode {mode}, accept {accept}"
        , mode => $mode, accept => $default_accept[$mode];
@@ -140,7 +139,7 @@ sub log($$$)
 }
 
 
-my %always_loc = map {($_ => 1)} qw/ASSERT PANIC/;
+my %always_loc = map +($_ => 1), qw/ASSERT PANIC/;
 sub translate($$$)
 {   my ($self, $opts, $reason, $msg) = @_;
 

@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 Log::Report::Dispatcher::Syslog - send messages to syslog
@@ -42,10 +44,16 @@ using L<new(to_prio)|Log::Report::Dispatcher::Syslog/"Constructors">.  See examp
   WARNING => LOG_WARNING  PANIC   => LOG_CRIT
   MISTAKE => LOG_WARNING
 
+See L<documentation in the base class|Log::Report::Dispatcher/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in the base class|Log::Report::Dispatcher/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in the base class|Log::Report::Dispatcher/"Constructors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<close>()
@@ -109,6 +117,8 @@ See L<reasonToPrio()|Log::Report::Dispatcher::Syslog/"Logging">.
 
 =head2 Accessors
 
+See L<documentation in the base class|Log::Report::Dispatcher/"Accessors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<isDisabled>()
@@ -135,6 +145,8 @@ See L<Log::Report::Dispatcher/"Accessors">
 
 =head2 Logging
 
+See L<documentation in the base class|Log::Report::Dispatcher/"Logging">.
+ 
 =over 4
 
 =item $obj-E<gt>B<collectLocation>()
@@ -170,10 +182,14 @@ See L<Log::Report::Dispatcher/"Logging">
 
 =back
 
+=head1 DETAILS
+
+See L<documentation in the base class|Log::Report::Dispatcher/"DETAILS">.
+ 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.993,
-built on March 28, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.994,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

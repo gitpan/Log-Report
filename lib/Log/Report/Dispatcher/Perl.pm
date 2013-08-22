@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher::Perl;
 use vars '$VERSION';
-$VERSION = '0.993';
+$VERSION = '0.994';
 
 use base 'Log::Report::Dispatcher';
 

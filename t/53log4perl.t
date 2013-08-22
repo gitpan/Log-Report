@@ -49,6 +49,7 @@ notice "this is a test"; $line_number = __LINE__;
 my $s1 = -s $outfn;
 cmp_ok($s1, '>', 0);
 $log_line = <$out>;
+$log_line =~ s!\\!/!g;  # windows
 $expected_msg = " $0 $line_number> notice: this is a test";
 like($log_line, qr/^$date_qr\Q$expected_msg\E$/);
 
@@ -56,6 +57,7 @@ warning "some more"; $line_number = __LINE__;
 my $s2 = -s $outfn;
 cmp_ok($s2, '>', $s1);
 $log_line = do { <$out> };
+$log_line =~ s!\\!/!g;  # windows
 $expected_msg = " $0 $line_number> warning: some more";
 like($log_line, qr/^$date_qr\Q$expected_msg\E$/);
 

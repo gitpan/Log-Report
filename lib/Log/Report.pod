@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 Log::Report - report a problem, with exceptions and translation support
@@ -97,7 +99,7 @@ REASON parameter>.
 
 Also, you can study this module swiftly via the article published in
 the German Perl $foo-magazine.  English version:
-F<http://perl.overmeer.net/log-report/papers/201308-PerlMagazine-article-en.html>
+F<http://perl.overmeer.net/log-report/papers/201306-PerlMagazine-article-en.html>
 
 =head1 FUNCTIONS
 
@@ -1057,8 +1059,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.993,
-built on March 28, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.994,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

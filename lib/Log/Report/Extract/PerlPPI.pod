@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 Log::Report::Extract::PerlPPI - Collect translatable strings from Perl using PPI
@@ -26,10 +28,16 @@ method needs to be called with all files which changed since last processing
 and the existing PO files will get updated accordingly.  If no translations
 exist yet, one C<textdomain/xx.po> file will be created.
 
+See L<documentation in the base class|Log::Report::Extract/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in the base class|Log::Report::Extract/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in the base class|Log::Report::Extract/"Constructors">.
+ 
 =over 4
 
 =item Log::Report::Extract::PerlPPI-E<gt>B<new>(OPTIONS)
@@ -40,6 +48,8 @@ See L<Log::Report::Extract/"Constructors">
 
 =head2 Accessors
 
+See L<documentation in the base class|Log::Report::Extract/"Accessors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<charset>()
@@ -62,6 +72,8 @@ See L<Log::Report::Extract/"Accessors">
 
 =head2 Processors
 
+See L<documentation in the base class|Log::Report::Extract/"Processors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<process>(FILENAME, OPTIONS)
@@ -95,8 +107,8 @@ See L<Log::Report::Extract/"Processors">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.993,
-built on March 28, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.994,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
