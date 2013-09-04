@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.995';
+$VERSION = '0.996';
 
 
 use Log::Report 'log-report';
@@ -119,7 +119,7 @@ sub toString(;$)
     my $loc  = defined $locale ? setlocale(LC_ALL, $locale) : undef;
 
     if($self->{_expand})
-    {    my $re   = join '|', map { quotemeta $_ } keys %$self;
+    {    my $re   = join '|', map quotemeta, keys %$self;
          $text    =~ s/\{($re)(\%[^}]*)?\}/$self->_expand($1,$2)/ge;
     }
 

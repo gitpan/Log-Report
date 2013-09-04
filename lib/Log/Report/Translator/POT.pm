@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Translator::POT;
 use vars '$VERSION';
-$VERSION = '0.995';
+$VERSION = '0.996';
 
 use base 'Log::Report::Translator';
 
@@ -34,8 +34,8 @@ sub translate($;$)
         or return $self->SUPER::translate($msg, $lang);
 
     my $pot
-      = exists $self->{pots}{$locale}
-      ? $self->{pots}{$locale}
+      = exists $self->{pots}{$domain}{$locale}
+      ? $self->{pots}{$domain}{$locale}
       : $self->load($domain, $locale);
 
     defined $pot
@@ -70,11 +70,11 @@ sub load($$)
 
         eval "require $class" or panic $@;
  
-        return $self->{pots}{$locale}
+        return $self->{pots}{$domain}{$locale}
           = $class->read($fn, charset => $self->charset);
     }
 
-    $self->{pots}{$locale} = undef;
+    $self->{pots}{$domain}{$locale} = undef;
 }
 
 1;

@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.995';
+$VERSION = '0.996';
 
 use base 'Exporter';
 
@@ -137,7 +137,7 @@ sub report($@)
         }
     }
 
-    if(@last_call)
+    if(@last_call && !$^S)
     {   # the PERL dispatcher may terminate the program
         shift(@last_call)->log(@last_call);
     }
