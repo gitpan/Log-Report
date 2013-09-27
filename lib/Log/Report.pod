@@ -443,8 +443,9 @@ is a L<Log::Report::Message|Log::Report::Message> object, which will be used in 
 later.  Translating is invoked when the object gets stringified.  When
 you have no translation tables, the MSGID will be shown untranslated.
 
-If you need options for L<Log::Report::Message::new()|Log::Report::Message/"Constructors"> then
-use L<__x()|Log::Report/"Language Translations">.
+If you need options for L<Log::Report::Message::new()|Log::Report::Message/"Constructors"> then use L<__x()|Log::Report/"Language Translations">;
+the prototype of this function does not permit parameters: it is a
+prefix operator!
 
 example: how to use __()
 
@@ -1059,8 +1060,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.996,
-built on September 04, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.997,
+built on September 27, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

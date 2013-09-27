@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.996';
+$VERSION = '0.997';
 
 
 use Log::Report 'log-report', syntax => 'SHORT';
@@ -219,7 +219,7 @@ sub collectStack($)
     defined $sub or $nest = 1;  # not found
 
     # skip syntax==SHORT routine entries
-    $nest++ if defined $sub && $sub =~ m/^Log\:\:Report\:\:/;
+#   $nest++ if defined $sub && $sub =~ m/^Log\:\:Report\:\:/;
 
     # special trick by Perl for Carp::Heavy: adds @DB::args
   { package DB;    # non-blank before package to avoid problem with OODoc

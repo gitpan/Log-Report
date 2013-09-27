@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.996';
+$VERSION = '0.997';
 
 use base 'Exporter';
 
@@ -301,10 +301,12 @@ sub __x($@)
 {   @_%2 or error __x"even length parameter list for __x at {where}",
         where => join(' line ', (caller)[1,2]);
 
+    my $msgid = shift;
     Log::Report::Message->new
-     ( _msgid  => @_
+     ( _msgid  => $msgid
      , _expand => 1
      , _domain => _default_domain(caller)
+     , @_
      );
 } 
 
@@ -430,7 +432,7 @@ sub _setting($$;$)
     $domain ||= 'rescue';
 
     defined $value
-        or return $settings{$domain}{$name};
+        or return ($settings{$domain} ? $settings{$domain}{$name} : undef);
 
     # Where is the setting done?
     my ($pkg, $fn, $line) = @_;

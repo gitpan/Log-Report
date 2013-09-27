@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.996';
+$VERSION = '0.997';
 
 
 use Log::Report 'log-report';
@@ -113,10 +113,15 @@ sub toString(;$)
 
     # create a translation
     my $text = Log::Report->translator($self->{_domain})
-                          ->translate($self, $locale);
+      ->translate($self, $locale);
+  
     defined $text or return ();
 
-    my $loc  = defined $locale ? setlocale(LC_ALL, $locale) : undef;
+    my $oldloc;
+    if(defined $locale)
+    {   $oldloc = setlocale(LC_ALL);
+        setlocale(LC_ALL, $locale);
+    }
 
     if($self->{_expand})
     {    my $re   = join '|', map quotemeta, keys %$self;
@@ -129,7 +134,8 @@ sub toString(;$)
     $text .= "$self->{_append}"
         if defined $self->{_append};
 
-    setlocale(LC_ALL, $loc) if $loc;
+    setlocale(LC_ALL, $oldloc)
+        if defined $oldloc && $oldloc ne $locale;
 
     $text;
 }

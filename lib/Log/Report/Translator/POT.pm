@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Translator::POT;
 use vars '$VERSION';
-$VERSION = '0.996';
+$VERSION = '0.997';
 
 use base 'Log::Report::Translator';
 

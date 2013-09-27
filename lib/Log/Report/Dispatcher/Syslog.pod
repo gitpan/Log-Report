@@ -188,8 +188,8 @@ See L<documentation in the base class|Log::Report::Dispatcher/"DETAILS">.
  
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.996,
-built on September 04, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.997,
+built on September 27, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
