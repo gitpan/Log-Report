@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report::Extract::PerlPPI;
 use vars '$VERSION';
-$VERSION = '0.997';
+$VERSION = '0.998';
 
 use base 'Log::Report::Extract';
 
@@ -97,18 +97,20 @@ sub process($@)
             my $def  = $msgids{$word}  # get __() description
                 or return 0;
 
-            my @msgids = $self->_get($node, @$def)
+            my @msgids = $self->_get($node, $domain, $word, $def)
                 or return 0;
+
+            my ($nr_msgids, $has_count, $has_opts, $has_vars,$do_split) = @$def;
 
             my $line = $node->location->[0];
             unless($domain)
-            {   mistake __x
-                    "no text-domain for translatable at {fn} line {line}"
+            {   mistake
+                    __x"no text-domain for translatable at {fn} line {line}"
                   , fn => $fn, line => $line;
                 return 0;
             }
 
-            if($def->[4])    # must split?  Bulk conversion strings
+            if($do_split)    #  Bulk conversion strings
             {   my @words = map {split} @msgids;
                 $self->store($domain, $fn, $line, $_) for @words;
                 $msgs_found += @words;
@@ -125,9 +127,10 @@ sub process($@)
     $msgs_found;
 }
 
-sub _get($@)
-{   my ($self, $node, $msgids, $count, $opts, $vars, $split) = @_;
-    my $list_only = ($msgids > 1) || $count || $opts || $vars;
+sub _get($$$$)
+{   my ($self, $node, $domain, $function, $def) = @_;
+    my ($nr_msgids, $has_count, $opts, $vars, $split) = @$def;
+    my $list_only = ($nr_msgids > 1) || $has_count || $opts || $vars;
     my $expand    = $opts || $vars;
 
     my @msgids;
@@ -138,11 +141,12 @@ sub _get($@)
     $first = $first->schild(0)
         if $first->isa('PPI::Statement::Expression');
 
-    while(defined $first && $msgids > @msgids)
+    my $line;
+    while(defined $first && $nr_msgids > @msgids)
     {   my $msgid;
         my $next  = $first->snext_sibling;
         my $sep   = $next && $next->isa('PPI::Token::Operator') ? $next : '';
-        my $line  = $first->location->[0];
+        $line     = $first->location->[0];
 
         if($first->isa('PPI::Token::Quote'))
         {   last if $sep !~ m/^ (?: | \=\> | [,;:] ) $/x;
@@ -172,9 +176,15 @@ sub _get($@)
           , line => $line if $msgid =~ s/(?<!\\)\n$//;
 
         push @msgids, $msgid;
-        last if $msgids==@msgids || !$sep;
+        last if $nr_msgids==@msgids || !$sep;
 
         $first = $sep->snext_sibling;
+    }
+    @msgids or return ();
+    my $next = $first->snext_sibling;
+    if($has_count && !$next)
+    {   error __x"count missing in {function} in line {line}"
+           , function => $function, line => $line;
     }
 
     @msgids;

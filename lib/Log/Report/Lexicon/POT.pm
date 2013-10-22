@@ -4,7 +4,7 @@
 # Pod stripped from pm file by OODoc 2.01.
 package Log::Report::Lexicon::POT;
 use vars '$VERSION';
-$VERSION = '0.997';
+$VERSION = '0.998';
 
 use base 'Log::Report::Lexicon::Table';
 

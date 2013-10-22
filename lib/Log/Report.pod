@@ -57,8 +57,11 @@ Log::Report - report a problem, with exceptions and translation support
  fault "cannot allocate $size bytes";      # no translation
  fault __x "cannot allocate $size bytes";  # wrong, not static
 
- # translation depends on count.
+ # translation depends on count
  print __xn("found one file", "found {_count} files", @files), "\n";
+
+ # borrow from an other textdomain (see Log::Report::Message)
+ print __x(+"errors in {line}", _domain => 'global', line => $line);
 
  # catch errors (implements hidden eval/die)
  try { error };
@@ -529,12 +532,19 @@ the DOMAIN.  For one package, it will contain configuration information.
 These OPTIONS are used for all packages which use the same DOMAIN.
 
  -Option         --Default
+  import           undef
   mode             'NORMAL'
   native_language  'en_US'
   syntax           'SHORT'
   translator       <rescue>
 
 =over 2
+
+=item import => FUNCTION|ARRAY
+
+[0.998] When not specified, the C<syntax> option determines the list
+of functions which are being exported.  With this option, the C<syntax>
+option is ignored and only the specified FUNCTION(s) are imported.
 
 =item mode => LEVEL
 
@@ -572,11 +582,13 @@ example: of import
  use Log::Report 'my-domain'    # in one package, top of distr
   , mode            => 'VERBOSE'
   , translator      => Log::Report::Translator::POT->new
-     ( lexicon => '/home/me/locale'  # bindtextdomain
-     , charset => 'UTF-8'            # codeset
+     ( lexicon => '/home/mine/locale'  # bindtextdomain
+     , charset => 'UTF-8'              # codeset
      )
   , native_language => 'nl_NL'  # untranslated msgs are Dutch
   , syntax          => 'REPORT';# report ERROR, not error()
+
+ use Log::Report import => 'try';      # or ARRAY of functions
 
 =item Log::Report-E<gt>B<translator>(TEXTDOMAIN, [TRANSLATOR])
 
@@ -1060,8 +1072,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.997,
-built on September 27, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.998,
+built on October 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

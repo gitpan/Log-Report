@@ -14,8 +14,8 @@ Log::Report::Extract::PerlPPI - Collect translatable strings from Perl using PPI
  my $ppi = Log::Report::Extract::PerlPPI->new
   ( lexicon => '/usr/share/locale'
   );
- $ppi->process('lib/My/Pkg.pm');  # many times
- $ppi->showStats;
+ $ppi->process('lib/My/Pkg.pm');  # call for each .pm file
+ $ppi->showStats;                 # optional
  $ppi->write;
 
  # See script  xgettext-perl
@@ -25,11 +25,61 @@ Log::Report::Extract::PerlPPI - Collect translatable strings from Perl using PPI
 This module helps maintaining the POT files, updating the list of
 message-ids which are kept in them.  After initiation, the L<process()|Log::Report::Extract::PerlPPI/"Processors">
 method needs to be called with all files which changed since last processing
-and the existing PO files will get updated accordingly.  If no translations
-exist yet, one C<textdomain/xx.po> file will be created.
+and the existing PO files will get updated accordingly.
+
+If no translations exist yet, one C<$lexicon/$domain.po> file will be
+created.  If you want to start a translation, copy C<$lexicon/$domain.po>
+to C<$lexicon/$domain/$lang.po> and edit that file.  You may use
+C<poedit> to edit po-files.  Do not forget to add the new po-file to
+your distribution (MANIFEST)
 
 See L<documentation in the base class|Log::Report::Extract/"DESCRIPTION">.
  
+=head2 The extraction process
+
+All pm-files need to be processed in one go: no incremental processing!
+
+The Perl source is parsed using PPI, which does understand Perl syntax
+quite well, but does not support all features.
+
+Automatically, the textdomain of the translations is discovered, as
+first parameter of C<use Log::Report>.  You may switch textdomain inside
+one pm-file.
+
+When all files have been processed, during the L<write()|Log::Report::Extract/"Processors">, all existing
+po-files for all discovered textdomains will get updated.  Not only the
+C<$lexicon/$domain.po> template, but also all C<$lexicon/$domain/$lang.po>
+will be replaced.  When a msgid has disappeared, existing translations
+will get disabled, not removed.  New msgids will be added and flagged
+"fuzzy".
+
+=head3 What is extracted?
+
+This script will extract the msgids used in C<__()>, C<__x()>, C<__xn()>,
+and C<__n()> (implemented by L<Log::Report|Log::Report>) For instance
+
+  __x"msgid", @more
+  __x'msgid', @more  <--- no!  syntax error!
+  __x("msgid", @more)
+  __x('msgid', @more)
+  __x(msgid => @more)
+
+Besides, there are some helpers which are no-ops in the code, only to fill
+the po-tables: C<N__()>, C<N__n()>, C<N__()>
+
+=head3 What is not extracted?
+
+B<Not> extracted are the usage of anything above, where the first
+parameter is not a simple string.  Not extracted are
+
+  __x($format, @more)
+  __x$format, @more
+  __x(+$format, _domain => 'other domain', @more)
+  __x($first.$second, @more)
+
+In these cases, you have to use C<N__()> functions to declare the possible
+values of C<$format>.
+
 =head1 METHODS
 
 See L<documentation in the base class|Log::Report::Extract/"METHODS">.
@@ -107,8 +157,8 @@ See L<Log::Report::Extract/"Processors">
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.997,
-built on September 27, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 0.998,
+built on October 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

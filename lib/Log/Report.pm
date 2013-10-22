@@ -8,7 +8,7 @@ use strict;
 
 package Log::Report;
 use vars '$VERSION';
-$VERSION = '0.997';
+$VERSION = '0.998';
 
 use base 'Exporter';
 
@@ -30,9 +30,9 @@ require Log::Report::Dispatcher;
 require Log::Report::Dispatcher::Try;
 
 # See section Run modes
-my %is_reason = map {($_=>1)} @Log::Report::Util::reasons;
-my %is_fatal  = map {($_=>1)} qw/ERROR FAULT FAILURE PANIC/;
-my %use_errno = map {($_=>1)} qw/FAULT ALERT FAILURE/;
+my %is_reason = map +($_=>1), @Log::Report::Util::reasons;
+my %is_fatal  = map +($_=>1), qw/ERROR FAULT FAILURE PANIC/;
+my %use_errno = map +($_=>1), qw/FAULT ALERT FAILURE/;
 
 sub _whats_needed(); sub dispatcher($@);
 sub trace(@); sub assert(@); sub info(@); sub notice(@); sub warning(@);
@@ -363,7 +363,6 @@ sub import(@)
 
     my $textdomain = @_%2 ? shift : undef;
     my %opts   = @_;
-    my $syntax = delete $opts{syntax} || 'SHORT';
     my ($pkg, $fn, $linenr) = caller;
 
     if(my $trans = delete $opts{translator})
@@ -388,14 +387,21 @@ sub import(@)
 
     push @{$domain_start{$fn}}, [$linenr => $textdomain];
 
-    my @export = (@functions, @make_msg);
-
-    if($syntax eq 'SHORT')
-    {   push @export, @reason_functions
+    my @export;
+    if(my $in = $opts{import})
+    {   push @export, ref $in eq 'ARRAY' ? @$in : $in;
     }
-    elsif($syntax ne 'REPORT' && $syntax ne 'LONG')
-    {   error __x"syntax flag must be either SHORT or REPORT, not `{syntax}'"
-          , syntax => $syntax;
+    else
+    {   push @export, @functions, @make_msg;
+
+        my $syntax = delete $opts{syntax} || 'SHORT';
+        if($syntax eq 'SHORT')
+        {   push @export, @reason_functions
+        }
+        elsif($syntax ne 'REPORT' && $syntax ne 'LONG')
+        {   error __x"syntax flag must be either SHORT or REPORT, not `{flag}'"
+              , flag => $syntax;
+        }
     }
 
     $class->export_to_level(1, undef, @export);
