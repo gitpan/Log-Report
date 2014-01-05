@@ -34,12 +34,14 @@
          "requires" : {
             "Devel::GlobalDestruction" : "0.09",
             "Encode" : "2.00",
+            "Log::Report::Optional" : "1.00",
             "Scalar::Util" : "0",
+            "String::Print" : "0.13",
             "Sys::Syslog" : "0.27",
             "Test::More" : "0.86"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "0.998"
+   "version" : "1.00"
 }

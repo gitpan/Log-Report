@@ -66,17 +66,18 @@ With syslog, people tend not to include the REASON of the message
 in the logs, because that is already used to determine the destination
 of the message.
 
- -Option       --Defined in             --Default
-  accept         Log::Report::Dispatcher  depend on mode
-  charset        Log::Report::Dispatcher  <undef>
-  facility                                'user'
-  flags                                   'pid,nowait'
-  format_reason  Log::Report::Dispatcher  'IGNORE'
-  identity                                <basename $0>
-  locale         Log::Report::Dispatcher  <system locale>
-  logsocket                               undef
-  mode           Log::Report::Dispatcher  'NORMAL'
-  to_prio                                 []
+ -Option        --Defined in             --Default
+  accept          Log::Report::Dispatcher  depend on mode
+  charset                                  'utf8'
+  facility                                 'user'
+  flags                                    'pid,nowait'
+  format_reason   Log::Report::Dispatcher  'IGNORE'
+  identity                                 <basename $0>
+  include_domain                           <false>
+  locale          Log::Report::Dispatcher  <system locale>
+  logsocket                                undef
+  mode            Log::Report::Dispatcher  'NORMAL'
+  to_prio                                  []
 
 =over 2
 
@@ -84,10 +85,13 @@ of the message.
 
 =item charset => CHARSET
 
+Translate the text-strings into the specified charset, otherwise the
+sysadmin may get unreadable text.
+
 =item facility => STRING
 
 The possible values for this depend (a little) on the system.  POSIX
-only defines 'user' and 'local0' upto 'local7'.
+only defines C<user>, and C<local0> upto C<local7>.
 
 =item flags => STRING
 
@@ -98,12 +102,16 @@ C<pid>, C<ndelay>, and C<nowait>.
 
 =item identity => STRING
 
+=item include_domain => BOOLEAN
+
+[1.00] Include the text-domain of the message in each logged message.
+
 =item locale => LOCALE
 
 =item logsocket => 'unix'|'inet'|'stream'
 
 If specified, the log socket type will be initialized to this before
-openlog is called.  If not specified, the system default is used.
+C<openlog()> is called.  If not specified, the system default is used.
 
 =item mode => 'NORMAL'|'VERBOSE'|'ASSERT'|'DEBUG'|0..3
 
@@ -133,7 +141,7 @@ See L<Log::Report::Dispatcher/"Accessors">
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<needs>()
+=item $obj-E<gt>B<needs>([REASON])
 
 See L<Log::Report::Dispatcher/"Accessors">
 
@@ -161,7 +169,7 @@ See L<Log::Report::Dispatcher/"Logging">
 
 See L<Log::Report::Dispatcher/"Logging">
 
-=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE, DOMAIN)
 
 See L<Log::Report::Dispatcher/"Logging">
 
@@ -188,12 +196,12 @@ See L<documentation in the base class|Log::Report::Dispatcher/"DETAILS">.
  
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.998,
-built on October 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.00,
+built on January 05, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

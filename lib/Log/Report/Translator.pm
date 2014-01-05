@@ -1,25 +1,22 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
 package Log::Report::Translator;
 use vars '$VERSION';
-$VERSION = '0.998';
+$VERSION = '1.00';
 
 
 use warnings;
 use strict;
 
-use File::Spec ();
-
-use Log::Report 'log-report', syntax => 'SHORT';
-
-use Log::Report::Lexicon::Index ();
+use Log::Report 'log-report';
 use Log::Report::Message;
 
+use File::Spec ();
 my %lexicons;
 
-sub _filename_to_lexicon($);
+sub _fn_to_lexdir($);
 
 
 sub new(@)
@@ -29,20 +26,29 @@ sub new(@)
 
 sub init($)
 {   my ($self, $args) = @_;
+
     my $lex = delete $args->{lexicons} || delete $args->{lexicon}
-           || _filename_to_lexicon $args->{callerfn};
+     || (ref $self eq __PACKAGE__ ? [] : _fn_to_lexdir $args->{callerfn});
 
     my @lex;
-    foreach my $lex (ref $lex eq 'ARRAY' ? @$lex : $lex)
-    {   push @lex, $lexicons{$lex} ||=   # lexicon indexes are shared
-            Log::Report::Lexicon::Index->new($lex);
+    foreach my $dir (ref $lex eq 'ARRAY' ? @$lex : $lex)
+    {   unless(exists $INC{'Log/Report/Lexicon/Index.pm'})
+        {   eval "require Log::Report::Lexicon::Index";
+            panic $@ if $@;
+
+            error __x"You have to upgrade Log::Report::Lexicon to at least 1.00"
+                if $Log::Report::Lexicon::Index::VERSION < 1.00;
+        }
+
+        push @lex, $lexicons{$dir} ||=   # lexicon indexes are shared
+            Log::Report::Lexicon::Index->new($dir);
     }
     $self->{lexicons} = \@lex;
     $self->{charset}  = $args->{charset} || 'utf-8';
     $self;
 }
 
-sub _filename_to_lexicon($)
+sub _fn_to_lexdir($)
 {   my $fn = shift;
     $fn =~ s/\.pm$//;
     File::Spec->catdir($fn, 'messages');
@@ -57,7 +63,7 @@ sub charset() {shift->{charset}}
 
 # this is called as last resort: if a translator cannot find
 # any lexicon or has no matching language.
-sub translate($)
+sub translate($$$)
 {   my $msg = $_[1];
 
       defined $msg->{_count} && $msg->{_count} != 1

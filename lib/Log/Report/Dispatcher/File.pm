@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,13 +7,16 @@ use strict;
 
 package Log::Report::Dispatcher::File;
 use vars '$VERSION';
-$VERSION = '0.998';
+$VERSION = '1.00';
 
 use base 'Log::Report::Dispatcher';
 
-use Log::Report 'log-report', syntax => 'SHORT';
-use IO::File ();
-use Encode   qw/find_encoding/;
+use Log::Report  'log-report';
+use IO::File     ();
+use POSIX        qw/strftime/;
+
+use Encode       qw/find_encoding/;
+use Fcntl        qw/:flock/;
 
 
 sub init($)
@@ -40,31 +43,69 @@ sub init($)
         my $binmode = $args->{replace} ? '>' : '>>';
 
         my $f = $self->{output} = IO::File->new($to, $binmode)
-            or fault __x"cannot write log into {file} with {binmode}"
-                   , binmode => $binmode, file => $to;
+            or fault __x"cannot write log into {file} with mode {binmode}"
+                 , binmode => $binmode, file => $to;
         $f->autoflush;
 
         trace "opened dispatcher $name to $to with $binmode";
     }
 
-    $self;
-}
+    my $format = $args->{format} || sub { '['.localtime()."] $_[0]" };
+    $self->{format}
+      = ref $format eq 'CODE' ? $format
+      : $format eq 'LONG'
+      ? sub { my $msg    = shift;
+              my $domain = shift || '-';
+              my $stamp  = strftime "%FT%T", gmtime;
+              "[$stamp $$] $domain $msg"
+            }
+      : error __x"unknown format parameter `{what}'"
+          , what => ref $format || $format;
 
-
-sub close()
-{   my $self = shift;
-    $self->SUPER::close or return;
-    $self->{output}->close if $self->{filename};
     $self;
 }
 
 
 sub filename() {shift->{filename}}
+sub format()   {shift->{format}}
+sub output()   {shift->{output}}
 
 
-sub log($$$)
+sub close()
 {   my $self = shift;
-    $self->{output}->print($self->SUPER::translate(@_));
+    $self->SUPER::close or return;
+    $self->output->close if $self->filename;
+    $self;
+}
+
+
+sub rotate($)
+{   my ($self, $new) = @_;
+
+    my $log = $self->filename
+        or error __x"cannot rotate log file which was opened as file-handle";
+
+    trace "rotating $log to $new";
+
+    rename $log, $new
+        or fault __x"unable to rotate logfile {oldfn} to {newfn}"
+              , oldfn => $log, newfn => $new;
+
+    $self->output->close;   # close after move not possible on Windows?
+    my $f = $self->{output} = IO::File->new($log, '>>')
+        or fault __x"cannot write log into {file}", file => $log;
+    $f->autoflush;
+    $self;
+}
+
+
+sub log($$$$)
+{   my ($self, $opts, $reason, $msg, $domain) = @_;
+    my $text = $self->format->($self->translate($opts, $reason, $msg), $domain);
+    my $out  = $self->output;
+    flock $out, LOCK_EX;
+    $out->print($text);
+    flock $out, LOCK_UN;
 }
 
 1;

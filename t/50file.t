@@ -6,7 +6,7 @@ use strict;
 
 use Test::More tests => 38;
 
-use Log::Report undef, syntax => 'SHORT';
+use Log::Report;
 use POSIX 'locale_h';
 
 setlocale(LC_ALL, 'en_US');
@@ -19,7 +19,7 @@ isa_ok($disp[0], 'Log::Report::Dispatcher');
 
 my $file1 = '';
 open my($fh1), ">", \$file1 or die $!;
-my $d = dispatcher FILE => 'file1', to => $fh1;
+my $d = dispatcher FILE => 'file1', to => $fh1, format => sub {shift};
 
 @disp = dispatcher 'list';
 cmp_ok(scalar(@disp), '==', 2);
@@ -42,7 +42,8 @@ my $file2 = '';
 open my($fh2), ">", \$file2 or die $!;
 my $e = dispatcher FILE => 'file2'
   , format_reason => 'UPPERCASE'
-  , to => $fh2, accept => '-INFO';
+  , to => $fh2, accept => '-INFO'
+  , format => sub {shift};
 ok(defined $e, 'created second disp');
 isa_ok($e, 'Log::Report::Dispatcher::File');
 

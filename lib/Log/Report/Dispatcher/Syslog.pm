@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,13 +7,15 @@ use strict;
 
 package Log::Report::Dispatcher::Syslog;
 use vars '$VERSION';
-$VERSION = '0.998';
+$VERSION = '1.00';
 
 use base 'Log::Report::Dispatcher';
 
-use Sys::Syslog qw/:standard :extended :macros/;
-use Log::Report 'log-report', syntax => 'SHORT';
+use Log::Report 'log-report';
+
+use Sys::Syslog        qw/:standard :extended :macros/;
 use Log::Report::Util  qw/@reasons expand_reasons/;
+use Encode             qw/encode/;
 
 use File::Basename qw/basename/;
 
@@ -31,8 +33,8 @@ my %default_reasonToPrio =
  , PANIC   => LOG_CRIT
  );
 
-@reasons != keys %default_reasonToPrio
-    and panic __"Not all reasons have a default translation";
+@reasons==keys %default_reasonToPrio
+    or panic __"not all reasons have a default translation";
 
 
 sub init($)
@@ -49,7 +51,10 @@ sub init($)
     my $fac   = delete $args->{facility} || 'user';
     openlog $ident, $flags, $fac;   # doesn't produce error.
 
-    $self->{prio} = { %default_reasonToPrio };
+    $self->{LRDS_incl_dom} = delete $args->{include_domain};
+    $self->{LRDS_charset}  = delete $args->{charset} || "utf-8";
+
+    $self->{prio} = +{ %default_reasonToPrio };
     if(my $to_prio = delete $args->{to_prio})
     {   my @to = @$to_prio;
         while(@to)
@@ -74,15 +79,23 @@ sub close()
 }
 
 
-sub log($$$$)
-{   my $self = shift;
-    my $text = $self->SUPER::translate(@_) or return;
+sub log($$$$$)
+{   my ($self, $opts, $reason, $msg, $domain) = @_;
+    my $text = encode $self->{LRDS_charset}
+      , $self->translate($opts, $reason, $msg) or return;
 
-    my $prio = $self->reasonToPrio($_[1]);
+    my $prio = $self->reasonToPrio($reason);
 
     # handle each line in message separately
-    syslog $prio, "%s", $_
-        for split /\n/, $text;
+    $text    =~ s/\s+$//s;
+    my @text = split /\n/, $text;
+
+    if($self->{LRDS_incl_dom} && $domain)
+    {   $domain  =~ s/\%//g;    # security
+        syslog $prio, "$domain %s", shift @text
+    }
+
+    syslog $prio, "%s", $_ for @text;
 }
 
 

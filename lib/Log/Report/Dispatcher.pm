@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,15 +7,15 @@ use strict;
 
 package Log::Report::Dispatcher;
 use vars '$VERSION';
-$VERSION = '0.998';
+$VERSION = '1.00';
 
 
-use Log::Report 'log-report', syntax => 'SHORT';
+use Log::Report 'log-report';
 use Log::Report::Util qw/parse_locale expand_reasons %reason_code
   escape_chars/;
 
 use POSIX      qw/strerror/;
-use List::Util qw/sum/;
+use List::Util qw/sum first/;
 use Encode     qw/find_encoding FB_DEFAULT/;
 use Devel::GlobalDestruction qw/in_global_destruction/;
 
@@ -28,18 +28,19 @@ if($@)
 my %modes = (NORMAL => 0, VERBOSE => 1, ASSERT => 2, DEBUG => 3
   , 0 => 0, 1 => 1, 2 => 2, 3 => 3);
 my @default_accept = ('NOTICE-', 'INFO-', 'ASSERT-', 'ALL');
+my %always_loc = map +($_ => 1), qw/ASSERT ALERT FAILURE PANIC/;
 
 my %predef_dispatchers = map { (uc($_) => __PACKAGE__.'::'.$_) }
-   qw/File Perl Syslog Try Callback/;
+   qw/File Perl Syslog Try Callback Log4perl/;
 
 
 sub new(@)
 {   my ($class, $type, $name, %args) = @_;
 
+    # $type is a class name or predefined name.
     my $backend
       = $predef_dispatchers{$type}          ? $predef_dispatchers{$type}
       : $type->isa('Log::Dispatch::Output') ? __PACKAGE__.'::LogDispatch'
-      : $type->isa('Log::Log4perl')         ? __PACKAGE__.'::Log4perl'
       : $type;
 
     eval "require $backend";
@@ -116,7 +117,7 @@ sub _set_mode($)
 
     $self->{needs} = [ expand_reasons $default_accept[$mode] ];
 
-    info __x"switching to run mode {mode}, accept {accept}"
+    trace __x"switching to run mode {mode}, accept {accept}"
        , mode => $mode, accept => $default_accept[$mode];
 
     $mode;
@@ -131,15 +132,25 @@ sub _disabled($)
 
 
 sub isDisabled() {shift->{disabled}}
-sub needs() { $_[0]->{disabled} ? () : @{$_[0]->{needs}} }
 
 
-sub log($$$)
+sub needs(;$)
+{   my $self = shift;
+    return () if $self->{disabled};
+
+    my $needs = $self->{needs};
+    @_ or return @$needs;
+
+    my $need = shift;
+    first {$need eq $_} @$needs;
+}
+
+
+sub log($$$$)
 {   panic "method log() must be extended per back-end";
 }
 
 
-my %always_loc = map +($_ => 1), qw/ASSERT PANIC/;
 sub translate($$$)
 {   my ($self, $opts, $reason, $msg) = @_;
 
@@ -160,12 +171,11 @@ sub translate($$$)
     my $locale
       = defined $msg->msgid
       ? ($opts->{locale} || $self->{locale})      # translate whole
-      : Log::Report->_setting($msg->domain, 'native_language');
+      : (textdomain $msg->domain)->nativeLanguage;
 
-    # not all implementations of setlocale() return the old value
-    my $oldloc = setlocale(&LC_ALL);
-    #setlocale(&LC_ALL, $locale || 'en_US');
-    setlocale(&LC_ALL, $locale) if $locale;
+    my $oldloc = setlocale(&LC_ALL) // "";
+    setlocale(&LC_ALL, $locale)
+        if $locale && $locale ne $oldloc;
 
     my $r = $self->{format_reason}->((__$reason)->toString);
     my $e = $opts->{errno} ? strerror($opts->{errno}) : undef;
@@ -176,11 +186,11 @@ sub translate($$$)
       : $e       ? N__"{message}; {error}"
       :            undef;
 
-    my $text = defined $format
-      ? __x($format, message => $msg->toString, reason => $r, error => $e
-           )->toString
-      : $msg->toString;
-    $text .= "\n";
+    my $text
+      = ( defined $format
+        ? __x($format, message => $msg->toString , reason => $r, error => $e)
+        : $msg
+        )->toString . "\n";
 
     if($show_loc)
     {   if(my $loc = $opts->{location} || $self->collectLocation)
@@ -204,7 +214,7 @@ sub translate($$$)
     }
 
     setlocale(&LC_ALL, $oldloc)
-        if defined $oldloc;
+        if $locale && $locale ne $oldloc;
 
     $self->{charset_enc}->($text);
 }

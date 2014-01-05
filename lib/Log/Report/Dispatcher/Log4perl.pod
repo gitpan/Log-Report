@@ -11,9 +11,11 @@ Log::Report::Dispatcher::Log4perl - send messages to Log::Log4perl back-end
 
 =head1 SYNOPSIS
 
- dispatcher Log::Log4perl => 'logger', accept => 'NOTICE-'
-   , config => "$ENV{HOME}/.log.conf"
-   , to_level => [ 'ALERT-' => $ERROR ];
+ # start using log4perl via a config file
+ # The name of the dispatcher is the name of the default category.
+ dispatcher LOG4PERL => 'logger'
+   , accept => 'NOTICE-'
+   , config => "$ENV{HOME}/.log.conf";
 
  # disable default dispatcher
  dispatcher close => 'logger';
@@ -23,40 +25,55 @@ Log::Report::Dispatcher::Log4perl - send messages to Log::Log4perl back-end
  my $outfile = '/tmp/a.log';
  my $config  = <<__CONFIG;
  log4perl.category.$name            = INFO, Logfile
- log4perl.appender.Logfile          = Log::Log4perl::Appender::File
- log4perl.appender.Logfile.filename = $outfn
- log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::PatternLayout
- log4perl.appender.Logfile.layout.ConversionPattern = %d %F{1} %L> %m
+ log4perl.logger.Logfile          = Log::Log4perl::Appender::File
+ log4perl.logger.Logfile.filename = $outfn
+ log4perl.logger.Logfile.layout   = Log::Log4perl::Layout::PatternLayout
+ log4perl.logger.Logfile.layout.ConversionPattern = %d %F{1} %L> %m
  __CONFIG
 
- dispatcher 'Log::Log4perl' => $name, config => \$config;
+ dispatcher LOG4PERL => $name, config => \$config;
 
 =head1 DESCRIPTION
 
 This dispatchers produces output tot syslog, based on the C<Sys::Log4perl>
 module (which will not be automatically installed for you).
 
-The REASON for a message often uses names which are quite similar to the
-log-levels used by Log::Dispatch.  However: they have a different
-approach.  The REASON of Log::Report limits the responsibility of the
-programmer to indicate the cause of the message: whether it was able to
-handle a certain situation.  The Log::Dispatch levels are there for the
-user's of the program.  However: the programmer does not known anything
-about the application (in the general case).  This is cause of much of
-the trickery in Perl programs.
-
-The default translation table is list below.  You can change the mapping
-using L<new(to_level)|Log::Report::Dispatcher::Log4perl/"Constructors">.  See example in SYNOPSIS.
-
-  TRACE   => $DEBUG  ERROR   => $ERROR
-  ASSERT  => $DEBUG  FAULT   => $ERROR
-  INFO    => $INFO   ALERT   => $FATAL
-  NOTICE  => $INFO   FAILURE => $FATAL
-  WARNING => $WARN   PANIC   => $FATAL
-  MISTAKE => $WARN
-
 See L<documentation in the base class|Log::Report::Dispatcher/"DESCRIPTION">.
  
+=head2 Reasons <--> Levels
+
+The REASONs for a message in L<Log::Report|Log::Report> are names quite similar to
+the log levels used by Log::Log4perl.  The default mapping is list
+below.  You can change the mapping using L<new(to_level)|Log::Report::Dispatcher::Log4perl/"Constructors">.
+
+  TRACE   => $DEBUG    ERROR   => $ERROR
+  ASSERT  => $DEBUG    FAULT   => $ERROR
+  INFO    => $INFO     ALERT   => $FATAL
+  NOTICE  => $INFO     FAILURE => $FATAL
+  WARNING => $WARN     PANIC   => $FATAL
+  MISTAKE => $WARN
+
+=head2 Categories
+
+C<Log::Report> uses text-domains for translation tables.  These are
+also used as categories for the Log4perl infrastructure.  So, typically
+every module start with:
+
+   use Log::Report 'my-text-domain', %more_options;
+
+Now, if there is a logger inside the log4perl configuration which is
+named 'my-text-domain', that will be used.  Otherwise, the name of the
+dispatcher is used to select the logger.
+
+=head3 Limitiations
+
+The global C<$caller_depth> concept of Log::Log4perl is broken.
+That variable is used to find the filename and line number of the logged
+messages.  But these messages may have been caught, rerouted, eval'ed, and
+otherwise followed a unpredictable multi-leveled path before it reached
+the Log::Log4perl dispatcher.  This means that layout patterns C<%F>
+and C<%L> are not useful in the generic case, maybe in your specific case.
+
 =head1 METHODS
 
 See L<documentation in the base class|Log::Report::Dispatcher/"METHODS">.
@@ -73,11 +90,11 @@ See L<Log::Report::Dispatcher/"Constructors">
 
 =item Log::Report::Dispatcher::Log4perl-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
-The Log::Log4perl infrastructure has all information in a configuration
+The Log::Log4perl infrastructure has all settings in a configuration
 file.  In that file, you should find a category with the NAME.
 
  -Option       --Defined in             --Default
-  accept         Log::Report::Dispatcher  depend on mode
+  accept         Log::Report::Dispatcher  'ALL'
   charset        Log::Report::Dispatcher  <undef>
   config                                  <required>
   format_reason  Log::Report::Dispatcher  'LOWERCASE'
@@ -116,13 +133,16 @@ See L<documentation in the base class|Log::Report::Dispatcher/"Accessors">.
  
 =over 4
 
-=item $obj-E<gt>B<appender>()
-
-Returns the Log::Log4perl::Logger object which is used for logging.
-
 =item $obj-E<gt>B<isDisabled>()
 
 See L<Log::Report::Dispatcher/"Accessors">
+
+=item $obj-E<gt>B<logger>([DOMAIN])
+
+Returns the Log::Log4perl::Logger object which is used for logging.
+When there is no specific logger for this DOMAIN (logger with the exact
+name of the DOMAIN) the default logger is being used, with the name of
+this dispatcher.
 
 =item $obj-E<gt>B<mode>()
 
@@ -132,7 +152,7 @@ See L<Log::Report::Dispatcher/"Accessors">
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<needs>()
+=item $obj-E<gt>B<needs>([REASON])
 
 See L<Log::Report::Dispatcher/"Accessors">
 
@@ -160,7 +180,7 @@ See L<Log::Report::Dispatcher/"Logging">
 
 See L<Log::Report::Dispatcher/"Logging">
 
-=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE, DOMAIN)
 
 See L<Log::Report::Dispatcher/"Logging">
 
@@ -168,6 +188,15 @@ See L<Log::Report::Dispatcher/"Logging">
 
 Returns a level which is understood by Log::Dispatch, based on
 a translation table.  This can be changed with L<new(to_level)|Log::Report::Dispatcher::Log4perl/"Constructors">.
+
+example: 
+
+ use Log::Log4perl     qw/:levels/;
+
+ # by default, ALERTs are output as $FATAL
+ dispatcher Log::Log4perl => 'logger'
+   , to_level => [ ALERT => $ERROR, ]
+   , ...;
 
 =item $obj-E<gt>B<stackTraceLine>(OPTIONS)
 
@@ -187,12 +216,12 @@ See L<documentation in the base class|Log::Report::Dispatcher/"DETAILS">.
  
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.998,
-built on October 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.00,
+built on January 05, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

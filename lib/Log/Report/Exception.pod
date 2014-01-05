@@ -58,7 +58,7 @@ an (untranslated) report.
 =item $obj-E<gt>B<isFatal>()
 
 Returns whether this exception has a severity which makes it fatal
-when thrown.  See L<Log::Report::isFatal()|Log::Report/"Reasons">.
+when thrown.  See L<Log::Report::Util::is_fatal()|Log::Report::Util/"Reasons">.
 
 example: 
 
@@ -148,12 +148,12 @@ Produces "reason: message".
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.998,
-built on October 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.00,
+built on January 05, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

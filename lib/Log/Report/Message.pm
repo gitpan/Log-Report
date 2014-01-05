@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,7 +7,7 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '0.998';
+$VERSION = '1.00';
 
 
 use Log::Report 'log-report';
@@ -18,7 +18,8 @@ use List::Util qw/first/;
 use overload
     '""'  => 'toString'
   , '&{}' => sub { my $obj = shift; sub{$obj->clone(@_)} }
-  , '.'   => 'concat';
+  , '.'   => 'concat'
+  , fallback => 1;
 
 
 sub new($@)
@@ -42,6 +43,7 @@ sub new($@)
     if($s{_plural})
     {   s/\s+$//, s/^\s+// for $s{_plural};
     }
+
     bless \%s, $class;
 }
 
@@ -78,6 +80,7 @@ sub msgid()   {shift->{_msgid}}
 sub append()  {shift->{_append}}
 sub domain()  {shift->{_domain}}
 sub count()   {shift->{_count}}
+sub context() {shift->{_context}}
 
 
 sub classes()
@@ -111,17 +114,16 @@ sub toString(;$)
         or return (defined $self->{_prepend} ? $self->{_prepend} : '')
                 . (defined $self->{_append}  ? $self->{_append}  : '');
 
+    # assumed is that switching locales is expensive
+    my $oldloc = setlocale(LC_MESSAGES);
+    setlocale(LC_MESSAGES, $locale)
+        if defined $locale && (!defined $oldloc || $locale ne $oldloc);
+
     # create a translation
-    my $text = Log::Report->translator($self->{_domain})
-      ->translate($self, $locale);
+    my $text = (textdomain $self->{_domain})
+       ->translate($self, $self->{_lang} || $locale || $oldloc);
   
     defined $text or return ();
-
-    my $oldloc;
-    if(defined $locale)
-    {   $oldloc = setlocale(LC_ALL);
-        setlocale(LC_ALL, $locale);
-    }
 
     if($self->{_expand})
     {    my $re   = join '|', map quotemeta, keys %$self;
@@ -134,8 +136,8 @@ sub toString(;$)
     $text .= "$self->{_append}"
         if defined $self->{_append};
 
-    setlocale(LC_ALL, $oldloc)
-        if defined $oldloc && $oldloc ne $locale;
+    setlocale(LC_MESSAGES, $oldloc)
+        if defined $oldloc && (!defined $locale || $oldloc ne $locale);
 
     $text;
 }

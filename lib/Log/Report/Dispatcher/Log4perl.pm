@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,14 +7,14 @@ use strict;
 
 package Log::Report::Dispatcher::Log4perl;
 use vars '$VERSION';
-$VERSION = '0.998';
+$VERSION = '1.00';
 
 use base 'Log::Report::Dispatcher';
 
-use Log::Report 'log-report', syntax => 'SHORT';
-use Log::Report::Util  qw/@reasons expand_reasons/;
+use Log::Report 'log-report';
 
-use Log::Log4perl qw/:levels/;
+use Log::Report::Util qw/@reasons expand_reasons/;
+use Log::Log4perl     qw/:levels/;
 
 my %default_reasonToLevel =
  ( TRACE   => $DEBUG
@@ -30,20 +30,21 @@ my %default_reasonToLevel =
  , PANIC   => $FATAL
  );
 
-@reasons != keys %default_reasonToLevel
-    and panic __"Not all reasons have a default translation";
+@reasons==keys %default_reasonToLevel
+    or panic __"Not all reasons have a default translation";
 
 
 sub init($)
 {   my ($self, $args) = @_;
+    $args->{accept} ||= 'ALL';
     $self->SUPER::init($args);
 
     my $name   = $self->name;
     my $config = delete $args->{config}
-       or error __x"Log::Log4perl back-end {name} requires a 'config' parameter"
+       or error __x"Log4perl back-end {name} requires a 'config' parameter"
             , name => $name;
 
-    $self->{level}  = { %default_reasonToLevel };
+    $self->{LRDL_levels}  = { %default_reasonToLevel };
     if(my $to_level = delete $args->{to_level})
     {   my @to = @$to_level;
         while(@to)
@@ -51,46 +52,51 @@ sub init($)
             my @reasons = expand_reasons $reasons;
 
             $level =~ m/^[0-5]$/
-                or error __x "Log::Log4perl level '{level}' must be in 0-5"
+                or error __x "Log4perl level '{level}' must be in 0-5"
                      , level => $level;
 
-            $self->{level}{$_} = $level for @reasons;
+            $self->{LRDL_levels}{$_} = $level for @reasons;
         }
     }
 
-    Log::Log4perl->init($config);
-
-    $self->{appender} = Log::Log4perl->get_logger($name, %$args)
-        or error __x"cannot find logger '{name}' in configuration {config}"
-             , name => $name, config => $config;
+    Log::Log4perl->init($config)
+        or return;
 
     $self;
 }
 
-sub close()
-{   my $self = shift;
-    $self->SUPER::close or return;
-    delete $self->{backend};
-    $self;
+#sub close()
+#{   my $self = shift;
+#    $self->SUPER::close or return;
+#    $self;
+#}
+
+
+sub logger(;$)
+{   my ($self, $domain) = @_;
+    defined $domain
+        or return Log::Log4perl->get_logger($self->name);
+
+    # get_logger() creates a logger if that does not exist.  But we
+    # want to route it to default
+    $Log::Log4perl::LOGGERS_BY_NAME->{$domain}
+       ||= Log::Log4perl->get_logger($self->name);
 }
-
-
-sub appender() {shift->{appender}}
 
 
 sub log($$$$)
-{   my $self  = shift;
-    my $text  = $self->SUPER::translate(@_) or return;
-    my $level = $self->reasonToLevel($_[1]);
+{   my ($self, $opts, $reason, $msg, $domain) = @_;
+    my $text   = $self->translate($opts, $reason, $msg) or return;
+    my $level  = $self->reasonToLevel($reason);
 
-    local $Log::Log4perl::caller_depth
-              = $Log::Log4perl::caller_depth + 3;
+    local $Log::Log4perl::caller_depth = $Log::Log4perl::caller_depth + 3;
 
-    $self->appender->log($level, $text);
+    $text =~ s/\s+$//s;  # log4perl adds own \n
+    $self->logger($domain)->log($level, $text);
     $self;
 }
 
 
-sub reasonToLevel($) { $_[0]->{level}{$_[1]} }
+sub reasonToLevel($) { $_[0]->{LRDL_levels}{$_[1]} }
 
 1;

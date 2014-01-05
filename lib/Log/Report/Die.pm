@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,13 +7,12 @@ use strict;
 
 package Log::Report::Die;
 use vars '$VERSION';
-$VERSION = '0.998';
+$VERSION = '1.00';
 
 use base 'Exporter';
 
 our @EXPORT = qw/die_decode/;
 
-use Log::Report 'log-report';
 use POSIX  qw/locale_h/;
 
 

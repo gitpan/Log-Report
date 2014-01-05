@@ -6,7 +6,7 @@ Log::Report::Message - a piece of text to be translated
 
 =head1 SYNOPSIS
 
- # Created by Log::Report's __ functions
+ # Objects created by Log::Report's __ functions
  # Full feature description in the DETAILS section
 
  # no interpolation
@@ -77,10 +77,12 @@ translated C<_msgid> string.
   _category  undef
   _class     []
   _classes   []
+  _context   undef
   _count     undef
   _domain    <from "use Log::Report">
   _expand    false
   _join      $" $LIST_SEPARATOR
+  _lang      <from locale>
   _msgid     undef
   _plural    undef
   _prepend   undef
@@ -113,6 +115,12 @@ ARRAY lists all tokens separately. See L<classes()|Log::Report::Message/"Accesso
 
 Alternative for C<_class>, which cannot be used at the same time.
 
+=item _context => WORDS|ARRAY
+
+[1.00] Set keywords which can be used to select alternatives
+between translations.  Read the DETAILS section in
+L<Log::Report::Translator::Context|Log::Report::Translator::Context>
+
 =item _count => INTEGER|ARRAY|HASH
 
 When defined, the C<_plural> need to be defined as well.  When an
@@ -140,6 +148,12 @@ Indicates whether variables are to be filled-in.
 =item _join => STRING
 
 Which STRING to be used then an ARRAY is being filled-in.
+
+=item _lang => ISO
+
+[1.00] Override language setting from locale, for instance because that
+is not configured correctly (yet).  This does not extend to prepended
+or appended translated message object.
 
 =item _msgid => MSGID
 
@@ -187,6 +201,10 @@ after this one.  Usually C<undef>.
 
 Returns the LIST of classes which are defined for this message; message
 group indicators, as often found in exception-based programming.
+
+=item $obj-E<gt>B<context>()
+
+Returns an HASH if there is a context defined for this message.
 
 =item $obj-E<gt>B<count>()
 
@@ -324,8 +342,13 @@ parameter can disappear.
 
 =head3 Interpolation of VARIABLES
 
-There is no way of checking beforehand whether you have provided all required
-values, to be interpolated in the translated string.
+C<Log::Report> uses L<String::Print> to interpolate values in(translated)
+messages.  This is a very powerful syntax, and you should certainly read
+that manual-page.  Here, we only described additional features, specific
+to the usage of C<String::Print> in C<Log::Report::Message> objects.
+
+There is no way of checking beforehand whether you have provided all
+required values, to be interpolated in the translated string.
 
 For interpolating, the following rules apply:
 
@@ -361,35 +384,6 @@ interpolation parameter via the C<_join> OPTION.
  error __x"matching files: {files}", files => \@files;
 
  error __x"matching files: {files}", files => \@files, _join => ', ';
-
-=head3 Interpolating formatted
-
-Next to the name, you can specify a format code.  With C<gettext()>,
-you often see this:
-
- printf gettext("approx pi: %.6f\n"), PI;
-
-Locale::TextDomain has two ways.
-
- printf __"approx pi: %.6f\n", PI;
- print __x"approx pi: {approx}\n", approx => sprintf("%.6f", PI);
-
-The first does not respect the wish to be able to reorder the
-arguments during translation.  The second version is quite long.
-With C<Log::Report>, above syntaxes do work, but you can also do
-
- print __x"approx pi: {pi%.6f}\n", pi => PI;
-
-So: the interpolation syntax is C< { name [format] } >.  Other
-examples:
-
- print __x "{perms} {links%2d} {user%-8s} {size%10d} {fn}\n"
-         , perms => '-rw-r--r--', links => 1, user => 'me'
-         , size => '12345', fn => $filename;
-
-An additional advantage is the fact that not all languages produce
-comparable length strings.  Now, the translators can take care that
-the layout of tables is optimal.
 
 =head3 Interpolation of OPTIONS
 
@@ -462,8 +456,9 @@ interpolation:
  {   print $s;
  }
 
-Oops, not what you mean.
-With Log::Report, you can do it.
+Oops, not what you mean because the first value of C<$i> is captured
+in the initial message object.  With Log::Report, you can do it (except
+when you use contexts)
 
  use Log::Report;
  my $i;
@@ -509,12 +504,12 @@ Implemented as L<toString()|Log::Report::Message/"Processing">.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.998,
-built on October 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.00,
+built on January 05, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -43,6 +43,9 @@ Log::Report::Dispatcher::File - send messages to a file or file-handle
 
 This basic file logger accepts an file-handle or filename as destination.
 
+[1.00] writing to the file protected by a lock, so multiple processes
+can write to the same file.
+
 See L<documentation in the base class|Log::Report::Dispatcher/"DESCRIPTION">.
  
 =head1 METHODS
@@ -55,16 +58,12 @@ See L<documentation in the base class|Log::Report::Dispatcher/"Constructors">.
  
 =over 4
 
-=item $obj-E<gt>B<close>()
-
-Only when initiated with a FILENAME, the file will be closed.  In any
-other case, nothing will be done.
-
 =item Log::Report::Dispatcher::File-E<gt>B<new>(TYPE, NAME, OPTIONS)
 
  -Option       --Defined in             --Default
   accept         Log::Report::Dispatcher  depend on mode
   charset        Log::Report::Dispatcher  LOCALE
+  format                                  <adds timestamp>
   format_reason  Log::Report::Dispatcher  'LOWERCASE'
   locale         Log::Report::Dispatcher  <system locale>
   mode           Log::Report::Dispatcher  'NORMAL'
@@ -76,6 +75,22 @@ other case, nothing will be done.
 =item accept => REASONS
 
 =item charset => CHARSET
+
+=item format => CODE|'LONG'
+
+[1.00] process each printed line.  By default, this adds a timestamp,
+but you may want to add hostname, process number, or more.
+
+   format => sub { '['.localtime().'] '.$_[0] }
+   format => sub { shift }   # no timestamp
+   format => 'LONG'
+
+The first parameter to format is the string to print; it is already
+translated and trailed by a newline.  The second parameter is the
+text-domain (if known).  The "LONG" format is equivalent to:
+
+  my $t = strftime "%FT%T", gmtime;
+  "[$t $$] $_[1] $_[0]"
 
 =item format_reason => 'UPPERCASE'|'LOWERCASE'|'UCFIRST'|'IGNORE'|CODE
 
@@ -117,6 +132,8 @@ See L<documentation in the base class|Log::Report::Dispatcher/"Accessors">.
 Returns the name of the opened file, or C<undef> in case this dispatcher
 was started from a file-handle or file-object.
 
+=item $obj-E<gt>B<format>()
+
 =item $obj-E<gt>B<isDisabled>()
 
 See L<Log::Report::Dispatcher/"Accessors">
@@ -129,13 +146,30 @@ See L<Log::Report::Dispatcher/"Accessors">
 
 See L<Log::Report::Dispatcher/"Accessors">
 
-=item $obj-E<gt>B<needs>()
+=item $obj-E<gt>B<needs>([REASON])
 
 See L<Log::Report::Dispatcher/"Accessors">
+
+=item $obj-E<gt>B<output>()
 
 =item $obj-E<gt>B<type>()
 
 See L<Log::Report::Dispatcher/"Accessors">
+
+=back
+
+=head2 File maintenance
+
+=over 4
+
+=item $obj-E<gt>B<close>()
+
+Only when initiated with a FILENAME, the file will be closed.  In any
+other case, nothing will be done.
+
+=item $obj-E<gt>B<rotate>(FILENAME)
+
+[1.00] Move the current file to FILENAME, and start a new file.
 
 =back
 
@@ -157,7 +191,7 @@ See L<Log::Report::Dispatcher/"Logging">
 
 See L<Log::Report::Dispatcher/"Logging">
 
-=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE, DOMAIN)
 
 See L<Log::Report::Dispatcher/"Logging">
 
@@ -179,12 +213,12 @@ See L<documentation in the base class|Log::Report::Dispatcher/"DETAILS">.
  
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.998,
-built on October 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.00,
+built on January 05, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

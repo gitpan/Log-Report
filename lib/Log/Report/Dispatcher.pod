@@ -76,13 +76,13 @@ are understood, other ignore unknown OPTIONS.
 
 =item accept => REASONS
 
-See L<Log::Report::Util::expand_reasons()|Log::Report::Util/"FUNCTIONS"> for possible values.  If
+See L<Log::Report::Util::expand_reasons()|Log::Report::Util/"Reasons"> for possible values.  If
 the initial mode for this dispatcher does not need verbose or debug
 information, then those levels will not be accepted.
 
-When the mode equals C<NORMAL> (the default) then C<accept>'s default
-is C<NOTICE->.  In case of C<VERBOSE> it will be C<INFO->, C<ASSERT>
-results in C<ASSERT->, and C<DEBUG> in C<ALL>.
+When the mode equals "NORMAL" (the default) then C<accept>'s default
+is C<NOTICE->.  In case of "VERBOSE"> it will be C<INFO->, C<ASSERT>
+results in C<ASSERT->, and "DEBUG" in C<ALL>.
 
 =item charset => CHARSET
 
@@ -131,10 +131,13 @@ and L<Log::Report/Run modes>.
 
 Returns the unique name of this dispatcher.
 
-=item $obj-E<gt>B<needs>()
+=item $obj-E<gt>B<needs>([REASON])
 
 Returns the list with all REASONS which are needed to fulfill this
 dispatcher's needs.  When disabled, the list is empty, but not forgotten.
+
+[0.999] when only one REASON is specified, it is returned if in the
+list.
 
 =item $obj-E<gt>B<type>()
 
@@ -160,7 +163,7 @@ Probably, this needs improvement, where carp and die show different lines.
 
 Returns an ARRAY of ARRAYs with text, filename, line-number.
 
-=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE)
+=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE, DOMAIN)
 
 This method is called by L<Log::Report::report()|Log::Report/"Report Production and Configuration"> and should not be called
 directly.  Internally, it will call L<translate()|Log::Report::Dispatcher/"Logging">, which does most of
@@ -303,8 +306,8 @@ Exactly what will be added depends on the actual mode of the dispatcher
  warning  program  T..  S    S    SL   SL
  error    user     TE.  S    S    SL   SC
  fault    system   TE!  S    S    SL   SC
- alert    system   T.!  S    S    SC   SC
- failure  system   TE!  S    S    SC   SC
+ alert    system   T.!  SL   SL   SC   SC
+ failure  system   TE!  SL   SL   SC   SC
  panic    program  .E.  SC   SC   SC   SC
 
  T - usually translated
@@ -343,12 +346,12 @@ using concatenation (see L<Log::Report::Message::concat()|Log::Report::Message/"
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 0.998,
-built on October 22, 2013. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.00,
+built on January 05, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

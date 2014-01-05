@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,11 +7,12 @@ use strict;
 
 package Log::Report::Exception;
 use vars '$VERSION';
-$VERSION = '0.998';
+$VERSION = '1.00';
 
 
-use Log::Report 'log-report';
-use POSIX  qw/locale_h/;
+use Log::Report      'log-report';
+use Log::Report::Util qw/is_fatal/;
+use POSIX             qw/locale_h/;
 
 
 use overload '""' => 'toString';
@@ -33,7 +34,7 @@ sub reason(;$)
 }
 
 
-sub isFatal() { Log::Report->isFatal(shift->{reason}) }
+sub isFatal() { is_fatal shift->{reason} }
 
 
 sub message(;$)
@@ -55,7 +56,8 @@ sub throw(@)
 
     my $reason;
     if($reason = delete $opts->{reason})
-    {   $opts->{is_fatal} = Log::Report->isFatal($reason)
+    {   $self->{reason} = $reason;
+        $opts->{is_fatal} = is_fatal $reason
             unless exists $opts->{is_fatal};
     }
     else
