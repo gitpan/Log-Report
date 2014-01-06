@@ -7,12 +7,18 @@ use strict;
 
 package Log::Report::Message;
 use vars '$VERSION';
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 
 use Log::Report 'log-report';
 use POSIX      qw/locale_h/;
 use List::Util qw/first/;
+
+# Work-around for missing LC_MESSAGES on old Perls and Windows
+{ no warnings;
+  eval "&LC_MESSAGES";
+  *LC_MESSAGES = sub(){5} if $@;
+}
 
 
 use overload
