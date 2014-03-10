@@ -38,7 +38,7 @@ language packs are not installed.
 
 =over 4
 
-=item Log::Report::Translator-E<gt>B<new>(OPTIONS)
+=item Log::Report::Translator-E<gt>B<new>(%options)
 
  -Option  --Default
   charset   <from locale>
@@ -94,15 +94,15 @@ translation files may be located.
 
 =over 4
 
-=item $obj-E<gt>B<load>(DOMAIN, LOCALE)
+=item $obj-E<gt>B<load>($domain, $locale)
 
-Load the translation information in the text DOMAIN for the indicated LOCALE.
+Load the translation information in the text $domain for the indicated $locale.
 Multiple calls to L<load()|Log::Report::Translator/"Translating"> should not cost significant performance: the
 data must be cached.
 
-=item $obj-E<gt>B<translate>(MESSAGE, [LANGUAGE, CTXT])
+=item $obj-E<gt>B<translate>( $message, [$language, $ctxt] )
 
-Returns the translation of the MESSAGE, a C<Log::Report::Message> object,
+Returns the translation of the $message, a C<Log::Report::Message> object,
 based on the current locale.
 
 Translators are permitted to peek into the internal HASH of the
@@ -112,8 +112,8 @@ message object, for performance reasons.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 1.01,
-built on January 06, 2014. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.02,
+built on March 10, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

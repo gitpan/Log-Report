@@ -51,19 +51,19 @@ Terminate the dispatcher activities.  The dispatcher gets disabled,
 to avoid the case that it is accidentally used.  Returns C<undef> (false)
 if the dispatcher was already closed.
 
-=item Log::Report::Dispatcher-E<gt>B<new>(TYPE, NAME, OPTIONS)
+=item Log::Report::Dispatcher-E<gt>B<new>($type, $name, %options)
 
-Create a dispatcher.  The TYPE of back-end to start is required, and listed
+Create a dispatcher.  The $type of back-end to start is required, and listed
 in the L</DESCRIPTION> part of this manual-page. For various external
 back-ends, special wrappers are created.
 
-The NAME must be uniquely identifying this dispatcher.  When a second
+The $name must be uniquely identifying this dispatcher.  When a second
 dispatcher is created (via L<Log::Report::dispatcher()|Log::Report/"Report Production and Configuration">) with the name
 of an existing dispatcher, the existing one will get replaced.
 
-All OPTIONS which are not consumed by this base constructor are passed
-to the wrapped back-end.  Some of them will check whether all OPTIONS
-are understood, other ignore unknown OPTIONS.
+All %options which are not consumed by this base constructor are passed
+to the wrapped back-end.  Some of them will check whether all %options
+are understood, other ignore unknown %options.
 
  -Option       --Default
   accept         depend on mode
@@ -131,17 +131,17 @@ and L<Log::Report/Run modes>.
 
 Returns the unique name of this dispatcher.
 
-=item $obj-E<gt>B<needs>([REASON])
+=item $obj-E<gt>B<needs>( [$reason] )
 
 Returns the list with all REASONS which are needed to fulfill this
 dispatcher's needs.  When disabled, the list is empty, but not forgotten.
 
-[0.999] when only one REASON is specified, it is returned if in the
+[0.999] when only one $reason is specified, it is returned if in the
 list.
 
 =item $obj-E<gt>B<type>()
 
-The dispatcher TYPE, which is usually the same as the class of this
+The dispatcher $type, which is usually the same as the class of this
 object, but not in case of wrappers like for Log::Dispatch.
 
 =back
@@ -157,21 +157,21 @@ object, but not in case of wrappers like for Log::Dispatch.
 Collect the information to be displayed as line where the error occurred.
 Probably, this needs improvement, where carp and die show different lines.
 
-=item $obj-E<gt>B<collectStack>([MAXDEPTH])
+=item $obj-E<gt>B<collectStack>( [$maxdepth] )
 
-=item Log::Report::Dispatcher-E<gt>B<collectStack>([MAXDEPTH])
+=item Log::Report::Dispatcher-E<gt>B<collectStack>( [$maxdepth] )
 
 Returns an ARRAY of ARRAYs with text, filename, line-number.
 
-=item $obj-E<gt>B<log>(HASH-of-OPTIONS, REASON, MESSAGE, DOMAIN)
+=item $obj-E<gt>B<log>(HASH-$of-%options, $reason, $message, $domain)
 
 This method is called by L<Log::Report::report()|Log::Report/"Report Production and Configuration"> and should not be called
-directly.  Internally, it will call L<translate()|Log::Report::Dispatcher/"Logging">, which does most of
+directly.  Internally, it will call L<translate()|Log::Report::Dispatcher/"Logging">, which does most $of
 the work.
 
-=item $obj-E<gt>B<stackTraceLine>(OPTIONS)
+=item $obj-E<gt>B<stackTraceLine>(%options)
 
-=item Log::Report::Dispatcher-E<gt>B<stackTraceLine>(OPTIONS)
+=item Log::Report::Dispatcher-E<gt>B<stackTraceLine>(%options)
 
  -Option    --Default
   abstract    1
@@ -208,7 +208,7 @@ margin.
 
 =back
 
-=item $obj-E<gt>B<translate>(HASH-of-OPTIONS, REASON, MESSAGE)
+=item $obj-E<gt>B<translate>(HASH-$of-%options, $reason, $message)
 
 See L</Processing the message>, which describes the actions taken by
 this method.  A string is returned, which ends on a new-line, and
@@ -346,8 +346,8 @@ using concatenation (see L<Log::Report::Message::concat()|Log::Report::Message/"
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 1.01,
-built on January 06, 2014. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.02,
+built on March 10, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

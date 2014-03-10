@@ -7,8 +7,7 @@ use warnings;
 use strict;
 
 package Log::Report;
-use vars '$VERSION';
-$VERSION = '1.01';
+our $VERSION = '1.02';
 
 use base 'Exporter';
 
@@ -361,6 +360,15 @@ sub N__w(@) {split " ", $_[0]}
 
 sub import(@)
 {   my $class = shift;
+
+    if($INC{'Log/Report/Minimal.pm'})
+    {    my ($pkg, $fn, $line) = caller;   # do not report on LR:: modules
+         if(index($pkg, 'Log::Report::') != 0)
+         {   my @pkgs = Log::Report::Optional->usedBy;
+             die "Log::Report loaded too late in $fn line $line, "
+               . "put in $pkg before ", (join ',', @pkgs) if @pkgs;
+         }
+    }
 
     my $to_level   = ($_[0] && $_[0] =~ m/^\+\d+$/ ? shift : undef) || 0;
     my $textdomain = @_%2 ? shift : undef;

@@ -110,11 +110,11 @@ F<http://perl.overmeer.net/log-report/papers/201306-PerlMagazine-article-en.html
 
 =over 4
 
-=item B<dispatcher>((TYPE, NAME, OPTIONS)|(COMMAND => NAME, [NAMEs]))
+=item B<dispatcher>( <$type, $name, %options>|<$command, @names> )
 
 The C<dispatcher> function controls access to dispatchers: the back-ends
 which process messages, do the logging.  Dispatchers are global entities,
-addressed by a symbolic NAME.  Please read L<Log::Report::Dispatcher|Log::Report::Dispatcher> as
+addressed by a symbolic $name.  Please read L<Log::Report::Dispatcher|Log::Report::Dispatcher> as
 well.
 
 The C<Log::Report> suite has its own dispatcher TYPES, but also connects
@@ -122,19 +122,19 @@ to external dispatching frameworks.  Each need some (minor) conversions,
 especially with respect to translation of REASONS of the reports
 into log-levels as the back-end understands.
 
-The OPTIONS are a mixture of parameters needed for the
+The %options are a mixture of parameters needed for the
 Log::Report dispatcher wrapper and the settings of the back-end.
 See L<Log::Report::Dispatcher|Log::Report::Dispatcher>, the documentation for the back-end
 specific wrappers, and the back-ends for more details.
 
 Implemented COMMANDs are C<close>, C<find>, C<list>, C<disable>,
 C<enable>, C<mode>, C<filter>, and C<needs>.  Most commands are followed
-by a LIST of dispatcher NAMEs to be address.  For C<mode> see section
+by a LIST of dispatcher @names to be addressed.  For C<mode> see section
 L</Run modes>; it requires a MODE argument before the LIST of NAMEs.
 Non-existing names will be ignored. When C<ALL> is specified, then
 all existing dispatchers will get addressed.  For C<filter> see
 L<Log::Report::Dispatcher/Filters>; it requires a CODE reference before
-the NAMEs of the dispatchers which will have the it applied (defaults to
+the @names of the dispatchers which will have the it applied (defaults to
 all).
 
 With C<needs>, you only provide a REASON: it will return the list of
@@ -167,24 +167,26 @@ example: play with dispatchers
  dispatcher PERL => 'default', mode => 'DEBUG', accept => 'ALL'
      if $debug;
 
-=item B<report>([HASH-of-OPTIONS], REASON, MESSAGE|(STRING,PARAMS),)
+=item B<report>( [%options], $reason, $message|<STRING,$params>, )
 
-The C<report> function is sending (for some REASON) a MESSAGE to be
+The C<report> function is sending (for some $reason) a $message to be
 displayed or logged (by a `dispatcher').  This function is the core
 for L<error()|Log::Report/"Abbreviations for report()">, L<info()|Log::Report/"Abbreviations for report()"> etc functions, which are nicer names for this
 exception throwing: better use those short names.
 
-The REASON is a string like 'ERROR' (for function C<error()>).
-The MESSAGE is a L<Log::Report::Message|Log::Report::Message> object (which are created with
-the special translation syntax like L<__x()|Log::Report/"Language Translations">).  The MESSAGE may also
+The $reason is a string like 'ERROR' (for function C<error()>).
+The $message is a L<Log::Report::Message|Log::Report::Message> object (which are created with
+the special translation syntax like L<__x()|Log::Report/"Language Translations">).  The $message may also
 be a plain string, or an L<Log::Report::Exception|Log::Report::Exception> object. The optional
 first parameter is a HASH which can be used to influence the dispatchers.
-The HASH contains any combination of the OPTIONS listed below.
 
-This function returns the LIST of dispatchers which accepted the MESSAGE.
-When empty, no back-end has accepted it so the MESSAGE was "lost".
+The optional %options are listed below.  Quite differently from other
+functions and methods, they have to be passed in a HASH as first parameter.
+
+This function returns the LIST of dispatchers which accepted the $message.
+When empty, no back-end has accepted it so the $message was "lost".
 Even when no back-end needs the message, the program will still exit
-when there is a REASON to C<die()>.
+when there is a $reason to C<die()>.
 
  -Option  --Default
   errno     $! or 1
@@ -198,9 +200,9 @@ when there is a REASON to C<die()>.
 
 =item errno => INTEGER
 
-When the REASON includes the error text (See L</Run modes>), you can
+When the $reason includes the error text (See L</Run modes>), you can
 overrule the error code kept in C<$!>.  In other cases, the return code
-defaults to C<1> (historical UNIX behavior). When the message REASON
+defaults to C<1> (historical UNIX behavior). When the message $reason
 (combined with the run-mode) is severe enough to stop the program,
 this value as return code of the program.  The use of this option itself
 will not trigger an C<die()>.
@@ -229,7 +231,7 @@ it is collected via C<caller()> if needed.
 
 =item to => NAME|ARRAY-of-NAMEs
 
-Sent the MESSAGE only to the NAME'd dispatchers.  Ignore unknown NAMEs.
+Sent the $message only to the NAMEd dispatchers.  Ignore unknown NAMEs.
 Still, the dispatcher needs to be enabled and accept the REASONs.
 
 =back
@@ -253,7 +255,7 @@ example: for use of L<report()|Log::Report/"Report Production and Configuration"
  report {locale => 'pt_BR'}
     , WARNING => "do this at home!";
 
-=item B<try>(CODE, OPTIONS)
+=item B<try>(CODE, %options)
 
 Execute the CODE while blocking all dispatchers as long as it is running.
 The exceptions which occur while running the CODE are caught until it
@@ -268,12 +270,12 @@ Run-time errors from Perl and die's, croak's and confess's within the
 program (which shouldn't appear, but you never know) are collected into an
 L<Log::Report::Message|Log::Report::Message> object, using L<Log::Report::Die|Log::Report::Die>.
 
-The OPTIONS are passed to the constructor of the try-dispatcher, see
+The %options are passed to the constructor of the try-dispatcher, see
 L<Log::Report::Dispatcher::Try::new()|Log::Report::Dispatcher::Try/"Constructors">.  For instance, you may like to
 add C<< mode => 'DEBUG' >>, or C<< accept => 'ERROR-' >>.
 
 B<Be warned> that the parameter to C<try> is a CODE reference.  This means
-that you shall not use a comma after the block when there are OPTIONS
+that you shall not use a comma after the block when there are %options
 specified.  On the other hand, you shall use a semi-colon after the
 block if there are no arguments.
 
@@ -308,49 +310,49 @@ C<report()>, which are usually not needed anyway.
 
 =over 4
 
-=item B<alert>(MESSAGE)
+=item B<alert>($message)
 
-Short for C<< report ALERT => MESSAGE >>
+Short for C<< report ALERT => $message >>
 
-=item B<assert>(MESSAGE)
+=item B<assert>($message)
 
-Short for C<< report ASSERT => MESSAGE >>
+Short for C<< report ASSERT => $message >>
 
-=item B<error>(MESSAGE)
+=item B<error>($message)
 
-Short for C<< report ERROR => MESSAGE >>
+Short for C<< report ERROR => $message >>
 
-=item B<failure>(MESSAGE)
+=item B<failure>($message)
 
-Short for C<< report FAILURE => MESSAGE >>
+Short for C<< report FAILURE => $message >>
 
-=item B<fault>(MESSAGE)
+=item B<fault>($message)
 
-Short for C<< report FAULT => MESSAGE >>
+Short for C<< report FAULT => $message >>
 
-=item B<info>(MESSAGE)
+=item B<info>($message)
 
-Short for C<< report INFO => MESSAGE >>
+Short for C<< report INFO => $message >>
 
-=item B<mistake>(MESSAGE)
+=item B<mistake>($message)
 
-Short for C<< report MISTAKE => MESSAGE >>
+Short for C<< report MISTAKE => $message >>
 
-=item B<notice>(MESSAGE)
+=item B<notice>($message)
 
-Short for C<< report NOTICE => MESSAGE >>
+Short for C<< report NOTICE => $message >>
 
-=item B<panic>(MESSAGE)
+=item B<panic>($message)
 
-Short for C<< report PANIC => MESSAGE >>
+Short for C<< report PANIC => $message >>
 
-=item B<trace>(MESSAGE)
+=item B<trace>($message)
 
-Short for C<< report TRACE => MESSAGE >>
+Short for C<< report TRACE => $message >>
 
-=item B<warning>(MESSAGE)
+=item B<warning>($message)
 
-Short for C<< report WARNING => MESSAGE >>
+Short for C<< report WARNING => $message >>
 
 =back
 
@@ -389,7 +391,7 @@ no counterpart.
 
 =over 4
 
-=item B<N__>(MSGID)
+=item B<N__>($msgid)
 
 Label to indicate that the string is a text which will be translated
 later.  The function itself does nothing.  See also L<N__w()|Log::Report/"Language Translations">.
@@ -410,7 +412,7 @@ example: how to use N__()
  # however: this will always create all Log::Report::Message objects,
  # where maybe only one is used.
 
-=item B<N__n>(SINGLE_MSGID, PLURAL_MSGID)
+=item B<N__n>($single_msgid, $plural_msgid)
 
 Label to indicate that the two MSGIDs are related, the first as
 single, the seconds as its plural.  Only used to find the text
@@ -438,13 +440,13 @@ example: of L<N__w()|Log::Report/"Language Translations">
   my @colors = N__w"red green blue";  # same
   print __ $colors[1];
 
-=item B<__>(MSGID)
+=item B<__>($msgid)
 
-This function (name is B<two> under-score characters) will cause the MSGID
+This function (name is B<two> under-score characters) will cause the $msgid
 to be replaced by the translations when doing the actual output.  Returned
 is a L<Log::Report::Message|Log::Report::Message> object, which will be used in translation
 later.  Translating is invoked when the object gets stringified.  When
-you have no translation tables, the MSGID will be shown untranslated.
+you have no translation tables, the $msgid will be shown untranslated.
 
 If you need options for L<Log::Report::Message::new()|Log::Report::Message/"Constructors"> then use L<__x()|Log::Report/"Language Translations">;
 the prototype of this function does not permit parameters: it is a
@@ -462,11 +464,11 @@ example: how to use __()
  print $s;                   # ok, translated
  print $s->toString('fr');   # ok, forced into French
 
-=item B<__n>(MSGID, PLURAL_MSGID, COUNT, PAIRS)
+=item B<__n>($msgid, $plural_msgid, $count, PAIRS)
 
-It depends on the value of COUNT (and the selected language) which
+It depends on the value of $count (and the selected language) which
 text will be displayed.  When translations can not be performed, then
-MSGID will be used when COUNT is 1, and PLURAL_MSGSID in other cases.
+$msgid will be used when $count is 1, and PLURAL_MSGSID in other cases.
 However, some languages have more complex schemes than English.
 
 The PAIRS are options for L<Log::Report::Message::new()|Log::Report::Message/"Constructors"> and variables
@@ -488,9 +490,9 @@ example: how to use __n()
  # ARRAYs and HASHes are counted
  print __n "one", "more", \@r;
 
-=item B<__nx>(MSGID, PLURAL_MSGID, COUNT, PAIRS)
+=item B<__nx>($msgid, $plural_msgid, $count, PAIRS)
 
-It depends on the value of COUNT (and the selected language) which
+It depends on the value of $count (and the selected language) which
 text will be displayed.  See details in L<__n()|Log::Report/"Language Translations">.  After translation,
 the VARIABLES will be filled-in.
 
@@ -505,16 +507,16 @@ example: how to use __nx()
  local $" = ', ';
  print __nx "one file: {f}", "{_count} files: {f}", @files, f => \@files;
 
-=item B<__x>(MSGID, PAIRS)
+=item B<__x>($msgid, PAIRS)
 
-Translate the MSGID and then interpolate the VARIABLES in that string.
+Translate the $msgid and then interpolate the VARIABLES in that string.
 Of course, translation and interpolation is delayed as long as possible.
 Both OPTIONS and VARIABLES are key-value pairs.
 
 The PAIRS are options for L<Log::Report::Message::new()|Log::Report::Message/"Constructors"> and variables
 to be filled in.
 
-=item B<__xn>(SINGLE_MSGID, PLURAL_MSGID, COUNT, PAURS)
+=item B<__xn>($single_msgid, $plural_msgid, $count, $paurs)
 
 Same as L<__nx()|Log::Report/"Language Translations">, because we have no preferred order for 'x' and 'n'.
 
@@ -524,15 +526,15 @@ Same as L<__nx()|Log::Report/"Language Translations">, because we have no prefer
 
 =over 4
 
-=item $obj-E<gt>B<import>([LEVEL,][DOMAIN], OPTIONS)
+=item $obj-E<gt>B<import>( [$level,][$domain,] %options )
 
 The import is automatically called when the package is compiled.  For all
 packages but one in your distribution, it will only contain the name of
-the DOMAIN.
+the $domain.
 
 For one package, the import list may additionally contain textdomain
-configuration OPTIONS.  These OPTIONS are used for all packages which
-use the same DOMAIN.  These are alternatives:
+configuration %options.  These %options are used for all packages which
+use the same $domain.  These are alternatives:
 
   use Log::Report 'my-domain', %config, %domain_config;
 
@@ -542,11 +544,11 @@ use the same DOMAIN.  These are alternatives:
 The latter syntax has major advantages, when the configuration of the
 domain is determined at run-time.  It is probably also easier to understand.
 
-See L<Log::Report::Domain::configure()|Log::Report::Domain/"Attributes">, for the B<list of OPTIONS>
+See L<Log::Report::Domain::configure()|Log::Report::Domain/"Attributes">, for the B<list of %options>
 for the domain configuration.  Here, we only list the options which are
 related to the normal import behavior.
 
-The export LEVEL is a plus (+) followed by a number, for instance C<+1>,
+The export $level is a plus (+) followed by a number, for instance C<+1>,
 to indicate to on which caller level we need to work.  This is used
 in L<Log::Report::Optional|Log::Report::Optional>.  It defaults to '0': my direct caller.
 
@@ -595,10 +597,10 @@ example: of import
 
  use Log::Report import => 'try';      # or ARRAY of functions
 
-=item B<textdomain>(([DOMAIN], CONFIG) | (DOMAIN, 'DELETE'))
+=item B<textdomain>( <[$domain], $config> | <$domain, 'DELETE'> )
 
 [1.00] Without CONFIGuration, this returns the L<Log::Report::Domain|Log::Report::Domain> object
-which administers the DOMAIN, by default the domain effictive in the scope
+which administers the $domain, by default the domain effictive in the scope
 of the package.
 
 A very special case is for "DELETE", which will remove the domain
@@ -610,9 +612,9 @@ configuration.
 
 =over 4
 
-=item Log::Report-E<gt>B<needs>(REASON, [REASONS])
+=item Log::Report-E<gt>B<needs>( $reason, [$reasons] )
 
-Returns true when the reporter needs any of the REASONS, when any of
+Returns true when the reporter needs any of the $reasons, when any of
 the active dispatchers is collecting messages in the specified level.
 This is useful when the processing of data for the message is relatively
 expensive, but for instance only required in debug mode.
@@ -640,7 +642,7 @@ with a single new command: C<report> with many abbreviations.
 Besides, the C<print>/C<warn>/C<die> together produce only three different
 output levels with a message.  Many people manually implement their
 own additional levels, like verbose and debug.  Syslog has some extra
-levels as well, like C<critical>.  The REASON argument to C<report()>
+levels as well, like C<critical>.  The $reason argument to C<report()>
 offers them all.
 
 The (optional) translations use the beautiful syntax defined by
@@ -1028,8 +1030,8 @@ wishes to return a LIST of objects, not the count of them.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 1.01,
-built on January 06, 2014. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.02,
+built on March 10, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

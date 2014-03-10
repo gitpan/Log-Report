@@ -46,10 +46,10 @@ that depends on the front-end, the log dispatcher.
 
 =over 4
 
-=item $obj-E<gt>B<clone>(OPTIONS, VARIABLES)
+=item $obj-E<gt>B<clone>(%options, $variables)
 
 Returns a new object which copies info from original, and updates it
-with the specified OPTIONS and VARIABLES.  The advantage is that the
+with the specified %options and $variables.  The advantage is that the
 cached translations are shared between the objects.
 
 example: use of clone()
@@ -60,15 +60,15 @@ example: use of clone()
  print $s;     # found 5 files
  print $t;     # found 3 files
 
-=item Log::Report::Message-E<gt>B<fromTemplateToolkit>(DOMAIN, MSGID, PARAMS)
+=item Log::Report::Message-E<gt>B<fromTemplateToolkit>($domain, $msgid, $params)
 
 See L<Log::Report::Extract::Template|Log::Report::Extract::Template> on the details how to integrate
 Log::Report translations with Template::Toolkit (version 1 and 2)
 
-=item Log::Report::Message-E<gt>B<new>(OPTIONS)
+=item Log::Report::Message-E<gt>B<new>(%options)
 
 B<End-users: do not use this method directly>, but use L<Log::Report::__()|Log::Report/"Language Translations">
-and friends.  The OPTIONS is a mixed list of object initiation parameters
+and friends.  The %options is a mixed list of object initiation parameters
 (all with a leading underscore) and variables to be filled in into the
 translated C<_msgid> string.
 
@@ -223,15 +223,15 @@ Returns the msgid which will later be translated.
 
 Returns the string which is prepended to this one.  Usually C<undef>.
 
-=item $obj-E<gt>B<to>([NAME])
+=item $obj-E<gt>B<to>( [$name] )
 
-Returns the NAME of a dispatcher if explicitly specified with
+Returns the $name of a dispatcher if explicitly specified with
 the '_to' key. Can also be used to set it.  Usually, this will
 return undef, because usually all dispatchers get all messages.
 
-=item $obj-E<gt>B<valueOf>(PARAMETER)
+=item $obj-E<gt>B<valueOf>($parameter)
 
-Lookup the named PARAMETER for the message.  All pre-defined names
+Lookup the named $parameter for the message.  All pre-defined names
 have their own method which should be used with preference.
 
 example: 
@@ -271,11 +271,11 @@ Simplified, the above example can also be written as:
 
 =over 4
 
-=item $obj-E<gt>B<concat>(STRING|OBJECT, [PREPEND])
+=item $obj-E<gt>B<concat>( STRING|$object, [$prepend] )
 
 This method implements the overloading of concatenation, which is needed
-to delay translations even longer.  When PREPEND is true, the STRING
-or OBJECT (other C<Log::Report::Message>) needs to prepended, otherwise
+to delay translations even longer.  When $prepend is true, the STRING
+or $object (other C<Log::Report::Message>) needs to prepended, otherwise
 it is appended.
 
 example: of concatenation
@@ -283,12 +283,12 @@ example: of concatenation
  print __"Hello" . ' ' . __"World!";
  print __("Hello")->concat(' ')->concat(__"World!")->concat("\n");
 
-=item $obj-E<gt>B<inClass>(CLASS|REGEX)
+=item $obj-E<gt>B<inClass>($class|Regexp)
 
-Returns true if the message is in the specified CLASS (string) or
-matches the REGEX.  The trueth value is the (first matching) class.
+Returns true if the message is in the specified $class (string) or
+matches the Regexp.  The trueth value is the (first matching) class.
 
-=item $obj-E<gt>B<toString>([LOCALE])
+=item $obj-E<gt>B<toString>( [$locale] )
 
 Translate a message.  If not specified, the default locale is used.
 
@@ -483,19 +483,19 @@ In either case, the translation will be looked-up only once.
 
 =over 4
 
-=item overload: B<as function>()
+=item overload: B<as $function>
 
-When the object is used to call as function, a new object is
+When the object is used to call as $function, a new object is
 created with the data from the original one but updated with the
 new parameters.  Implemented in C<clone()>.
 
-=item overload: B<concatenation>()
+=item overload: B<concatenation>
 
 An (accidental) use of concatenation (a dot where a comma should be
 used) would immediately stringify the object.  This is avoided by
 overloading that operation.
 
-=item overload: B<stringification>()
+=item overload: B<stringification>
 
 When the object is used in string context, it will get translated.
 Implemented as L<toString()|Log::Report::Message/"Processing">.
@@ -504,8 +504,8 @@ Implemented as L<toString()|Log::Report::Message/"Processing">.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 1.01,
-built on January 06, 2014. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.02,
+built on March 10, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

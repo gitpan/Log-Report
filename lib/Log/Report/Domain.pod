@@ -56,19 +56,19 @@ only related to translations, but also -for instance- for text formatting
 configuration.  The administration for the configuration is managed in
 this package.
 
-See L<documentation in the base class|Log::Report::Minimal::Domain/"DESCRIPTION">.
+Extends L<"DESCRIPTION" in Log::Report::Minimal::Domain|Log::Report::Minimal::Domain/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in the base class|Log::Report::Minimal::Domain/"METHODS">.
+Extends L<"METHODS" in Log::Report::Minimal::Domain|Log::Report::Minimal::Domain/"METHODS">.
  
 =head2 Constructors
 
-See L<documentation in the base class|Log::Report::Minimal::Domain/"Constructors">.
+Extends L<"Constructors" in Log::Report::Minimal::Domain|Log::Report::Minimal::Domain/"Constructors">.
  
 =over 4
 
-=item Log::Report::Domain-E<gt>B<new>(OPTIONS)
+=item Log::Report::Domain-E<gt>B<new>(%options)
 
 Create a new Domain object.
 
@@ -85,16 +85,16 @@ Create a new Domain object.
 
 =head2 Attributes
 
-See L<documentation in the base class|Log::Report::Minimal::Domain/"Attributes">.
+Extends L<"Attributes" in Log::Report::Minimal::Domain|Log::Report::Minimal::Domain/"Attributes">.
  
 =over 4
 
-=item $obj-E<gt>B<configure>(OPTIONS)
+=item $obj-E<gt>B<configure>(%options)
 
 The import is automatically called when the package is compiled.  For all
 but one packages in your distribution, it will only contain the name of
 the DOMAIN.  For one package, it will contain configuration information.
-These OPTIONS are used for all packages which use the same DOMAIN.
+These %options are used for all packages which use the same DOMAIN.
 See chapter L</Configuring> below.
 
  -Option         --Defined in                  --Default
@@ -151,19 +151,19 @@ not modify the content of that HASH: change it by called L<setContext()|Log::Rep
 
 =item $obj-E<gt>B<isConfigured>()
 
-See L<Log::Report::Minimal::Domain/"Attributes">
+Inherited, see L<Log::Report::Minimal::Domain/"Attributes">
 
 =item $obj-E<gt>B<name>()
 
-See L<Log::Report::Minimal::Domain/"Attributes">
+Inherited, see L<Log::Report::Minimal::Domain/"Attributes">
 
 =item $obj-E<gt>B<nativeLanguage>()
 
-=item $obj-E<gt>B<readConfig>(FILENAME)
+=item $obj-E<gt>B<readConfig>($filename)
 
-=item Log::Report::Domain-E<gt>B<readConfig>(FILENAME)
+=item Log::Report::Domain-E<gt>B<readConfig>($filename)
 
-Helper method, which simply parses the content FILENAME into a HASH to be
+Helper method, which simply parses the content $filename into a HASH to be
 used as parameters to L<configure()|Log::Report::Domain/"Attributes">. The filename must end on '.pl',
 to indicate that it uses perl syntax (can be processed with Perl's C<do>
 command) or end on '.json'.  See also chapter L</Configuring> below.
@@ -187,17 +187,17 @@ Contexts are totally ignored then there are no C<context_rules>.
 
 =head2 Action
 
-See L<documentation in the base class|Log::Report::Minimal::Domain/"Action">.
+Extends L<"Action" in Log::Report::Minimal::Domain|Log::Report::Minimal::Domain/"Action">.
  
 =over 4
 
-=item Log::Report::Domain-E<gt>B<interpolate>(MSGID, [ARGS])
+=item Log::Report::Domain-E<gt>B<interpolate>( $msgid, [$args] )
 
-See L<Log::Report::Minimal::Domain/"Action">
+Inherited, see L<Log::Report::Minimal::Domain/"Action">
 
-=item $obj-E<gt>B<translate>(MESSAGE, LANGUAGE)
+=item $obj-E<gt>B<translate>($message, $language)
 
-Translate the MESSAGE into the LANGUAGE.
+Translate the $message into the $language.
 
 =back
 
@@ -246,8 +246,8 @@ of C<String::Print>, you need to pass a code reference.
 
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 1.01,
-built on January 06, 2014. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.02,
+built on March 10, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

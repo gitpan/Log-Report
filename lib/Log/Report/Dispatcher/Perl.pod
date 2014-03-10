@@ -27,20 +27,20 @@ Therefore, this dispatcher will always be called last.
 In the early releases of Log::Report, it tried to simulate the behavior
 of warn and die using STDERR and exit; however: that is not possible.
 
-See L<documentation in the base class|Log::Report::Dispatcher/"DESCRIPTION">.
+Extends L<"DESCRIPTION" in Log::Report::Dispatcher|Log::Report::Dispatcher/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in the base class|Log::Report::Dispatcher/"METHODS">.
+Extends L<"METHODS" in Log::Report::Dispatcher|Log::Report::Dispatcher/"METHODS">.
  
 =head1 DETAILS
 
-See L<documentation in the base class|Log::Report::Dispatcher/"DETAILS">.
+Extends L<"DETAILS" in Log::Report::Dispatcher|Log::Report::Dispatcher/"DETAILS">.
  
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 1.01,
-built on January 06, 2014. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.02,
+built on March 10, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

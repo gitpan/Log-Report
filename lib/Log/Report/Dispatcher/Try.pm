@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Try;
-use vars '$VERSION';
-$VERSION = '1.01';
+our $VERSION = '1.02';
 
 use base 'Log::Report::Dispatcher';
 
@@ -16,8 +15,9 @@ use Log::Report::Exception;
 
 
 use overload
-    bool => 'failed'
-  , '""' => 'showStatus';
+    bool     => 'failed'
+  , '""'     => 'showStatus'
+  , fallback => 1;
 
 
 sub init($)
@@ -69,10 +69,9 @@ sub log($$$$)
 }
 
 
+sub reportFatal(@) { $_->throw(@_) for shift->wasFatal }
 sub reportAll(@) { $_->throw(@_) for shift->exceptions }
 
-
-sub reportFatal(@) { $_->throw(@_) for shift->wasFatal }
 
 #-----------------
 

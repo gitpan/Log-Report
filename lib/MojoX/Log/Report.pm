@@ -3,8 +3,7 @@
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
 package MojoX::Log::Report;
-use vars '$VERSION';
-$VERSION = '1.01';
+our $VERSION = '1.02';
 
 use Mojo::Base 'Mojo::Log';  # implies use strict etc
 

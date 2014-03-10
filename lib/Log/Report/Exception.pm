@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package Log::Report::Exception;
-use vars '$VERSION';
-$VERSION = '1.01';
+our $VERSION = '1.02';
 
 
 use Log::Report      'log-report';
@@ -15,7 +14,9 @@ use Log::Report::Util qw/is_fatal/;
 use POSIX             qw/locale_h/;
 
 
-use overload '""' => 'toString';
+use overload
+    '""'     => 'toString'
+  , fallback => 1;
 
 
 sub new($@)

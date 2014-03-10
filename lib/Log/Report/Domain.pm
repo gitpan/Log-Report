@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package Log::Report::Domain;
-use vars '$VERSION';
-$VERSION = '1.01';
+our $VERSION = '1.02';
 
 use base 'Log::Report::Minimal::Domain';
 
@@ -44,11 +43,13 @@ sub configure(%)
     # 'formatter' is handled by the base-class, but documented here.
     $self->SUPER::configure(%args);
 
-    my $transl = $self->{LRD_transl}
-      = $args{translator} || Log::Report::Translator->new;
+    my $transl = $args{translator} || Log::Report::Translator->new;
+    $transl    =  Log::Report::Translator->new(@$transl)
+        if ref $transl eq 'HASH';
 
     !blessed $transl || $transl->isa('Log::Report::Translator')
         or panic "translator must be a Log::Report::Translator object";
+    $self->{LRD_transl} = $transl;
 
     my $native = $self->{LRD_native}
       = $args{native_language} || 'en_US';

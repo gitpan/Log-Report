@@ -3,8 +3,7 @@
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
 package Log::Report::Translator;
-use vars '$VERSION';
-$VERSION = '1.01';
+our $VERSION = '1.02';
 
 
 use warnings;
@@ -40,8 +39,10 @@ sub init($)
                 if $Log::Report::Lexicon::Index::VERSION < 1.00;
         }
 
-        push @lex, $lexicons{$dir} ||=   # lexicon indexes are shared
-            Log::Report::Lexicon::Index->new($dir);
+        # lexicon indexes are shared
+        my $l = $lexicons{$dir} ||= Log::Report::Lexicon::Index->new($dir);
+        $l->index;   # index the files now
+        push @lex, $l;
     }
     $self->{lexicons} = \@lex;
     $self->{charset}  = $args->{charset} || 'utf-8';
