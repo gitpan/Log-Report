@@ -6,7 +6,8 @@ use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Try;
-our $VERSION = '1.02';
+use vars '$VERSION';
+$VERSION = '1.03';
 
 use base 'Log::Report::Dispatcher';
 
@@ -19,6 +20,7 @@ use overload
   , '""'     => 'showStatus'
   , fallback => 1;
 
+#-----------------
 
 sub init($)
 {   my ($self, $args) = @_;
@@ -35,6 +37,7 @@ sub close()
     $self;
 }
 
+#-----------------
 
 sub died(;$)
 {   my $self = shift;
@@ -44,6 +47,7 @@ sub died(;$)
 
 sub exceptions() { @{shift->{exceptions}} }
 
+#-----------------
 
 sub log($$$$)
 {   my ($self, $opts, $reason, $message, $domain) = @_;
@@ -69,12 +73,10 @@ sub log($$$$)
 }
 
 
-sub reportFatal(@) { $_->throw(@_) for shift->wasFatal }
-sub reportAll(@) { $_->throw(@_) for shift->exceptions }
-
+sub reportFatal(@) { $_->throw(@_) for shift->wasFatal   }
+sub reportAll(@)   { $_->throw(@_) for shift->exceptions }
 
 #-----------------
-
 
 sub failed()  {   shift->{died}}
 sub success() { ! shift->{died}}

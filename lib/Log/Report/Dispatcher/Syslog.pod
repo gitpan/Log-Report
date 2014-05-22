@@ -196,8 +196,8 @@ Extends L<"DETAILS" in Log::Report::Dispatcher|Log::Report::Dispatcher/"DETAILS"
  
 =head1 SEE ALSO
 
-This module is part of Log-Report distribution version 1.02,
-built on March 10, 2014. Website: F<http://perl.overmeer.net/log-report/>
+This module is part of Log-Report distribution version 1.03,
+built on May 22, 2014. Website: F<http://perl.overmeer.net/log-report/>
 
 =head1 LICENSE
 

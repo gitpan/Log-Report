@@ -6,7 +6,8 @@ use warnings;
 use strict;
 
 package Log::Report::Message;
-our $VERSION = '1.02';
+use vars '$VERSION';
+$VERSION = '1.03';
 
 
 use Log::Report 'log-report';

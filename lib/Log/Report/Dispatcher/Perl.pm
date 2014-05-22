@@ -6,7 +6,8 @@ use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Perl;
-our $VERSION = '1.02';
+use vars '$VERSION';
+$VERSION = '1.03';
 
 use base 'Log::Report::Dispatcher';
 
@@ -18,15 +19,7 @@ my $singleton = 0;   # can be only one (per thread)
 
 sub log($$$$)
 {   my ($self, $opts, $reason, $message, $domain) = @_;
-    my $text = $self->translate($opts, $reason, $message);
-
-    if($opts->{is_fatal})
-    {   $! = $opts->{errno};
-        die $text;
-    }
-    else
-    {   warn $text;
-    }
+    print STDERR $self->translate($opts, $reason, $message);
 }
 
 1;

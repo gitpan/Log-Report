@@ -3,7 +3,8 @@
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
 package Log::Report::Translator;
-our $VERSION = '1.02';
+use vars '$VERSION';
+$VERSION = '1.03';
 
 
 use warnings;

@@ -6,7 +6,8 @@ use warnings;
 use strict;
 
 package Log::Report::Dispatcher::Log4perl;
-our $VERSION = '1.02';
+use vars '$VERSION';
+$VERSION = '1.03';
 
 use base 'Log::Report::Dispatcher';
 
@@ -31,6 +32,13 @@ my %default_reasonToLevel =
 
 @reasons==keys %default_reasonToLevel
     or panic __"Not all reasons have a default translation";
+
+# Do not show these as source of the error: one or more caller frames up
+Log::Log4perl->wrapper_register($_) for qw/
+  Log::Report
+  Log::Report::Dispatcher
+  Log::Report::Dispatcher::Try
+/;
 
 
 sub init($)
