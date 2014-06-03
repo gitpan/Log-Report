@@ -4,7 +4,7 @@
 # Pod stripped from pm file by OODoc 2.01.
 package DieTests;
 use vars '$VERSION';
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 use warnings;
 use strict;
