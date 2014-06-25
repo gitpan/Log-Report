@@ -4,7 +4,7 @@
 # Pod stripped from pm file by OODoc 2.01.
 package MojoX::Log::Report;
 use vars '$VERSION';
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 use Mojo::Base 'Mojo::Log';  # implies use strict etc
 
